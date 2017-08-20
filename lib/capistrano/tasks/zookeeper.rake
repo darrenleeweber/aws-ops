@@ -62,7 +62,8 @@ namespace :zookeeper do
 
     desc 'Find and describe all Zookeeper nodes'
     task :find do
-      AwsHelpers.ec2_find_service_instances(SERVICE)
+      instances = AwsHelpers.ec2_find_service_instances(SERVICE)
+      instances.each { |i| AwsHelpers.ec2_instance_info(i) }
     end
 
   end
