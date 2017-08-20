@@ -17,7 +17,7 @@ aws:
     tag_group: test_nodes
     tag_manager: dlweber
     tag_service:
-    tag_stage: testelopment
+    tag_stage: test
 
   # ---
   # Zookeeper Nodes
@@ -26,7 +26,6 @@ aws:
 
   test_zookeeper1: &ZookeeperDefaults
     <<: *TestDefault
-    instance_type: t2.medium
     tag_service: zookeeper
     tag_group: test_zookeeper
     tag_name: test_zookeeper1
@@ -47,9 +46,7 @@ aws:
 
   test_mesos_agent1: &MesosAgentDefaults
     <<: *TestDefault
-    instance_type: c4.4xlarge
     tag_service: mesos
-    tag_stage: testelopment
     tag_group: test_mesos_agent
     tag_name: test_mesos_agent1
     availability_zone: us-west-2a  # need one node in each zone

@@ -59,7 +59,6 @@ aws:
     <<: *DevDefault
     instance_type: c4.4xlarge
     tag_service: mesos
-    tag_stage: development
     tag_group: dev_mesos_agent
     tag_name: dev_mesos_agent1
     availability_zone: us-west-2a  # need one node in each zone
