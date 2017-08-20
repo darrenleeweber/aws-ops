@@ -36,7 +36,9 @@ namespace :zookeeper do
       existing_names = zookeeper_instance_names
       zookeeper_settings.each do |params|
         # Only create a new one if it does not exist, based on tag:Name
-        unless existing_names.include? params.tag_name
+        if existing_names.include? params.tag_name
+          puts "Found existing instance named: #{params.tag_name}"
+        else
           AwsHelpers.ec2_create params
         end
       end
