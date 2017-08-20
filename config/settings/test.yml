@@ -1,0 +1,56 @@
+# These settings are merged into config/settings.yml
+
+# - these development settings may not be fault tolerant
+# - these settings consolidate services on single nodes that should be replicated
+#   on multiple nodes in different availability zones for production fault tolerance
+
+aws:
+
+  instance_default_test: &TestDefault
+    region: us-west-2
+    image_id: ami-6e1a0117  # Ubuntu
+    min_count: 1
+    max_count: 1
+    instance_type: t2.micro
+    availability_zone: us-west-2a
+    tag_name: test_default
+    tag_group: test_nodes
+    tag_manager: dlweber
+    tag_service:
+    tag_stage: testelopment
+
+  # ---
+  # Zookeeper Nodes
+  # - note definition and use of defaults: ZookeeperDefaults
+  # - it's important that each instance has 'zookeeper' in the key and tag_name (case sensitive)
+
+  test_zookeeper1: &ZookeeperDefaults
+    <<: *TestDefault
+    instance_type: t2.medium
+    tag_service: zookeeper
+    tag_group: test_zookeeper
+    tag_name: test_zookeeper1
+    availability_zone: us-west-2a  # need one node in each zone
+
+  # ---
+  # Mesos Nodes
+  # - note definition and use of defaults: MesosMasterDefaults, MesosAgentDefaults
+  # - note definition and use of defaults: MesosMasterDefaults, MesosAgentDefaults
+  # - it's important that each instance has 'mesos' in the key and tag_name (case sensitive)
+
+  test_mesos_master1: &MesosMasterDefaults
+    <<: *TestDefault
+    tag_service: mesos
+    tag_group: test_mesos_master
+    tag_name: test_mesos_master1
+    availability_zone: us-west-2a  # need one node in each zone
+
+  test_mesos_agent1: &MesosAgentDefaults
+    <<: *TestDefault
+    instance_type: c4.4xlarge
+    tag_service: mesos
+    tag_stage: testelopment
+    tag_group: test_mesos_agent
+    tag_name: test_mesos_agent1
+    availability_zone: us-west-2a  # need one node in each zone
+

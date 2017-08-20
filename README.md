@@ -35,6 +35,7 @@ bundle exec cap dev ops:aws:check_credentials
 # instance defaults, like: AMI, AWS region, instance types and tags
 AWS_ENV=development bundle exec cap dev ops:aws:check_settings
 AWS_ENV=production  bundle exec cap dev ops:aws:check_settings
+AWS_ENV=test        bundle exec cap dev ops:aws:check_settings
 ```
 
 # Use
