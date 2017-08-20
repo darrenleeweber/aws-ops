@@ -63,31 +63,34 @@ namespace :zookeeper do
     AwsHelpers.ec2_find_service_instances(SERVICE)
   end
 
-  desc 'Install Zookeeper nodes'
-  task :install do
-    on roles(:zookeeper), in: :parallel do |host|
-      # PuppetHelpers.puppet_apply('zookeeper.pp')
-    end
-  end
 
-  desc 'Start Zookeeper nodes'
-  task :start do
-    on roles(:zookeeper), in: :parallel do |host|
-      sudo('service zookeeper restart')
+  namespace :service do
+    desc 'Install Zookeeper service'
+    task :install do
+      on roles(:zookeeper), in: :parallel do |host|
+        # PuppetHelpers.puppet_apply('zookeeper.pp')
+      end
     end
-  end
 
-  desc 'Status of Zookeeper nodes'
-  task :status do
-    on roles(:zookeeper), in: :parallel do |host|
-      sudo('service zookeeper status')
+    desc 'Start Zookeeper service'
+    task :start do
+      on roles(:zookeeper), in: :parallel do |host|
+        sudo('service zookeeper restart')
+      end
     end
-  end
 
-  desc 'Stop Zookeeper nodes'
-  task :stop do
-    on roles(:zookeeper), in: :parallel do |host|
-      sudo('service zookeeper stop')
+    desc 'Status of Zookeeper service'
+    task :status do
+      on roles(:zookeeper), in: :parallel do |host|
+        sudo('service zookeeper status')
+      end
+    end
+
+    desc 'Stop Zookeeper service'
+    task :stop do
+      on roles(:zookeeper), in: :parallel do |host|
+        sudo('service zookeeper stop')
+      end
     end
   end
 end
