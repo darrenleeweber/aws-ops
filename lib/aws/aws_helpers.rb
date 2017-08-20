@@ -118,6 +118,10 @@ module AwsHelpers
     i.tags.select { |t| t.key == 'Name' }.map(&:value).first
   end
 
+  def ec2_instance_tag_name?(i, tag_name)
+    ec2_instance_tag_name(i) == tag_name
+  end
+
   def ec2_instance_info(i)
     puts "ID:\t\t"     + i.id.to_s
     puts "Type:\t\t"   + i.instance_type.to_s
