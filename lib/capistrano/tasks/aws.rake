@@ -19,7 +19,7 @@ namespace :ops do
         instance_params = Settings.aws[args.name]
         if instance_params.nil?
           puts "Settings.aws['#{args.name}'] does not exist"
-          puts "Check the config/settings.yml or config/settings/{env} for details"
+          puts 'Check the config/settings.yml or config/settings/{env} for details'
         else
           AwsHelpers.ec2_create instance_params
         end
@@ -37,18 +37,26 @@ namespace :ops do
 
       desc 'Find an EC2 instance by GROUP'
       task :find_instances_by_group, :group do |task, args|
-        group = args.group || Settings.aws.tag_group
-        AwsHelpers.ec2_find_group_instances(group)
+        instances = AwsHelpers.ec2_find_group_instances(args.group)
+        instances.each { |i| AwsHelpers.ec2_instance_info(i) }
       end
 
       desc 'Find an EC2 instance by NAME'
       task :find_instance_by_name, :name do |task, args|
-        AwsHelpers.ec2_find_name_instances(args.name)
+        instances = AwsHelpers.ec2_find_name_instances(args.name)
+        instances.each { |i| AwsHelpers.ec2_instance_info(i) }
+      end
+
+      desc 'Find an EC2 instance by SERVICE'
+      task :find_instances_by_service, :service do |task, args|
+        instances = AwsHelpers.ec2_find_service_instances(args.service)
+        instances.each { |i| AwsHelpers.ec2_instance_info(i) }
       end
 
       desc 'Find an EC2 instance by ID'
       task :find_instance, :instance_id do |task, args|
-        AwsHelpers.ec2_find_instance(args.instance_id)
+        i = AwsHelpers.ec2_find_instance(args.instance_id)
+        AwsHelpers.ec2_instance_info(i)
       end
 
       desc 'Start an EC2 instance by ID'

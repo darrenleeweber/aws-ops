@@ -42,8 +42,10 @@ module AwsHelpers
   #   "tag_group": "default"
   # }
   def ec2_create(params)
+    puts "Using AWS region: #{params['region']}"
     ec2 = Aws::EC2::Resource.new(region: params['region'])
 
+    puts "Creating EC2 instance with tag:Name - #{params['tag_name']}"
     instances = ec2.create_instances(
       image_id: params['image_id'],
       min_count: params['min_count'],
@@ -62,8 +64,8 @@ module AwsHelpers
     )
 
     instance_ids = instances.map(&:id)
-    ec2_wait_instances(instance_ids)
-    instances.each { |i| ec2_add_tags(i, parms) }
+    ec2_wait_instance_startup(instance_ids)
+    instances.each { |i| ec2_add_tags(i, params) }
     instances.each { |i| ec2_instance_info(i) }
     instances
   end
@@ -84,33 +86,47 @@ module AwsHelpers
   end
 
   # Get all instances with tag key 'Group'
-  def ec2_find_group_instances(tag_group)
-    filter = { name: 'tag:Group', values: [tag_group] }
-    ec2.instances(filters: [filter]).each { |i| ec2_instance_info(i) }
+  def ec2_find_group_instances(tag_value)
+    ec2_find_instances_by_tag('Group', tag_value)
   end
 
   # Get all instances with tag key 'Group'
-  def ec2_find_name_instances(tag_name)
-    filter = { name: 'tag:Name', values: [tag_name] }
-    ec2.instances(filters: [filter]).each { |i| ec2_instance_info(i) }
+  def ec2_find_name_instances(tag_value)
+    ec2_find_instances_by_tag('Name', tag_value)
+  end
+
+  # Get all instances with tag key 'Service'
+  def ec2_find_service_instances(tag_value)
+    ec2_find_instances_by_tag('Service', tag_value)
   end
 
   # Find an instance
   def ec2_find_instance(instance_id)
     i = ec2.instance(instance_id)
-    ec2_instance_info(i)
+    raise 'Instance not found' if i.nil?
     i
   end
 
+  # Get all instances by tag
+  def ec2_find_instances_by_tag(tag, value)
+    filter = { name: "tag:#{tag}", values: [value] }
+    collection = ec2.instances(filters: [filter])
+    collection.to_a
+  end
+
+  def ec2_instance_tag_name(i)
+    i.tags.select { |t| t.key == 'Name' }.map(&:value).first
+  end
+
   def ec2_instance_info(i)
-    puts "ID:\t\t"     + i.id
-    puts "Type:\t\t"   + i.instance_type
-    puts "AMI ID:\t\t" + i.image_id
-    puts "State:\t\t"  + i.state.name
+    puts "ID:\t\t"     + i.id.to_s
+    puts "Type:\t\t"   + i.instance_type.to_s
+    puts "AMI ID:\t\t" + i.image_id.to_s
+    puts "State:\t\t"  + i.state.name.to_s
     puts "Tags:\t\t"   + i.tags.map { |t| "#{t.key}: #{t.value}" }.join('; ')
-    puts "Public IP:\t"   + i.public_ip_address
-    puts "Public DNS:\t"  + i.public_dns_name
-    puts "Private DNS:\t" + i.private_dns_name
+    puts "Public IP:\t"   + i.public_ip_address.to_s
+    puts "Public DNS:\t"  + i.public_dns_name.to_s
+    puts "Private DNS:\t" + i.private_dns_name.to_s
     puts
     # require 'pry'
     # binding.pry
@@ -118,29 +134,46 @@ module AwsHelpers
 
   # Start an instance
   def ec2_start_instance(instance_id)
-    i = ec2.instance(instance_id)
-    return false if i.nil?
-    return true if i.state.name == 'started'
-    return true if i.state.name == 'running'
+    i = ec2_find_instance(instance_id)
     i.start
-    ec2_wait_instances([i.id])
+    ec2_wait_instance_startup([i.id])
   end
 
   # Stop an instance
   def ec2_stop_instance(instance_id)
-    ec2 = Aws::EC2::Resource.new(region: Settings.aws.region)
-    i = ec2.instance(instance_id)
-    return false if i.nil?
-    return true if i.state.name.include? 'stop'
-    status = i.stop
-    status.stopping_instances[0].current_state.name.include? 'stop'
+    i = ec2_find_instance(instance_id)
+    i.stop
+    ec2_wait_instance_stopped([i.id])
   end
 
-  def ec2_wait_instances(instance_ids)
+  # Stop an instance
+  def ec2_terminate_instance(instance_id)
+    i = ec2_find_instance(instance_id)
+    i.terminate
+    ec2_wait_instance_terminated([i.id])
+  end
+
+  # See ec2.client.waiter_names for options to wait
+  def ec2_wait_instance_startup(instance_ids)
     # Wait for the instance to be created, running, and passed status checks
     puts "instances #{instance_ids}: waiting to pass status checks"
     ec2.client.wait_until(:instance_status_ok, instance_ids: instance_ids)
     puts "instances #{instance_ids}: created, running, and passed status checks"
   end
 
+  # See ec2.client.waiter_names for options to wait
+  def ec2_wait_instance_stopped(instance_ids)
+    # Wait for the instance to be created, running, and passed status checks
+    puts "instances #{instance_ids}: waiting to stop"
+    ec2.client.wait_until(:instance_stopped, instance_ids: instance_ids)
+    puts "instances #{instance_ids}: stopped"
+  end
+
+  # See ec2.client.waiter_names for options to wait
+  def ec2_wait_instance_terminated(instance_ids)
+    # Wait for the instance to be created, running, and passed status checks
+    puts "instances #{instance_ids}: waiting to terminate"
+    ec2.client.wait_until(:instance_terminated, instance_ids: instance_ids)
+    puts "instances #{instance_ids}: terminated"
+  end
 end

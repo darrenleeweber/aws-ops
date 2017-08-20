@@ -1,6 +1,8 @@
+source 'https://rubygems.org'
 
 gem 'aws-sdk'
 gem 'config'
+gem 'highline', '~> 1.7', '>= 1.7.8'
 
 group :development do
   gem 'pry'

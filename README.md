@@ -18,7 +18,7 @@ Incomplete - work in progress.
    - or use AWS discovery services to find them dynamically
 
 # Install
-```sh
+```bash
 git clone https://github.com/darrenleeweber/aws-ops.git
 cd aws-ops
 bundle install
@@ -26,23 +26,25 @@ bundle exec cap -T
 ```
 
 # Configure
-```sh
+```bash
 # Setup your AWS credentials using ENV values or config/setting.yml
 bundle exec cap dev ops:aws:check_credentials
+
 # Check details of config/settings.yml and subdirectories
 # Modify the settings as required, esp. AWS details in the
 # instance defaults, like: AMI, AWS region, instance types and tags
-bundle exec cap dev ops:aws:check_settings
+AWS_ENV=development bundle exec cap dev ops:aws:check_settings
+AWS_ENV=production  bundle exec cap dev ops:aws:check_settings
 ```
 
 # Use
-```sh
+```bash
 # Test creating a new instance
 bundle exec cap dev ops:aws:ec2:create_instance_test
 # Create a named instance using the settings params
-bundle exec cap dev ops:aws:ec2:create_instance_by_name['zookeeper1']
+bundle exec cap dev ops:aws:ec2:create_instance_by_name['dev_zookeeper1']
 # Find an instance by tags
-bundle exec cap dev ops:aws:ec2:find_instance_by_name['zookeeper1']
+bundle exec cap dev ops:aws:ec2:find_instance_by_name['dev_zookeeper1']
 # Record instance public DNS in the servers/roles details in
 # config/deploy/*.rb as required. (This is not automated yet.)
 ```
@@ -51,6 +53,7 @@ bundle exec cap dev ops:aws:ec2:find_instance_by_name['zookeeper1']
  - `ops:aws`
  - `hdfs`
  - `spark`
+ - `zookeeper`
  - TODO: `mesos` and others
  - the rest are capistrano defaults, like `deploy`
  - see `lib/capistrano/tasks` for details

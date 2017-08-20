@@ -1,5 +1,23 @@
 PROJECT_PATH=Dir.pwd
 
+require 'highline/import'
+def confirmation?(msg)
+  cli = HighLine.new
+  confirm = cli.ask("#{msg}; do it? [y/n] ") { |yn| yn.limit = 1, yn.validate = /[yn]/i }
+  confirm.downcase == 'y'
+end
+
+require 'config'
+app_env = ENV['AWS_ENV'] || 'development'
+Config.load_and_set_settings(
+  Config.setting_files('config', app_env)
+)
+
+require_relative 'lib/aws/aws_helpers'
+require_relative 'lib/puppet/puppet_helpers'
+
+
+
 # Load DSL and set up stages
 require 'capistrano/setup'
 
@@ -35,15 +53,6 @@ install_plugin Capistrano::SCM::Git
 # require "capistrano/rails/assets"
 # require "capistrano/rails/migrations"
 # require "capistrano/passenger"
-
-require 'config'
-app_env = ENV['AWS_ENV'] || 'development'
-Config.load_and_set_settings(
-  Config.setting_files('config', app_env)
-)
-
-require_relative 'lib/aws/aws_helpers'
-require_relative 'lib/puppet/puppet_helpers'
 
 # Load custom tasks from `lib/capistrano/tasks` if you have any defined
 Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }

@@ -17,6 +17,12 @@ aws:
   image_id: ami-6e1a0117
   key_name: ld4p
 
+  # ---
+  # EC2 Instance Params
+  # - each instance block begins with a 'key' to identify the instance
+  # - use the same 'key' value to name the instance and put it in the 'tag_name' value
+  # - use '_' in all 'key' and tag values, not '-' (because Settings.aws.keys uses symbols)
+
   instance_default: &default
     region: us-west-2
     image_id: ami-6e1a0117  # Ubuntu
@@ -24,70 +30,15 @@ aws:
     max_count: 1
     instance_type: t2.micro
     availability_zone: us-west-2a
-    tag_name: ld4p-default
-    tag_group: ld4p-nodes
+    tag_name: instance_default
+    tag_group: dev_nodes
     tag_manager: dlweber
-    tag_service: ld4p
+    tag_service:
+    tag_stage: development
 
   instance_test:
     <<: *default
     instance_type: t2.micro
-    tag_name: ld4p-test
-
-  # ---
-  # Zookeeper Nodes
-
-  zookeeper1: &ZookeeperDefaults
-    <<: *default
-    tag_service: zookeeper
-    tag_group: ld4p-zookeeper
-    tag_name: ld4p-zookeeper1
-    availability_zone: us-west-2a  # need one node in each zone
-
-  zookeeper2:
-    <<: *ZookeeperDefaults
-    tag_name: ld4p-zookeeper2
-    availability_zone: us-west-2b  # need one node in each zone
-
-  zookeeper3:
-    <<: *ZookeeperDefaults
-    tag_name: ld4p-zookeeper3
-    availability_zone: us-west-2c  # need one node in each zone
-
-  # ---
-  # Mesos Nodes
-
-  mesos-master1: &MesosMasterDefaults
-    <<: *default
-    tag_service: mesos
-    tag_group: ld4p-mesos-master
-    tag_name: ld4p-mesos-master1
-    availability_zone: us-west-2a  # need one node in each zone
-
-  mesos-master2:
-    <<: *MesosMasterDefaults
-    tag_name: ld4p-mesos-master2
-    availability_zone: us-west-2b  # need one node in each zone
-
-  mesos-master3:
-    <<: *MesosMasterDefaults
-    tag_name: ld4p-mesos-master3
-    availability_zone: us-west-2c  # need one node in each zone
-
-  mesos-agent1: &MesosAgentDefaults
-    <<: *default
-    tag_service: mesos
-    tag_group: ld4p-mesos-agent
-    tag_name: ld4p-mesos-agent1
-    availability_zone: us-west-2a  # need one node in each zone
-
-  mesos-agent2:
-    <<: *MesosAgentDefaults
-    tag_name: ld4p-mesos-agent2
-    availability_zone: us-west-2b  # need one node in each zone
-
-  mesos-agent3:
-    <<: *MesosAgentDefaults
-    tag_name: ld4p-mesos-agent3
-    availability_zone: us-west-2c  # need one node in each zone
+    tag_name: instance_test
+    tag_stage: test
 
