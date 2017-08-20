@@ -25,46 +25,50 @@ namespace :zookeeper do
     zookeeper_instances.map { |i| AwsHelpers.ec2_instance_tag_name(i) }
   end
 
-  desc 'Create Zookeeper nodes'
-  task :create do
-    # Attempts to be idempotent, but if details of settings change,
-    # it cannot inspect everything to detect updates or instance replacements.
-    # To replace instances and change their settings, terminate them and recreate them.
-    # TODO: Can this task auto-update the config/deploy/{env} servers?
-    existing_names = zookeeper_instance_names
-    zookeeper_settings.each do |params|
-      # Only create a new one if it does not exist, based on tag:Name
-      unless existing_names.include? params.tag_name
-        AwsHelpers.ec2_create params
+  namespace :nodes do
+
+    desc 'Create Zookeeper nodes'
+    task :create do
+      # Attempts to be idempotent, but if details of settings change,
+      # it cannot inspect everything to detect updates or instance replacements.
+      # To replace instances and change their settings, terminate them and recreate them.
+      # TODO: Can this task auto-update the config/deploy/{env} servers?
+      existing_names = zookeeper_instance_names
+      zookeeper_settings.each do |params|
+        # Only create a new one if it does not exist, based on tag:Name
+        unless existing_names.include? params.tag_name
+          AwsHelpers.ec2_create params
+        end
       end
     end
-  end
 
-  desc 'Terminate Zookeeper nodes'
-  task :terminate do
-    # Attempts to be idempotent, but if details of settings change,
-    # it cannot inspect everything to detect updates or instance replacements.
-    # To replace instances and change their settings, terminate them and recreate them.
-    # TODO: Can this task auto-update the config/deploy/{env} servers?
-    exit unless confirmation?('WARNING: terminating zookeeper can crash services')
-    zookeeper_settings.each do |params|
-      # Only terminate an existing instance that matches our settings
-      instances = AwsHelpers.ec2_find_name_instances(params.tag_name)
-      raise 'Found too many instances' if instances.length > 1
-      next if instances.empty?
-      next unless confirmation?("Terminate: #{params.tag_name}")
-      i = instances.first
-      AwsHelpers.ec2_terminate_instance(i.id) unless i.nil?
+    desc 'Terminate Zookeeper nodes'
+    task :terminate do
+      # Attempts to be idempotent, but if details of settings change,
+      # it cannot inspect everything to detect updates or instance replacements.
+      # To replace instances and change their settings, terminate them and recreate them.
+      # TODO: Can this task auto-update the config/deploy/{env} servers?
+      exit unless confirmation?('WARNING: terminating zookeeper can crash services')
+      zookeeper_settings.each do |params|
+        # Only terminate an existing instance that matches our settings
+        instances = AwsHelpers.ec2_find_name_instances(params.tag_name)
+        raise 'Found too many instances' if instances.length > 1
+        next if instances.empty?
+        next unless confirmation?("Terminate: #{params.tag_name}")
+        i = instances.first
+        AwsHelpers.ec2_terminate_instance(i.id) unless i.nil?
+      end
     end
-  end
 
-  desc 'Find and describe all Zookeeper nodes'
-  task :find do
-    AwsHelpers.ec2_find_service_instances(SERVICE)
-  end
+    desc 'Find and describe all Zookeeper nodes'
+    task :find do
+      AwsHelpers.ec2_find_service_instances(SERVICE)
+    end
 
+  end
 
   namespace :service do
+
     desc 'Install Zookeeper service'
     task :install do
       on roles(:zookeeper), in: :parallel do |host|
@@ -92,6 +96,8 @@ namespace :zookeeper do
         sudo('service zookeeper stop')
       end
     end
+
   end
+
 end
 
