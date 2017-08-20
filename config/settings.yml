@@ -1,0 +1,93 @@
+# http://docs.aws.amazon.com/sdk-for-ruby/v2/developer-guide/setup-config.html
+
+# Some image-ids as of 2017-08
+# Amazon Linux AMI 2017.03.1 (HVM), SSD Volume Type - ami-aa5ebdd2
+# Red Hat Enterprise Linux 7.4 (HVM), SSD Volume Type - ami-9fa343e7
+# Ubuntu Server 16.04 LTS (HVM), SSD Volume Type - ami-6e1a0117
+
+aws:
+  # when access_key_id and secret_access_key are blank, Settings will try to use ENV values
+  access_key_id:
+  secret_access_key:
+  region: us-west-2
+  availability_zones:
+    - us-west-2a
+    - us-west-2b
+    - us-west-2c
+  image_id: ami-6e1a0117
+  key_name: ld4p
+
+  instance_default: &default
+    region: us-west-2
+    image_id: ami-6e1a0117  # Ubuntu
+    min_count: 1
+    max_count: 1
+    instance_type: t2.micro
+    availability_zone: us-west-2a
+    tag_name: ld4p-default
+    tag_group: ld4p-nodes
+    tag_manager: dlweber
+    tag_service: ld4p
+
+  instance_test:
+    <<: *default
+    instance_type: t2.micro
+    tag_name: ld4p-test
+
+  # ---
+  # Zookeeper Nodes
+
+  zookeeper1: &ZookeeperDefaults
+    <<: *default
+    tag_service: zookeeper
+    tag_group: ld4p-zookeeper
+    tag_name: ld4p-zookeeper1
+    availability_zone: us-west-2a  # need one node in each zone
+
+  zookeeper2:
+    <<: *ZookeeperDefaults
+    tag_name: ld4p-zookeeper2
+    availability_zone: us-west-2b  # need one node in each zone
+
+  zookeeper3:
+    <<: *ZookeeperDefaults
+    tag_name: ld4p-zookeeper3
+    availability_zone: us-west-2c  # need one node in each zone
+
+  # ---
+  # Mesos Nodes
+
+  mesos-master1: &MesosMasterDefaults
+    <<: *default
+    tag_service: mesos
+    tag_group: ld4p-mesos-master
+    tag_name: ld4p-mesos-master1
+    availability_zone: us-west-2a  # need one node in each zone
+
+  mesos-master2:
+    <<: *MesosMasterDefaults
+    tag_name: ld4p-mesos-master2
+    availability_zone: us-west-2b  # need one node in each zone
+
+  mesos-master3:
+    <<: *MesosMasterDefaults
+    tag_name: ld4p-mesos-master3
+    availability_zone: us-west-2c  # need one node in each zone
+
+  mesos-agent1: &MesosAgentDefaults
+    <<: *default
+    tag_service: mesos
+    tag_group: ld4p-mesos-agent
+    tag_name: ld4p-mesos-agent1
+    availability_zone: us-west-2a  # need one node in each zone
+
+  mesos-agent2:
+    <<: *MesosAgentDefaults
+    tag_name: ld4p-mesos-agent2
+    availability_zone: us-west-2b  # need one node in each zone
+
+  mesos-agent3:
+    <<: *MesosAgentDefaults
+    tag_name: ld4p-mesos-agent3
+    availability_zone: us-west-2c  # need one node in each zone
+
