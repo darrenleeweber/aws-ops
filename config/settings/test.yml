@@ -1,8 +1,22 @@
 # These settings are merged into config/settings.yml
 
-# - these development settings may not be fault tolerant
-# - these settings consolidate services on single nodes that should be replicated
+# - these test settings may use small instances that cannot support large
+#   application loads
+# - these test settings may not be fault tolerant
+# - these settings may consolidate services on single nodes that should be replicated
 #   on multiple nodes in different availability zones for production fault tolerance
+
+# IMPORTANT - Get an AWS Key Pair from the AWS EC2 console and use the name of that key
+#             in the `key_name` field for the instance default settings.
+
+# IMPORTANT - Find an AMI image_id and set it, ensure the OS on that AMI matches the
+#             value in `Distributor ID:`, which can be found from the
+#             `lsb_release -a`.  This test setting is using an Ubuntu AMI.
+#             This can make a difference for package installations.
+#
+# It might be possible to dynamically detect the OS, e.g.
+# https://unix.stackexchange.com/questions/6345/how-can-i-get-distribution-name-and-version-number-in-a-simple-shell-script
+
 
 aws:
 
@@ -14,7 +28,7 @@ aws:
     max_count: 1
     instance_type: t2.micro
     availability_zone: us-west-2a
-    key_name: dlweber_test
+    key_name: dweber-consulting-test
     tag_name: test_default
     tag_group: test_nodes
     tag_manager: dlweber
@@ -38,6 +52,11 @@ aws:
     tag_name: test_zookeeper2
     availability_zone: us-west-2b  # need one node in each zone
 
+  test_zookeeper3:
+    <<: *ZookeeperDefaults
+    tag_name: test_zookeeper3
+    availability_zone: us-west-2c  # need one node in each zone
+
   # ---
   # Mesos Nodes
   # - note definition and use of defaults: MesosMasterDefaults, MesosAgentDefaults
@@ -51,6 +70,16 @@ aws:
     tag_name: test_mesos_master1
     availability_zone: us-west-2a  # need one node in each zone
 
+  test_mesos_master2:
+    <<: *MesosMasterDefaults
+    tag_name: test_mesos_master2
+    availability_zone: us-west-2b  # need one node in each zone
+
+  test_mesos_master3:
+    <<: *MesosMasterDefaults
+    tag_name: test_mesos_master3
+    availability_zone: us-west-2c  # need one node in each zone
+
   test_mesos_agent1: &MesosAgentDefaults
     <<: *TestDefault
     tag_service: mesos
@@ -58,11 +87,22 @@ aws:
     tag_name: test_mesos_agent1
     availability_zone: us-west-2a  # need one node in each zone
 
+  test_mesos_agent2:
+    <<: *MesosAgentDefaults
+    tag_name: test_mesos_agent2
+    availability_zone: us-west-2b  # need one node in each zone
+
+  test_mesos_agent3:
+    <<: *MesosMasterDefaults
+    tag_name: test_mesos_agent3
+    availability_zone: us-west-2c  # need one node in each zone
+
   # ---
   # Security Groups
+  # A 'Default VPC' can be found on the EC2 Dashboard
 
   test_security_group_defaults: &TestSecurityGroupDefault
-    vpc_id: vpc-d84467b3
+    vpc_id: vpc-14d0be7c
     tag_group: test_security_groups
     tag_manager: dlweber
     tag_stage: test
