@@ -28,6 +28,8 @@ aws:
     max_count: 1
     instance_type: t2.micro
     availability_zone: us-west-2a
+    security_groups:
+      - test_ssh_security_group
     key_name: dweber-consulting-test
     tag_name: test_default
     tag_group: test_nodes

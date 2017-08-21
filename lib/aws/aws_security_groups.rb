@@ -25,8 +25,22 @@ module AwsSecurityGroups
     puts JSON.pretty_generate(JSON.parse(sg.to_h.to_json))
   end
 
+  # @param group_name [String]
   def ec2_security_group_find(group_name)
     ec2_security_groups.find { |sg| sg.group_name == group_name }
+  end
+
+  # @param security_group_names [Array<String>]
+  def ec2_security_groups_validate(security_group_names)
+    security_group_names.all? do |group_name|
+      sg = ec2_security_group_find(group_name) || begin
+        # Cannot find it, try to create it
+        sg_settings = SettingsSecurityGroups.find(group_name)
+        raise "Not Found: security group settings for '#{group_name}'" if sg_settings.nil?
+        params = SettingsSecurityGroups.to_params(sg_settings)
+        ec2_security_group_create(params)
+      end
+    end
   end
 
   # The following example creates a security group MyGroovySecurityGroup in the
@@ -46,7 +60,7 @@ module AwsSecurityGroups
     ec2.authorize_security_group_ingress(params['authorize_ingress'])
     # adding tags is broken, see below
     # ec2_security_group_add_tags(sg, params)
-    sg.group_id
+    ec2_security_group_find(params['group_name'])
   rescue Aws::EC2::Errors::InvalidGroupDuplicate
     puts "Security group_name '#{params['group_name']}' already exists."
     ec2_security_group_find(params['group_name'])

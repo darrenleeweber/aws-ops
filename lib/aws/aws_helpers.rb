@@ -45,6 +45,7 @@ module AwsHelpers
   #   "tag_group": "default"
   # }
   def ec2_create(params)
+    AwsSecurityGroups.ec2_security_groups_validate(params['security_groups'])
     puts "Using AWS region: #{params['region']}"
     ec2 = Aws::EC2::Resource.new(region: params['region'])
 
@@ -54,7 +55,7 @@ module AwsHelpers
       min_count: params['min_count'],
       max_count: params['max_count'],
       key_name: params['key_name'],
-      # security_group_ids: ['SECURITY_GROUP_ID'],
+      security_group_ids: params['security_groups'],
       # user_data: encoded_script,
       instance_type: params['instance_type'],
       placement: {
