@@ -9,6 +9,7 @@ aws:
   instance_default_dev: &DevDefault
     region: us-west-2
     image_id: ami-6e1a0117  # Ubuntu
+    distrib_id: Ubuntu
     min_count: 1
     max_count: 1
     instance_type: t2.2xlarge

@@ -9,6 +9,7 @@ aws:
   instance_default_test: &TestDefault
     region: us-west-2
     image_id: ami-6e1a0117  # Ubuntu
+    distrib_id: Ubuntu
     min_count: 1
     max_count: 1
     instance_type: t2.micro
@@ -19,29 +20,6 @@ aws:
     tag_manager: dlweber
     tag_service:
     tag_stage: test
-
-  # ---
-  # Security Groups
-
-  test_security_group_defaults: &TestSecurityGroupDefault
-    vpc_id: vpc-d84467b3
-    tag_group: test_security_groups
-    tag_manager: dlweber
-    tag_stage: test
-
-  test_ssh_security_group:
-    <<: *TestSecurityGroupDefault
-    tag_name: test_ssh_security_group
-    group_name: test_ssh_security_group
-    description: 'SSH access'
-    authorize_ingress:
-      group_id:
-      ip_permissions:
-        - ip_protocol: tcp
-          from_port: 22
-          to_port: 22
-          ip_ranges:
-            - cidr_ip: '0.0.0.0/0'
 
   # ---
   # Zookeeper Nodes
@@ -79,4 +57,27 @@ aws:
     tag_group: test_mesos_agent
     tag_name: test_mesos_agent1
     availability_zone: us-west-2a  # need one node in each zone
+
+  # ---
+  # Security Groups
+
+  test_security_group_defaults: &TestSecurityGroupDefault
+    vpc_id: vpc-d84467b3
+    tag_group: test_security_groups
+    tag_manager: dlweber
+    tag_stage: test
+
+  test_ssh_security_group:
+    <<: *TestSecurityGroupDefault
+    tag_name: test_ssh_security_group
+    group_name: test_ssh_security_group
+    description: 'SSH access'
+    authorize_ingress:
+      group_id:
+      ip_permissions:
+        - ip_protocol: tcp
+          from_port: 22
+          to_port: 22
+          ip_ranges:
+            - cidr_ip: '0.0.0.0/0'
 

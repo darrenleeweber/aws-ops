@@ -14,7 +14,6 @@ aws:
     - us-west-2a
     - us-west-2b
     - us-west-2c
-  image_id: ami-6e1a0117
 
   # ---
   # EC2 Instance Params
@@ -25,6 +24,7 @@ aws:
   instance_default: &default
     region: us-west-2
     image_id: ami-6e1a0117  # Ubuntu
+    distrib_id: Ubuntu
     min_count: 1
     max_count: 1
     instance_type: t2.micro
