@@ -3,37 +3,18 @@ namespace :ops do
   namespace :aws do
     namespace :security_groups do
 
-      def security_group_keys
-        Settings.aws.keys.select { |k| k.to_s.include? 'security_group' }
-      end
-
-      def security_group_settings
-        security_group_keys
-          .map { |k| Settings.aws[k] }
-          .reject { |sg| sg.group_name.nil? }
-      end
-
-      def security_group_settings_names
-        security_group_settings.map(&:group_name)
-      end
-
-      def security_group_settings_find(group_name)
-        security_group_settings.find { |sg| sg.group_name == group_name }
-      end
-
-      def security_group_params(sg_settings)
-        JSON.parse(sg_settings.to_json)
-      end
-
       desc 'List security group settings in this project'
-      task :list do
-        security_group_settings.each { |sg| puts security_group_params(sg) }
+      task :check_settings do
+        SettingsSecurityGroups.security_groups.each do |sg|
+          puts SettingsSecurityGroups.to_params(sg)
+        end
       end
 
       desc 'Create security group'
       task :create, :group_name do |task, args|
-        sg_settings = security_group_settings_find(args.group_name)
-        params = security_group_params(sg_settings)
+        sg_settings = SettingsSecurityGroups.find(args.group_name)
+        raise "Not Found: security group '#{args.group_name}'" if sg_settings.nil?
+        params = SettingsSecurityGroups.to_params(sg_settings)
         sg = AwsSecurityGroups.ec2_security_group_create(params)
         AwsSecurityGroups.ec2_security_group_describe(sg) unless sg.nil?
       end
