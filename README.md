@@ -18,6 +18,7 @@ Incomplete - work in progress.
    - or use AWS discovery services to find them dynamically
    
 # Background information and resources
+ - https://aws.amazon.com/blogs/devops/tag/capistrano/
  - http://fuzzyblog.io/blog/aws/2016/09/23/aws-tutorial-09-deploying-rails-apps-to-aws-with-capistrano-take-1.html
 
 # Install
@@ -30,6 +31,26 @@ bundle exec cap -T
 
 # Configure
 
+### AWS Access Keys
+
+Use the AWS console to create any authorized user/group accounts for access
+to any or all of the AWS services.  For a user, get their access-key-id and
+the security-access-key.  Details can be found at AWS documentation, e.g.
+- http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
+
+Use the `aws configure --profile <username>` to set these access credentials for
+the AWS CLI utility.  It saves the values to `~/.aws/credentials`.
+
+I also like to set environment variables, e.g.
+
+```bash
+export AWS_SECRET_ACCESS_KEY=<YourKey>
+export AWS_ACCESS_KEY_ID=<YourKeyID>
+export AWS_DEFAULT_REGION=<YourRegion>
+```
+
+### AWS Key Pairs
+
 Use the AWS console to create and save any Key Pairs to be used for access
 to any or all of the AWS EC2 instances.  Add the name of a key pair to the
 `/config/settings/{AWS_ENV}.rb` instances.
@@ -37,10 +58,14 @@ to any or all of the AWS EC2 instances.  Add the name of a key pair to the
 ```bash
 # Setup your AWS credentials using ENV values or config/setting.yml
 bundle exec cap dev ops:aws:check_credentials
+```
 
-# Check details of config/settings.yml and subdirectories
-# Modify the settings as required, esp. AWS details in the
-# instance defaults, like: AMI, AWS region, instance types and tags
+### Settings
+
+Check details of config/settings.yml and subdirectories;
+modify the settings as required, esp. AWS details in the
+instance defaults, like: AMI, AWS region, instance types and tags.
+```bash
 AWS_ENV=development bundle exec cap development ops:aws:check_settings
 AWS_ENV=production  bundle exec cap production ops:aws:check_settings
 AWS_ENV=stage       bundle exec cap stage ops:aws:check_settings
