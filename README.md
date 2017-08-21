@@ -60,6 +60,32 @@ to any or all of the AWS EC2 instances.  Add the name of a key pair to the
 bundle exec cap dev ops:aws:check_credentials
 ```
 
+Once any instance is created and assigned a public DNS, it can be added to
+your `~/.ssh/config` file, along with the required AWS Key Pair used to
+access it.  It recommended that `Host` value matches the instance name in
+`config/settings/{stage}.yml` and it's essential that the `Host` value
+is used in the Capistrano `config/deploy/{stage}.rb` settings.
+
+An example of an `~/.ssh/config` entry:
+```
+Host <Instance name in your config/settings/{stage}.yml>
+  Hostname {AWS_EC2_PUBLIC_DNS}
+  user {ubuntu or something}
+  IdentityFile ~/.ssh/{AWS_Key_Pair_Name}.pem
+  Port 22
+```
+
+To test the ssh access to any AWS EC2 public DNS, try something like:
+```bash
+ssh -i ~/.ssh/{AWS_Key_Pair_Name}.pem {user}@{AWS_EC2_PUBLIC_DNS}
+```
+
+If that works and the `~/.ssh/config` entry is made, try:
+```bash
+ssh {HOST value from ~/.ssh/config}
+```
+
+
 ### Settings
 
 Check details of config/settings.yml and subdirectories;
@@ -124,7 +150,7 @@ In this case, the `~/.ssh/config` file contains:
 Host test_zookeeper1
   Hostname ec2-52-32-121-252.us-west-2.compute.amazonaws.com
   user ubuntu
-  IdentityFile /Users/someuser/.ssh/an_aws_key.pem
+  IdentityFile ~/.ssh/an_aws_key.pem
   Port 22
 ```
 

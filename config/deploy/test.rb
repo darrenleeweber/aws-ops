@@ -7,7 +7,11 @@
 # server "example.com", user: "deploy", roles: %w{app web}, other_property: :other_value
 # server "db.example.com", user: "deploy", roles: %w{db}
 
-server 'ec2-52-32-121-252.us-west-2.compute.amazonaws.com', user: 'ubuntu', roles: %w{zookeeper}
+# These server aliases match the instance tag:Name and the connection details
+# are managed in ~/.ssh/config
+server 'test_zookeeper1', user: 'ubuntu', roles: %w{zookeeper}
+server 'test_zookeeper2', user: 'ubuntu', roles: %w{zookeeper}
+server 'test_zookeeper3', user: 'ubuntu', roles: %w{zookeeper}
 
 
 # role-based syntax
