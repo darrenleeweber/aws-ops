@@ -155,6 +155,13 @@ module AwsHelpers
     ec2_wait_instance_stopped([i.id])
   end
 
+  # Reboot an instance
+  def ec2_reboot_instance(instance_id)
+    i = ec2_find_instance(instance_id)
+    i.reboot
+    ec2_wait_instance_startup([i.id])
+  end
+
   # Stop an instance
   def ec2_terminate_instance(instance_id)
     i = ec2_find_instance(instance_id)
