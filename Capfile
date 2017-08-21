@@ -14,8 +14,14 @@ Config.load_and_set_settings(
 )
 
 require_relative 'lib/aws/aws_helpers'
+require_relative 'lib/aws/aws_security_groups'
+require_relative 'lib/aws/aws_vpc'
 require_relative 'lib/puppet/puppet_helpers'
 require_relative 'lib/zookeeper/zookeeper_helpers'
+
+# ---
+# Standard Capfile content below here.
+# ---
 
 
 # Load DSL and set up stages

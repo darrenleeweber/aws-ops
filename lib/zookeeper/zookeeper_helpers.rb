@@ -36,6 +36,11 @@ module ZookeeperHelpers
     instances_alive.first
   end
 
+  # Find and describe all Zookeeper nodes
+  def describe_instances
+    zookeeper_instances.each { |i| AwsHelpers.ec2_instance_info(i) }
+  end
+
   # Create Zookeeper nodes
   def create_instances
     zookeeper_settings.each { |params| create_instance(params) }
@@ -73,11 +78,6 @@ module ZookeeperHelpers
     return unless confirmation?("Terminate: #{params.tag_name}")
     AwsHelpers.ec2_terminate_instance(i.id)
   rescue
-  end
-
-  # Find and describe all Zookeeper nodes
-  def describe_instances
-    zookeeper_instances.each { |i| AwsHelpers.ec2_instance_info(i) }
   end
 
   # Install Zookeeper service

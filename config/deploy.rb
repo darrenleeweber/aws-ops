@@ -1,8 +1,16 @@
 # config valid only for current version of Capistrano
 lock "3.8.2"
 
-set :application, "spark-setup"
-set :repo_url, "git@example.com:me/my_repo.git"
+set :application, 'aws-ops'
+set :repo_url, 'git@github.com:darrenleeweber/aws-ops.git'
+
+set :ssh_options, {
+  forward_agent: true,
+  auth_methods: ['publickey'],
+  keys: ["#{Dir.home}/.ssh/ld4p.pem"]
+}
+
+set :deploy_to, '/opt/aws-ops'
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp

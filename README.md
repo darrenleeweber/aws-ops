@@ -16,6 +16,9 @@ Incomplete - work in progress.
         - settings are merged with config/settings/production.yml
  - TODO: persist the AWS resource details in a local DB
    - or use AWS discovery services to find them dynamically
+   
+# Background information and resources
+ - http://fuzzyblog.io/blog/aws/2016/09/23/aws-tutorial-09-deploying-rails-apps-to-aws-with-capistrano-take-1.html
 
 # Install
 ```bash
@@ -26,6 +29,11 @@ bundle exec cap -T
 ```
 
 # Configure
+
+Use the AWS console to create and save any Key Pairs to be used for access
+to any or all of the AWS EC2 instances.  Add the name of a key pair to the
+`/config/settings/{AWS_ENV}.rb` instances.
+
 ```bash
 # Setup your AWS credentials using ENV values or config/setting.yml
 bundle exec cap dev ops:aws:check_credentials
@@ -33,9 +41,10 @@ bundle exec cap dev ops:aws:check_credentials
 # Check details of config/settings.yml and subdirectories
 # Modify the settings as required, esp. AWS details in the
 # instance defaults, like: AMI, AWS region, instance types and tags
-AWS_ENV=development bundle exec cap dev ops:aws:check_settings
-AWS_ENV=production  bundle exec cap dev ops:aws:check_settings
-AWS_ENV=test        bundle exec cap dev ops:aws:check_settings
+AWS_ENV=development bundle exec cap development ops:aws:check_settings
+AWS_ENV=production  bundle exec cap production ops:aws:check_settings
+AWS_ENV=stage       bundle exec cap stage ops:aws:check_settings
+AWS_ENV=test        bundle exec cap test ops:aws:check_settings
 ```
 
 # Use
@@ -49,6 +58,53 @@ bundle exec cap dev ops:aws:ec2:find_instance_by_name['dev_zookeeper1']
 # Record instance public DNS in the servers/roles details in
 # config/deploy/*.rb as required. (This is not automated yet.)
 ```
+
+# AWS EC2 Instance Information
+
+To get AWS EC2 instance connection details, e.g.
+
+```
+$ AWS_ENV=test bundle exec cap test zookeeper:nodes:create
+# Wait a while for the Public IP and Public DNS values to be available, then:
+$ AWS_ENV=test bundle exec cap test zookeeper:nodes:find
+ID:		i-08ccd8ef0540b2b15
+Type:		t2.micro
+AMI ID:		ami-6e1a0117
+State:		running
+Tags:		Group: test_zookeeper; Name: test_zookeeper1; Service: zookeeper
+Public IP:	52.32.121.252
+Public DNS:	ec2-52-32-121-252.us-west-2.compute.amazonaws.com
+Private DNS:	ip-172-31-23-169.us-west-2.compute.internal
+```
+
+# Capistrano configuration
+
+Once AWS EC2 instances are running, add their connection details to the
+`config/deploy/*.rb` files and assign roles to each instance; e.g.
+
+`server 'ec2-52-32-121-252.us-west-2.compute.amazonaws.com', user: 'ubuntu', roles: %w{zookeeper}`
+
+If any instance serves multiple roles, just add them to the `roles`.  This can
+allow installation of multiple services on one instance.  (The general assumption
+of this project, however, is that an instance will host one service.)
+
+If you want to use a `~/.ssh/config` file to rename and manage the public DNS entries for
+your AWS instances, the connection details can be simplified to something like:
+
+`server 'test_zookeeper1', user: 'ubuntu', roles: %w{zookeeper}`
+
+In this case, the `~/.ssh/config` file contains:
+
+```
+Host test_zookeeper1
+  Hostname ec2-52-32-121-252.us-west-2.compute.amazonaws.com
+  user ubuntu
+  IdentityFile /Users/someuser/.ssh/an_aws_key.pem
+  Port 22
+```
+
+Their connection details can be found using various `aws:ops` tasks or more specific
+service tasks, like `zookeeper:nodes:find`.
 
 # Capistrano Namespaces
  - `ops:aws`

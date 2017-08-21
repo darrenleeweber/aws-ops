@@ -15,7 +15,6 @@ aws:
     - us-west-2b
     - us-west-2c
   image_id: ami-6e1a0117
-  key_name: ld4p
 
   # ---
   # EC2 Instance Params
@@ -30,6 +29,7 @@ aws:
     max_count: 1
     instance_type: t2.micro
     availability_zone: us-west-2a
+    key_name: test-dlweber
     tag_name: instance_default
     tag_group: dev_nodes
     tag_manager: dlweber

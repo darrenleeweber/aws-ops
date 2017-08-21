@@ -13,11 +13,35 @@ aws:
     max_count: 1
     instance_type: t2.micro
     availability_zone: us-west-2a
+    key_name: dlweber_test
     tag_name: test_default
     tag_group: test_nodes
     tag_manager: dlweber
     tag_service:
     tag_stage: test
+
+  # ---
+  # Security Groups
+
+  test_security_group_defaults: &TestSecurityGroupDefault
+    vpc_id: vpc-d84467b3
+    tag_group: test_security_groups
+    tag_manager: dlweber
+    tag_stage: test
+
+  test_ssh_security_group:
+    <<: *TestSecurityGroupDefault
+    tag_name: test_ssh_security_group
+    group_name: test_ssh_security_group
+    description: 'SSH access'
+    authorize_ingress:
+      group_id:
+      ip_permissions:
+        - ip_protocol: tcp
+          from_port: 22
+          to_port: 22
+          ip_ranges:
+            - cidr_ip: '0.0.0.0/0'
 
   # ---
   # Zookeeper Nodes
@@ -30,6 +54,11 @@ aws:
     tag_group: test_zookeeper
     tag_name: test_zookeeper1
     availability_zone: us-west-2a  # need one node in each zone
+
+  test_zookeeper2:
+    <<: *ZookeeperDefaults
+    tag_name: test_zookeeper2
+    availability_zone: us-west-2b  # need one node in each zone
 
   # ---
   # Mesos Nodes

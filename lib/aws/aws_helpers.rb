@@ -1,9 +1,12 @@
 require 'aws-sdk'
+require_relative 'aws_security_groups'
+require_relative 'aws_vpc'
 
 # Utilities for working with the AWS API, see
 # http://docs.aws.amazon.com/sdk-for-ruby/v2/developer-guide/examples.html
 # http://docs.aws.amazon.com/sdk-for-ruby/v2/developer-guide/ec2-examples.html
 module AwsHelpers
+
   module_function
 
   def aws_credentials
@@ -128,6 +131,7 @@ module AwsHelpers
     puts "AMI ID:\t\t" + i.image_id.to_s
     puts "State:\t\t"  + i.state.name.to_s
     puts "Tags:\t\t"   + i.tags.map { |t| "#{t.key}: #{t.value}" }.join('; ')
+    puts "Key Pair\t"  + i.key_name.to_s
     puts "Public IP:\t"   + i.public_ip_address.to_s
     puts "Public DNS:\t"  + i.public_dns_name.to_s
     puts "Private DNS:\t" + i.private_dns_name.to_s

@@ -9,6 +9,7 @@ aws:
     max_count: 1
     instance_type: c4.2xlarge
     availability_zone: us-west-2a
+    key_name: test-dlweber   # TODO: replace this key pair
     tag_name: prod_default
     tag_group: prod_nodes
     tag_manager: dlweber

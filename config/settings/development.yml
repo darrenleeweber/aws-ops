@@ -13,6 +13,7 @@ aws:
     max_count: 1
     instance_type: t2.2xlarge
     availability_zone: us-west-2a
+    key_name: dlweber-dev   # TODO: replace this key pair
     tag_name: dev_default
     tag_group: dev_nodes
     tag_manager: dlweber
