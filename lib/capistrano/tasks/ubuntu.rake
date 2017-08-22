@@ -15,8 +15,8 @@ namespace :ubuntu do
     end
   end
 
-  desc 'apt upgrade'
-  task :upgrade do
+  desc 'apt auto-remove'
+  task :auto_remove do
     on roles(:ubuntu), in: :parallel do |host|
       sudo('apt-get -y -qqq auto-remove')
     end
