@@ -26,26 +26,42 @@ namespace :zookeeper do
     task :install do
       on roles(:zookeeper), in: :parallel do |host|
         # PuppetHelpers.puppet_apply('zookeeper.pp')
+        sudo("#{current_path}/lib/bash/debian/java.sh")
+        sudo("#{current_path}/lib/bash/debian/java8.sh")
+        sudo("#{current_path}/lib/bash/debian/zookeeper.sh")
+      end
+    end
+
+    desc 'Upgrade Zookeeper service'
+    task :upgrade do
+      on roles(:zookeeper), in: :parallel do |host|
+        sudo('apt-get install -y -q --only-upgrade zookeeper')
+      end
+    end
+
+    desc 'Configure Zookeeper service'
+    task :configure do
+      on roles(:zookeeper), in: :parallel do |host|
       end
     end
 
     desc 'Start Zookeeper service'
     task :start do
-      on roles(:zookeeper), in: :parallel do |host|
+      on roles(:zookeeper) do |host|
         sudo('service zookeeper restart')
       end
     end
 
     desc 'Status of Zookeeper service'
     task :status do
-      on roles(:zookeeper), in: :parallel do |host|
+      on roles(:zookeeper) do |host|
         sudo('service zookeeper status')
       end
     end
 
     desc 'Stop Zookeeper service'
     task :stop do
-      on roles(:zookeeper), in: :parallel do |host|
+      on roles(:zookeeper) do |host|
         sudo('service zookeeper stop')
       end
     end
