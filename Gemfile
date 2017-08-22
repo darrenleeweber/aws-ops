@@ -18,4 +18,5 @@ group :deployment do
   gem 'capistrano', '> 3.1'
   gem 'capistrano-bundle_audit'
   gem 'capistrano-bundler', '> 1.1'
+  gem 'capistrano-shell'
 end

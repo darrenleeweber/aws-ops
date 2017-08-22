@@ -30,6 +30,8 @@ GEM
     capistrano-bundler (1.2.0)
       capistrano (~> 3.1)
       sshkit (~> 1.2)
+    capistrano-shell (0.2.0)
+      capistrano (~> 3.1)
     coderay (1.1.1)
     concurrent-ruby (1.0.5)
     config (1.4.0)
@@ -70,6 +72,7 @@ DEPENDENCIES
   capistrano (> 3.1)
   capistrano-bundle_audit
   capistrano-bundler (> 1.1)
+  capistrano-shell
   config
   highline (~> 1.7, >= 1.7.8)
   pry
