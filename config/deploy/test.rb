@@ -10,7 +10,13 @@
 # These server aliases match the instance tag:Name and the connection details
 # are managed in ~/.ssh/config
 
-# It's important that each instance host name must end with a unique digit >= 0
+# It's important that each zookeeper host name ends with a unique digit
+# in the range of i in 1 <= i <= 255; this value will be used to set the
+# /etc/zookeeper/conf/myid value on zookeeper servers.  Also, these hostnames
+# will be added to the /etc/hosts file on zookeeper servers and associated with
+# AWS IPs. See related zookeeper details in:
+# - lib/zookeeper/zoo.cfg.{stage}
+# - lib/zookeeper/zookeeper.rake#configure
 
 server 'test_zookeeper1', user: 'ubuntu', roles: %w[ubuntu zookeeper]
 server 'test_zookeeper2', user: 'ubuntu', roles: %w[ubuntu zookeeper]
