@@ -1,7 +1,7 @@
 #!/bin/sh
 
-if which mysqld >/dev/null; then
-  echo "skip mysql installation"
+if which mysqld > /dev/null; then
+  echo "Found mysql installation"
 else
   echo "mysql installation"
   DB_PASS='root4mysql'

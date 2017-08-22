@@ -1,7 +1,7 @@
 #!/bin/sh
 
-if which heroku >/dev/null; then
-  echo "skip heroku installation"
+if which heroku > /dev/null; then
+  echo "Found heroku installation"
 else
   echo "heroku installation"
   wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh

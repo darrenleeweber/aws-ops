@@ -1,7 +1,7 @@
 #!/bin/sh
 
-if which mongod >/dev/null; then
-  echo "skip mongodb installation"
+if which mongod > /dev/null; then
+  echo "Found mongodb installation"
 else
   echo "mongodb installation"
   apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10

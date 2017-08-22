@@ -1,7 +1,7 @@
 #!/bin/sh
 
-if which vim >/dev/null; then
-  echo "skip vim installation"
+if which vim > /dev/null; then
+  echo "Found vim installation"
 else
   echo "vim installation"
   apt-get install -y vim

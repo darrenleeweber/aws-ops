@@ -1,7 +1,7 @@
 #!/bin/sh
 
-if which subl >/dev/null; then
-  echo "skip sublime 3 installation"
+if which subl > /dev/null; then
+  echo "Found sublime 3 installation"
 else
   echo "sublime 3 installation"
   add-apt-repository ppa:webupd8team/sublime-text-3

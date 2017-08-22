@@ -1,7 +1,7 @@
 #!/bin/sh
 
-if which redis-server >/dev/null; then
-  echo "skip redis installation"
+if which redis-server > /dev/null; then
+  echo "Found redis installation"
 else
   echo "redis installation"
   apt-get install -y redis-server
