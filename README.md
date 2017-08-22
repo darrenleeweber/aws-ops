@@ -157,6 +157,29 @@ Host test_zookeeper1
 Their connection details can be found using various `aws:ops` tasks or more specific
 service tasks, like `zookeeper:nodes:find`.
 
+# Capistrano Deployment and Connections
+
+The `config/deploy.rb` and the `config/deploy/{stage}.rb` files contain the connection
+information for all the systems.  By default, `cap {stage} deploy` will deploy this code
+repository to the `~/aws-ops` path (using conventional capistrano deployment directories).
+Some of the capistrano tasks require access to the files in this project on the remote hosts,
+so it's best to deploy this project and then run run some system/service package installation
+and configuration tasks.
+
+To test the deployment, use
+```bash
+AWS_ENV={stage} bundle exec cap {stage} deploy:check
+```
+To run the deployment, use
+```bash
+AWS_ENV={stage} bundle exec cap {stage} deploy
+```
+To connect to a remote host, this project includes the `capistrano-shell` gem, e.g.
+```bash
+AWS_ENV={stage} bundle exec cap {stage} shell
+# when multiple hosts are configured, it prompts for a specific host to connect to.
+```
+
 # Capistrano Namespaces
  - `ops:aws`
  - `hdfs`
