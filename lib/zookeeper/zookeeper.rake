@@ -72,9 +72,12 @@ namespace :zookeeper do
         # or terminated (unless their network interfaces are retained and
         # their IP address can be assigned).
 
+        # The host name must end with a digit >= 0
+        i = host.to_s[-1].to_i
+        raise 'ERROR: cannot update /etc/zookeeper/conf/myid' if i < 0
+        sudo("echo #{i} > /etc/zookeeper/conf/myid")
 
         # TODO: change the content in these files:
-        #execute('cat /etc/zookeeper/conf/myid')
         #execute('cat /etc/zookeeper/conf/zoo.cfg')
 
       end

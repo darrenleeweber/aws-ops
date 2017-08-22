@@ -9,6 +9,9 @@
 
 # These server aliases match the instance tag:Name and the connection details
 # are managed in ~/.ssh/config
+
+# It's important that each instance host name must end with a unique digit >= 0
+
 server 'test_zookeeper1', user: 'ubuntu', roles: %w[ubuntu zookeeper]
 server 'test_zookeeper2', user: 'ubuntu', roles: %w[ubuntu zookeeper]
 server 'test_zookeeper3', user: 'ubuntu', roles: %w[ubuntu zookeeper]
