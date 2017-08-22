@@ -73,9 +73,11 @@ namespace :zookeeper do
         # their IP address can be assigned).
 
         # The host name must end with a digit >= 0
+        # Using `sed` to replace the generic text with an integer will only do it once;
+        # it cannot be updated automatically once the original text is replaced.
         i = host.to_s[-1].to_i
         raise 'ERROR: cannot update /etc/zookeeper/conf/myid' if i < 0
-        sudo("echo #{i} > /etc/zookeeper/conf/myid")
+        sudo("sudo sed -i -e 's/replace.*/#{i}/' /etc/zookeeper/conf/myid")
 
         # TODO: change the content in these files:
         #execute('cat /etc/zookeeper/conf/zoo.cfg')
