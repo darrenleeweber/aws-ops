@@ -60,8 +60,29 @@ aws:
     availability_zone: us-west-2c  # need one node in each zone
 
   # ---
+  # Kafka Nodes
+  # - note definition and use of defaults: KafkaDefaults
+  # - it's important that each instance has 'kafka' in the key and tag_name (case sensitive)
+
+  test_kafka1: &KafkaDefaults
+    <<: *TestDefault
+    tag_service: kafka
+    tag_group: test_kafka
+    tag_name: test_kafka1
+    availability_zone: us-west-2a  # need one node in each zone
+
+  test_kafka2:
+    <<: *KafkaDefaults
+    tag_name: test_kafka2
+    availability_zone: us-west-2b  # need one node in each zone
+
+  test_kafka3:
+    <<: *KafkaDefaults
+    tag_name: test_kafka3
+    availability_zone: us-west-2c  # need one node in each zone
+
+  # ---
   # Mesos Nodes
-  # - note definition and use of defaults: MesosMasterDefaults, MesosAgentDefaults
   # - note definition and use of defaults: MesosMasterDefaults, MesosAgentDefaults
   # - it's important that each instance has 'mesos' in the key and tag_name (case sensitive)
 

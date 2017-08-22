@@ -13,6 +13,10 @@ server 'test_zookeeper1', user: 'ubuntu', roles: %w[ubuntu zookeeper]
 server 'test_zookeeper2', user: 'ubuntu', roles: %w[ubuntu zookeeper]
 server 'test_zookeeper3', user: 'ubuntu', roles: %w[ubuntu zookeeper]
 
+server 'test_kafka1', user: 'ubuntu', roles: %w[ubuntu kafka]
+server 'test_kafka2', user: 'ubuntu', roles: %w[ubuntu kafka]
+server 'test_kafka3', user: 'ubuntu', roles: %w[ubuntu kafka]
+
 
 # role-based syntax
 # ==================
