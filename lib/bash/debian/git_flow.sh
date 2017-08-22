@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if git flow init help | grep -q 'usage: git flow'; then
   echo "Found git-flow installation"

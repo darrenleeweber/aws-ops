@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if which mvn > /dev/null; then
   echo "Found maven installation"

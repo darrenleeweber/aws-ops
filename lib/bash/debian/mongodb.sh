@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if which mongod > /dev/null; then
   echo "Found mongodb installation"

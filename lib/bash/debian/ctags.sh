@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if which ctags > /dev/null; then
   echo "Found ctags installation"

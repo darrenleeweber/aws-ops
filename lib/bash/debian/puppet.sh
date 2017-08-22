@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if which puppet > /dev/null; then
   echo "Found puppet installation"

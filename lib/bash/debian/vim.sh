@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if which vim > /dev/null; then
   echo "Found vim installation"

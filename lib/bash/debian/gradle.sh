@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if which gradle > /dev/null; then
   echo "Found gradle installation"

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if which heroku > /dev/null; then
   echo "Found heroku installation"

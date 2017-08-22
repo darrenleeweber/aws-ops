@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # This script depends on the ./java.sh for installation of Oracle java dependencies
 

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if which subl > /dev/null; then
   echo "Found sublime 3 installation"

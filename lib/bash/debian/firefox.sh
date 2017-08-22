@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if which firefox > /dev/null; then
   echo "Found firefox installation"

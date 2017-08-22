@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if which xpdf > /dev/null; then
   echo "Found xpdf installation"

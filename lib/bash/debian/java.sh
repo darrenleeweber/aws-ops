@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ -d /usr/lib/jvm/java-7-oracle ]; then
     echo "Found java-7-oracle installation"

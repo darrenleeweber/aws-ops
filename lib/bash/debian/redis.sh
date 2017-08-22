@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if which redis-server > /dev/null; then
   echo "Found redis installation"

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if which git > /dev/null; then
   echo "Found git installation"

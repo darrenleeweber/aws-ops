@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 LIBDB_VER=5.3
 

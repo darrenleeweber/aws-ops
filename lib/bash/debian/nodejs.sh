@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # NodeJS
 apt-get -y install nodejs

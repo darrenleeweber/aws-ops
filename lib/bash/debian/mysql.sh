@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if which mysqld > /dev/null; then
   echo "Found mysql installation"
