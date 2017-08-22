@@ -48,6 +48,35 @@ namespace :zookeeper do
     desc 'Configure Zookeeper service'
     task :configure do
       on roles(:zookeeper), in: :parallel do |host|
+        # TODO: the zookeeper instances must have a unique ID
+
+
+        # Disable RAM Swap on a zookeeper node
+        sudo("#{current_path}/lib/zookeeper/zookeeper_disable_swap.sh")
+
+        # NOTES:
+        # - some of these notes require AWS changes, some are system/software changes.
+
+        # Try to assign IP addresses to each node and retain their network
+        # interfaces whenever the instance is terminated and replaced.
+
+        # Try to retain the instance volume whenever it is terminated, so
+        # the zookeeper data nodes are retained even when the instance is
+        # replaced and added back into the quorum.
+
+        # Setup the /etc/hosts file
+        # Associate all the private IPs for each zookeeper instance with
+        # their instance names on the {stage} cluster.  Consider additional
+        # instance services also (Kafka, Mesos, etc.).  This will have to
+        # be done automatically and updated whenever an instance is created
+        # or terminated (unless their network interfaces are retained and
+        # their IP address can be assigned).
+
+
+        # TODO: change the content in these files:
+        #execute('cat /etc/zookeeper/conf/myid')
+        #execute('cat /etc/zookeeper/conf/zoo.cfg')
+
       end
     end
 
@@ -62,6 +91,7 @@ namespace :zookeeper do
     task :status do
       on roles(:zookeeper) do |host|
         sudo('service zookeeper status')
+        execute("echo 'ruok' | nc localhost 2181 && echo") # should respond 'imok'
       end
     end
 
