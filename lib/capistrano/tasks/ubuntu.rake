@@ -36,6 +36,13 @@ namespace :ubuntu do
       end
     end
 
+    desc 'common network tools'
+    task :network_tools do
+      on roles(:ubuntu), in: :parallel do |host|
+        sudo("#{current_path}/lib/bash/debian/network.sh")
+      end
+    end
+
     desc 'java-7-oracle'
     task :java_7_oracle do
       on roles(:ubuntu), in: :parallel do |host|
