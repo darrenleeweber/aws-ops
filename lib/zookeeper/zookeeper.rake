@@ -1,7 +1,13 @@
+require_relative 'zookeeper_helpers'
 
 namespace :zookeeper do
 
   namespace :nodes do
+
+    desc 'List zookeeper settings in this project'
+    task :check_settings do
+      ZookeeperHelpers.zookeeper_settings.each { |params| puts params.to_json }
+    end
 
     desc 'Create Zookeeper nodes'
     task :create do
