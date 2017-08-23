@@ -69,9 +69,9 @@ namespace :zookeeper do
     task :install do
       on roles(:zookeeper), in: :parallel do |host|
         # PuppetHelpers.puppet_apply('zookeeper.pp')
-        sudo("#{current_path}/lib/bash/debian/java.sh")
-        sudo("#{current_path}/lib/bash/debian/java8.sh")
-        sudo("#{current_path}/lib/bash/debian/zookeeper.sh")
+        sudo("#{current_path}/lib/bash/debian/java_oracle_license.sh  > #{current_path}/log/bash_java_oracle_license.log")
+        sudo("#{current_path}/lib/bash/debian/java_8_oracle.sh > #{current_path}/log/bash_java_8_oracle.log")
+        sudo("#{current_path}/lib/bash/debian/zookeeper.sh > #{current_path}/log/bash_zookeeper.log")
       end
     end
 

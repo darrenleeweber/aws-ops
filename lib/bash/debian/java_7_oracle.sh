@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script depends on the ./java.sh for installation of Oracle java dependencies
+# This script depends on the ./java_oracle_license.sh for installation of Oracle java dependencies
 
 if [ -d /usr/lib/jvm/java-7-oracle ]; then
     echo "Found java-7-oracle installation"

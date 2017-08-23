@@ -46,7 +46,7 @@ namespace :ubuntu do
     desc 'java oracle license'
     task :java_oracle_license do
       on roles(:ubuntu), in: :parallel do |host|
-        sudo("#{current_path}/lib/bash/debian/java.sh  > #{current_path}/log/bash_java.log")
+        sudo("#{current_path}/lib/bash/debian/java_oracle_license.sh  > #{current_path}/log/bash_java_oracle_license.log")
       end
     end
 
@@ -54,7 +54,7 @@ namespace :ubuntu do
     task :java_7_oracle do
       Rake::Task['ubuntu:install:java_oracle_license'].invoke
       on roles(:ubuntu), in: :parallel do |host|
-        sudo("#{current_path}/lib/bash/debian/java7.sh > #{current_path}/log/bash_java7.log")
+        sudo("#{current_path}/lib/bash/debian/java_7_oracle.sh > #{current_path}/log/bash_java_7_oracle.log")
       end
     end
 
@@ -62,7 +62,7 @@ namespace :ubuntu do
     task :java_8_oracle do
       Rake::Task['ubuntu:install:java_oracle_license'].invoke
       on roles(:ubuntu), in: :parallel do |host|
-        sudo("#{current_path}/lib/bash/debian/java8.sh > #{current_path}/log/bash_java8.log")
+        sudo("#{current_path}/lib/bash/debian/java_8_oracle.sh > #{current_path}/log/bash_java_8_oracle.log")
       end
     end
   end
