@@ -1,35 +1,38 @@
+require_relative 'zookeeper_settings'
 require_relative 'zookeeper_helpers'
 
 namespace :zookeeper do
 
   namespace :nodes do
 
-    desc 'List zookeeper settings in this project'
+    desc 'List settings in this project'
     task :check_settings do
-      ZookeeperHelpers.zookeeper_settings.each { |params| puts params.to_json }
+      ZookeeperSettings.instance_settings.each do |params|
+        puts JSON.pretty_generate(JSON.parse(params.to_json))
+      end
     end
 
-    desc 'Create Zookeeper nodes'
+    desc 'Create nodes'
     task :create do
       ZookeeperHelpers.create_instances
     end
 
-    desc 'Terminate Zookeeper nodes'
+    desc 'Terminate nodes'
     task :terminate do
       ZookeeperHelpers.terminate_instances
     end
 
-    desc 'Find and describe all Zookeeper nodes'
+    desc 'Find and describe all nodes'
     task :find do
       ZookeeperHelpers.describe_instances
     end
 
-    desc 'Compose public entries for ~/.ssh/config for Zookeeper nodes'
+    desc 'Compose public entries for ~/.ssh/config for nodes'
     task :ssh_config_public do
       puts ZookeeperHelpers.ssh_config
     end
 
-    desc 'Compose private entries for ~/.ssh/config for Zookeeper nodes'
+    desc 'Compose private entries for ~/.ssh/config for nodes'
     task :ssh_config_private do
       puts ZookeeperHelpers.ssh_config(false)
     end
@@ -53,16 +56,16 @@ namespace :zookeeper do
 
   namespace :service do
 
-    desc 'Upgrade Zookeeper service'
-    task :debug do
-      on roles(:zookeeper) do |host|
-        puts host.hostname
-        # require 'pry'
-        # binding.pry
-      end
-    end
+    # desc 'Debug service'
+    # task :debug do
+    #   on roles(:zookeeper) do |host|
+    #     puts host.hostname
+    #     # require 'pry'
+    #     # binding.pry
+    #   end
+    # end
 
-    desc 'Install Zookeeper service'
+    desc 'Install service'
     task :install do
       on roles(:zookeeper), in: :parallel do |host|
         # PuppetHelpers.puppet_apply('zookeeper.pp')
@@ -72,7 +75,7 @@ namespace :zookeeper do
       end
     end
 
-    desc 'Upgrade Zookeeper service'
+    desc 'Upgrade service'
     task :upgrade do
       on roles(:zookeeper), in: :parallel do |host|
         sudo('apt-get install -y -q --only-upgrade zookeeper')
@@ -96,10 +99,10 @@ namespace :zookeeper do
     # dataLogDir=/disk2/zookeeper
     # -----------------------------------
 
-    desc 'Configure Zookeeper service'
+    desc 'Configure service'
     task :configure do
       on roles(:zookeeper), in: :parallel do |host|
-        # Disable RAM Swap on a zookeeper node
+        # Disable RAM Swap
         sudo("#{current_path}/lib/zookeeper/zookeeper_disable_swap.sh")
 
         # Set /etc/zookeeper/conf/myid
@@ -124,7 +127,7 @@ namespace :zookeeper do
         aws_ops_tag = 'ZOOKEEPER MANAGED BY AWS-OPS'
         aws_ops_comment = "\t# #{aws_ops_tag}\n"
 
-        etc_hosts_new = ZookeeperHelpers.etc_hosts # use private here?
+        etc_hosts_new = ZookeeperHelpers.etc_hosts(false) # use private IPs
         etc_hosts_new = etc_hosts_new.join(aws_ops_comment) + aws_ops_comment
         # etc_hosts_old = capture('cat /etc/hosts') # should not need this, unless debugging
         # remove any existing zookeeper entries in the /etc/hosts file
@@ -138,10 +141,10 @@ namespace :zookeeper do
         # and it could be a linked_file, if necessary.
         sudo("cp #{current_path}/lib/zookeeper/zoo.cfg.#{fetch(:stage)} /etc/zookeeper/conf/zoo.cfg")
 
-        # Update the zookeeper server details in zoo.cfg, using /etc/hosts data
+        # Update the server details in zoo.cfg, using /etc/hosts data
         zoo_cfg_new = ZookeeperHelpers.zoo_cfg
         zoo_cfg_new = zoo_cfg_new.join(aws_ops_comment) + aws_ops_comment
-        # remove any existing zookeeper entries in the zoo.cfg file
+        # remove any existing server entries in the zoo.cfg file
         sudo("sudo sed -i -e '/#{aws_ops_tag}/d' /etc/zookeeper/conf/zoo.cfg")
         # append new entries to the zoo.cfg file
         entry = "\n" + zoo_cfg_new + "\n"
@@ -149,14 +152,14 @@ namespace :zookeeper do
       end
     end
 
-    desc 'Start Zookeeper service'
+    desc 'Start service'
     task :start do
       on roles(:zookeeper) do |host|
         sudo('service zookeeper restart')
       end
     end
 
-    desc 'Status of Zookeeper service'
+    desc 'Status of service'
     task :status do
       on roles(:zookeeper) do |host|
         sudo('service zookeeper status')
@@ -164,7 +167,7 @@ namespace :zookeeper do
       end
     end
 
-    desc 'Stop Zookeeper service'
+    desc 'Stop service'
     task :stop do
       on roles(:zookeeper) do |host|
         sudo('service zookeeper stop')
