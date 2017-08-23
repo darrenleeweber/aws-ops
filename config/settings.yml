@@ -22,6 +22,7 @@ aws:
   # - use '_' in all 'key' and tag values, not '-' (because Settings.aws.keys uses symbols)
 
   instance_default: &default
+    resource: instance
     region: us-west-2
     image_id: ami-6e1a0117  # Ubuntu
     distrib_id: Ubuntu

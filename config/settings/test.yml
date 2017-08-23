@@ -21,6 +21,7 @@
 aws:
 
   instance_default_test: &TestDefault
+    resource: instance
     region: us-west-2
     image_id: ami-6e1a0117  # Ubuntu
     distrib_id: Ubuntu
@@ -139,6 +140,7 @@ aws:
   # - instance creation can validate or create a new security group, as necessary
 
   test_security_group_defaults: &TestSecurityGroupDefault
+    resource: security_group
     vpc_id: vpc-14d0be7c
     tag_group: test_security_groups
     tag_manager: dlweber

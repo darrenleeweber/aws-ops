@@ -7,6 +7,7 @@
 aws:
 
   instance_default_dev: &DevDefault
+    resource: instance
     region: us-west-2
     image_id: ami-6e1a0117  # Ubuntu
     distrib_id: Ubuntu
