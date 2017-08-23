@@ -124,33 +124,38 @@ namespace :zookeeper do
         # or terminated (unless their network interfaces are retained and
         # their IP address can be assigned).
 
-        aws_ops_tag = 'ZOOKEEPER MANAGED BY AWS-OPS'
-        aws_ops_comment = "\t# #{aws_ops_tag}"
-
         etc_hosts_new = ZookeeperHelpers.etc_hosts(false) # use private IPs
-        # remove any existing zookeeper entries in the /etc/hosts file
-        sudo("sudo sed -i -e '/#{aws_ops_tag}/d' /etc/hosts")
+        # remove any existing server entries in /etc/hosts
+        sudo("sudo sed -i -e '/BEGIN_ZOO_SERVERS/,/END_ZOO_SERVERS/{ d; }' /etc/hosts")
+        # append new entries to the /etc/hosts file (one line at a time)
+        sudo("echo '### BEGIN_ZOO_SERVERS' | sudo tee -a /etc/hosts > /dev/null")
         # append new entries to the /etc/hosts file (one line at a time)
         etc_hosts_new.each do |etc_host|
-          entry = etc_host + aws_ops_comment
-          sudo("echo '#{entry}' | sudo tee -a /etc/hosts > /dev/null")
+          sudo("echo '#{etc_host}' | sudo tee -a /etc/hosts > /dev/null")
         end
+        sudo("echo '### END_ZOO_SERVERS' | sudo tee -a /etc/hosts > /dev/null")
 
         # Apply the template zoo.cfg file for the capistrano stage, note
         # that this template file is assumed to be deployed on the server already
         # and it could be a linked_file, if necessary.
         sudo("cp #{current_path}/lib/zookeeper/zoo.cfg.#{fetch(:stage)} /etc/zookeeper/conf/zoo.cfg")
 
-        # Update the server details in zoo.cfg, using /etc/hosts data
+        # Update the server details in zoo.cfg, using /etc/hosts data, to manage the
+        # content within the BEGIN..END block, e.g.
+        # ### BEGIN ZOO_SERVERS
+        # server.1=zookeeper1:2888:3888
+        # server.2=zookeeper2:2888:3888
+        # server.3=zookeeper3:2888:3888
+        # ### END ZOO_SERVERS
         zoo_cfg_new = ZookeeperHelpers.zoo_cfg
-        # remove any existing server entries in the zoo.cfg file
-        sudo("sudo sed -i -e '/#{aws_ops_tag}/d' /etc/zookeeper/conf/zoo.cfg")
+        # remove any existing server entries in the zoo.cfg file (see lib/zookeeper/zoo.cfg.test)
+        sudo("sudo sed -i -e '/BEGIN_ZOO_SERVERS/,/END_ZOO_SERVERS/{ d; }' /etc/zookeeper/conf/zoo.cfg")
         # append new entries to the zoo.cfg file (one line at a time)
+        sudo("echo '### BEGIN_ZOO_SERVERS' | sudo tee -a /etc/zookeeper/conf/zoo.cfg > /dev/null")
         zoo_cfg_new.each do |server_cfg|
-          entry = server_cfg + aws_ops_comment
-          sudo("echo '#{entry}' | sudo tee -a /etc/zookeeper/conf/zoo.cfg > /dev/null")
+          sudo("echo '#{server_cfg}' | sudo tee -a /etc/zookeeper/conf/zoo.cfg > /dev/null")
         end
-
+        sudo("echo '### END_ZOO_SERVERS' | sudo tee -a /etc/zookeeper/conf/zoo.cfg > /dev/null")
       end
     end
 
@@ -165,7 +170,7 @@ namespace :zookeeper do
     task :status do
       on roles(:zookeeper) do |host|
         sudo('service zookeeper status')
-        execute("echo 'ruok' | nc localhost 2181 && echo") # should respond 'imok'
+        execute("echo 'ruok' | nc localhost 2181") # should respond 'imok'
       end
     end
 

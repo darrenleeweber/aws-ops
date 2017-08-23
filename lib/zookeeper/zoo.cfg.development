@@ -55,11 +55,13 @@ maxClientCnxns=0
 
 # specify all zookeeper servers
 # these hostnames such as `zookeeper1` must be in the /etc/hosts file
-# The comment string, '# ZOOKEEPER MANAGED BY AWS-OPS', is used by the
-# zookeeper.rake#configure task to update the /etc/hosts and these values.
+# The comment strings are used by the zookeeper.rake#configure task to
+# update the /etc/hosts and these values.
 # The first port is used by followers to connect to the leader
 # The second one is used for leader election
 
-server.1=zookeeper1:2888:3888 # ZOOKEEPER MANAGED BY AWS-OPS
-server.2=zookeeper2:2888:3888 # ZOOKEEPER MANAGED BY AWS-OPS
-server.3=zookeeper3:2888:3888 # ZOOKEEPER MANAGED BY AWS-OPS
+### BEGIN_ZOO_SERVERS
+server.1=zookeeper1:2888:3888
+server.2=zookeeper2:2888:3888
+server.3=zookeeper3:2888:3888
+### END_ZOO_SERVERS
