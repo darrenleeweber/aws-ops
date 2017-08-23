@@ -155,7 +155,9 @@ Host test_zookeeper1
 ```
 
 Their connection details can be found using various `aws:ops` tasks or more specific
-service tasks, like `zookeeper:nodes:find`.
+service tasks, like `zookeeper:nodes:find`.  NOTE: if the systems are stopped or
+restarted, AWS could reassign the public DNS entries and wipe out these settings, which
+have to be updated again.
 
 # Capistrano Deployment and Connections
 
