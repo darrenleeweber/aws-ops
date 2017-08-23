@@ -1,23 +1,6 @@
 # http://hadoop.apache.org/zookeeper/docs/current/zookeeperAdmin.html
 
 # ----
-# Changes to the default zoo.cfg.default
-
-# disable the per-ip limit on the number of connections since this is a non-production config
-maxClientCnxns=0
-
-# specify all zookeeper servers
-# these hostnames such as `zookeeper1` must be in the /etc/hosts file
-# The comment string, '# ZOOKEEPER MANAGED BY AWS-OPS', is used by the
-# zookeeper.rake#configure task to update the /etc/hosts and these values.
-# The first port is used by followers to connect to the leader
-# The second one is used for leader election
-server.1=zookeeper1:2888:3888 # ZOOKEEPER MANAGED BY AWS-OPS
-server.2=zookeeper2:2888:3888 # ZOOKEEPER MANAGED BY AWS-OPS
-server.3=zookeeper3:2888:3888 # ZOOKEEPER MANAGED BY AWS-OPS
-
-
-# ----
 # The defaults from zoo.cfg.default
 
 # The number of milliseconds of each tick
@@ -63,3 +46,20 @@ clientPort=2181
 # on coordination.
 #leaderServes=yes
 
+
+# ----
+# Changes to the default zoo.cfg.default
+
+# disable the per-ip limit on the number of connections since this is a non-production config
+maxClientCnxns=0
+
+# specify all zookeeper servers
+# these hostnames such as `zookeeper1` must be in the /etc/hosts file
+# The comment string, '# ZOOKEEPER MANAGED BY AWS-OPS', is used by the
+# zookeeper.rake#configure task to update the /etc/hosts and these values.
+# The first port is used by followers to connect to the leader
+# The second one is used for leader election
+
+server.1=zookeeper1:2888:3888 # ZOOKEEPER MANAGED BY AWS-OPS
+server.2=zookeeper2:2888:3888 # ZOOKEEPER MANAGED BY AWS-OPS
+server.3=zookeeper3:2888:3888 # ZOOKEEPER MANAGED BY AWS-OPS

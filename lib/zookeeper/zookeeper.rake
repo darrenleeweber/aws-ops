@@ -125,16 +125,16 @@ namespace :zookeeper do
         # their IP address can be assigned).
 
         aws_ops_tag = 'ZOOKEEPER MANAGED BY AWS-OPS'
-        aws_ops_comment = "\t# #{aws_ops_tag}\n"
+        aws_ops_comment = "\t# #{aws_ops_tag}"
 
         etc_hosts_new = ZookeeperHelpers.etc_hosts(false) # use private IPs
-        etc_hosts_new = etc_hosts_new.join(aws_ops_comment) + aws_ops_comment
-        # etc_hosts_old = capture('cat /etc/hosts') # should not need this, unless debugging
         # remove any existing zookeeper entries in the /etc/hosts file
         sudo("sudo sed -i -e '/#{aws_ops_tag}/d' /etc/hosts")
-        # append new entries to the /etc/hosts file
-        entry = "\n" + etc_hosts_new + "\n"
-        sudo("echo #{entry} >> /etc/hosts")
+        # append new entries to the /etc/hosts file (one line at a time)
+        etc_hosts_new.each do |etc_host|
+          entry = etc_host + aws_ops_comment
+          sudo("echo '#{entry}' | sudo tee -a /etc/hosts > /dev/null")
+        end
 
         # Apply the template zoo.cfg file for the capistrano stage, note
         # that this template file is assumed to be deployed on the server already
@@ -143,12 +143,14 @@ namespace :zookeeper do
 
         # Update the server details in zoo.cfg, using /etc/hosts data
         zoo_cfg_new = ZookeeperHelpers.zoo_cfg
-        zoo_cfg_new = zoo_cfg_new.join(aws_ops_comment) + aws_ops_comment
         # remove any existing server entries in the zoo.cfg file
         sudo("sudo sed -i -e '/#{aws_ops_tag}/d' /etc/zookeeper/conf/zoo.cfg")
-        # append new entries to the zoo.cfg file
-        entry = "\n" + zoo_cfg_new + "\n"
-        sudo("echo #{entry} >> /etc/zookeeper/conf/zoo.cfg")
+        # append new entries to the zoo.cfg file (one line at a time)
+        zoo_cfg_new.each do |server_cfg|
+          entry = server_cfg + aws_ops_comment
+          sudo("echo '#{entry}' | sudo tee -a /etc/zookeeper/conf/zoo.cfg > /dev/null")
+        end
+
       end
     end
 
