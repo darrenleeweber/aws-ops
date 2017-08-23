@@ -79,12 +79,14 @@ module AwsHelpers
     group = tags['tag_group'] || ''
     manager = tags['tag_manager'] || ''
     service = tags['tag_service'] || ''
+    stage = tags['tag_stage'] || ''
     inst.create_tags(
       tags: [
         { key: 'Name',  value: name },
         { key: 'Group', value: group },
         { key: 'Manager', value: manager },
-        { key: 'Service', value: service }
+        { key: 'Service', value: service },
+        { key: 'Stage', value: stage }
       ]
     )
   end
@@ -102,6 +104,11 @@ module AwsHelpers
   # Get all instances with tag key 'Service'
   def ec2_find_service_instances(tag_value)
     ec2_find_instances_by_tag('Service', tag_value)
+  end
+
+  # Get all instances with tag key 'Stage'
+  def ec2_find_stage_instances(tag_value)
+    ec2_find_instances_by_tag('Stage', tag_value)
   end
 
   # Find an instance

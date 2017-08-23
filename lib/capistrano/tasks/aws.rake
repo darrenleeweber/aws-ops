@@ -35,21 +35,28 @@ namespace :ops do
         AwsHelpers.ec2_create Settings.aws.instance_test
       end
 
-      desc 'Find an EC2 instance by GROUP'
+      desc 'Find an EC2 instance by "Group" tag'
       task :find_instances_by_group, :group do |task, args|
         instances = AwsHelpers.ec2_find_group_instances(args.group)
         instances.each { |i| AwsHelpers.ec2_instance_info(i) }
       end
 
-      desc 'Find an EC2 instance by NAME'
+      desc 'Find an EC2 instance by "Name" tag'
       task :find_instance_by_name, :name do |task, args|
         instances = AwsHelpers.ec2_find_name_instances(args.name)
         instances.each { |i| AwsHelpers.ec2_instance_info(i) }
       end
 
-      desc 'Find an EC2 instance by SERVICE'
+      desc 'Find an EC2 instance by "Service" tag'
       task :find_instances_by_service, :service do |task, args|
         instances = AwsHelpers.ec2_find_service_instances(args.service)
+        instances.each { |i| AwsHelpers.ec2_instance_info(i) }
+      end
+
+      desc 'Find an EC2 instance by "Stage" tag'
+      task :find_instances_by_stage, :stage do |task, args|
+        stage = args.stage || fetch(:stage)
+        instances = AwsHelpers.ec2_find_stage_instances(stage)
         instances.each { |i| AwsHelpers.ec2_instance_info(i) }
       end
 
