@@ -24,9 +24,43 @@ namespace :zookeeper do
       ZookeeperHelpers.describe_instances
     end
 
+    desc 'Compose public entries for ~/.ssh/config for Zookeeper nodes'
+    task :ssh_config_public do
+      puts ZookeeperHelpers.ssh_config
+    end
+
+    desc 'Compose private entries for ~/.ssh/config for Zookeeper nodes'
+    task :ssh_config_private do
+      puts ZookeeperHelpers.ssh_config(false)
+    end
+
+    desc 'Compose entries for /etc/hosts using public IPs'
+    task :etc_hosts_public do
+      puts ZookeeperHelpers.etc_hosts.join("\n")
+    end
+
+    desc 'Compose entries for /etc/hosts using private IPs'
+    task :etc_hosts_private do
+      puts ZookeeperHelpers.etc_hosts(false).join("\n")
+    end
+
+    desc 'Compose entries for zoo.cfg'
+    task :zoo_cfg do
+      puts ZookeeperHelpers.zoo_cfg.join("\n")
+    end
+
   end
 
   namespace :service do
+
+    desc 'Upgrade Zookeeper service'
+    task :debug do
+      on roles(:zookeeper) do |host|
+        puts host.hostname
+        # require 'pry'
+        # binding.pry
+      end
+    end
 
     desc 'Install Zookeeper service'
     task :install do
@@ -45,12 +79,26 @@ namespace :zookeeper do
       end
     end
 
+    # -----------------------------------
+    # Configuration Notes
+    #
+    # - some of these notes require AWS changes, some are system/software changes.
+    #
+    # Try to assign IP addresses to each node and retain their network
+    # interfaces whenever the instance is terminated and replaced.
+    #
+    # Try to retain the instance volume whenever it is terminated, so
+    # the zookeeper data nodes are retained even when the instance is
+    # replaced and added back into the quorum.
+    #
+    # TODO: consider adding an additional data disk, the zoo.cfg says:
+    # Place the dataLogDir to a separate physical disc for better performance
+    # dataLogDir=/disk2/zookeeper
+    # -----------------------------------
+
     desc 'Configure Zookeeper service'
     task :configure do
       on roles(:zookeeper), in: :parallel do |host|
-        # TODO: the zookeeper instances must have a unique ID
-
-
         # Disable RAM Swap on a zookeeper node
         sudo("#{current_path}/lib/zookeeper/zookeeper_disable_swap.sh")
 
@@ -61,19 +109,9 @@ namespace :zookeeper do
         # the original text is replace, the sed becomes a no-op.  Note that
         # sed is used because an `echo $x >` incurs a file permission error.
         # This config file is heavily symlinked all over the place.
-        i = host.to_s[-1].to_i
-        raise 'ERROR: cannot update /etc/zookeeper/conf/myid' if i < 1 || i > 255
-        sudo("sudo sed -i -e 's/replace.*/#{i}/' /etc/zookeeper/conf/myid")
-
-        # NOTES:
-        # - some of these notes require AWS changes, some are system/software changes.
-
-        # Try to assign IP addresses to each node and retain their network
-        # interfaces whenever the instance is terminated and replaced.
-
-        # Try to retain the instance volume whenever it is terminated, so
-        # the zookeeper data nodes are retained even when the instance is
-        # replaced and added back into the quorum.
+        myid = Settings.aws[host.hostname].myid
+        raise 'ERROR: cannot update /etc/zookeeper/conf/myid' if myid < 1 || myid > 255
+        sudo("sudo sed -i -e 's/replace.*/#{myid}/' /etc/zookeeper/conf/myid")
 
         # Setup the /etc/hosts file
         # Associate all the private IPs for each zookeeper instance with
@@ -83,30 +121,31 @@ namespace :zookeeper do
         # or terminated (unless their network interfaces are retained and
         # their IP address can be assigned).
 
-        # TODO: Create a utility method that returns all the zookeeper details for /etc/hosts
+        aws_ops_tag = 'ZOOKEEPER MANAGED BY AWS-OPS'
+        aws_ops_comment = "\t# #{aws_ops_tag}\n"
 
-        # TODO: Modify the zookeeper security group port settings
-        # TODO: see ld4p-zoo-kafka_security_group.json
-        # TODO: The zoo.cfg says:
-        # # the port at which the clients will connect
-        # clientPort=2181
-        # # specify all zookeeper servers
-        # # The fist port is used by followers to connect to the leader
-        # # The second one is used for leader election
-        # #server.1=zookeeper1:2888:3888
-        # #server.2=zookeeper2:2888:3888
-        # #server.3=zookeeper3:2888:3888
+        etc_hosts_new = ZookeeperHelpers.etc_hosts # use private here?
+        etc_hosts_new = etc_hosts_new.join(aws_ops_comment) + aws_ops_comment
+        # etc_hosts_old = capture('cat /etc/hosts') # should not need this, unless debugging
+        # remove any existing zookeeper entries in the /etc/hosts file
+        sudo("sudo sed -i -e '/#{aws_ops_tag}/d' /etc/hosts")
+        # append new entries to the /etc/hosts file
+        entry = "\n" + etc_hosts_new + "\n"
+        sudo("echo #{entry} >> /etc/hosts")
 
+        # Apply the template zoo.cfg file for the capistrano stage, note
+        # that this template file is assumed to be deployed on the server already
+        # and it could be a linked_file, if necessary.
+        sudo("cp #{current_path}/lib/zookeeper/zoo.cfg.#{fetch(:stage)} /etc/zookeeper/conf/zoo.cfg")
 
-        # TODO: change the content in these files:
-        sudo("cp #{current_path}/lib/zookeeper/zoo.cfg.#{stage} /etc/zookeeper/conf/zoo.cfg")
-
-        # TODO: consider adding an additional data disk, the zoo.cfg says:
-        # Place the dataLogDir to a separate physical disc for better performance
-        # dataLogDir=/disk2/zookeeper
-
-
-
+        # Update the zookeeper server details in zoo.cfg, using /etc/hosts data
+        zoo_cfg_new = ZookeeperHelpers.zoo_cfg
+        zoo_cfg_new = zoo_cfg_new.join(aws_ops_comment) + aws_ops_comment
+        # remove any existing zookeeper entries in the zoo.cfg file
+        sudo("sudo sed -i -e '/#{aws_ops_tag}/d' /etc/zookeeper/conf/zoo.cfg")
+        # append new entries to the zoo.cfg file
+        entry = "\n" + zoo_cfg_new + "\n"
+        sudo("echo #{entry} >> /etc/zookeeper/conf/zoo.cfg")
       end
     end
 

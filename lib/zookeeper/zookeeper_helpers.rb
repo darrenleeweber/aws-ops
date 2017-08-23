@@ -41,6 +41,42 @@ module ZookeeperHelpers
     zookeeper_instances.each { |i| AwsHelpers.ec2_instance_info(i) }
   end
 
+  # Create /etc/hosts data
+  def etc_hosts(public = true)
+    zookeeper_settings.map do |zk|
+      i = AwsHelpers.ec2_find_name_instances(zk.tag_name).first
+      next if i.nil?
+      hosts = AwsHelpers.ec2_instance_etc_hosts(i, public)
+      hosts.sub!('{HOST}', zk.tag_name)
+    end
+  end
+
+  # Create zoo.cfg data, something like:
+  # server.1=zookeeper1:2888:3888
+  # server.2=zookeeper2:2888:3888
+  # server.3=zookeeper3:2888:3888
+  #
+  # @param leader_port [Integer] the first port is for connections to a leader
+  # @param election_port [Integer] the second one is used for leader elections
+  def zoo_cfg(leader_port = 2888, election_port = 3888)
+    zookeeper_settings.map do |zk|
+      i = AwsHelpers.ec2_find_name_instances(zk.tag_name).first
+      next if i.nil?
+      "server.#{zk.myid}=#{zk.tag_name}:#{leader_port}:#{election_port}"
+    end
+  end
+
+  # Create entries for ~/.ssh/config
+  def ssh_config(public = true)
+    zookeeper_settings.map do |zk|
+      i = AwsHelpers.ec2_find_name_instances(zk.tag_name).first
+      next if i.nil?
+      hosts = AwsHelpers.ec2_instance_ssh_config(i, public)
+      hosts.sub!('{HOST}', zk.tag_name)
+      hosts.sub!('{USER}', zk.user)
+    end
+  end
+
   # Create Zookeeper nodes
   def create_instances
     zookeeper_settings.each { |params| create_instance(params) }
@@ -78,26 +114,6 @@ module ZookeeperHelpers
     return unless confirmation?("Terminate: #{params.tag_name}")
     AwsHelpers.ec2_terminate_instance(i.id)
   rescue
-  end
-
-  # Install Zookeeper service
-  def service_install
-    # PuppetHelpers.puppet_apply('zookeeper.pp')
-  end
-
-  # Start Zookeeper service
-  def service_start
-    'service zookeeper restart'
-  end
-
-  # Status of Zookeeper service
-  def service_status
-    'service zookeeper status'
-  end
-
-  # Stop Zookeeper service
-  def service_stop
-    'service zookeeper stop'
   end
 
 end
