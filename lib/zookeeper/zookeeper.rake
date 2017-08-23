@@ -181,6 +181,13 @@ namespace :zookeeper do
       end
     end
 
+    desc 'Zookeeper 4-letter commands'
+    task :command, :cmd do |task, args|
+      on roles(:zookeeper) do |host|
+        execute("echo '#{args.cmd}' | nc localhost 2181")
+      end
+    end
+
   end
 
 end
