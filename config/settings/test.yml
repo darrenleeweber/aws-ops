@@ -42,10 +42,17 @@ aws:
   # Zookeeper Nodes
   # - note definition and use of defaults: ZookeeperDefaults
   # - it's important that each instance has 'zookeeper' in the key and tag_name (case sensitive)
-  # - it's important that each instance host name must end with a unique digit >= 0
+  # - it's important that each instance has a 'myid' with a unique integer between 1-255 (inclusive)
+  # - the `leader_port` and the `election_port` must match up with security_group settings
 
   test_zookeeper1: &ZookeeperDefaults
     <<: *TestDefault
+    myid: 1
+    leader_port: 2888
+    election_port: 3888
+    security_groups:
+      - test_ssh_security_group
+      - test_zookeeper_security_group
     tag_service: zookeeper
     tag_group: test_zookeeper
     tag_name: test_zookeeper1
@@ -53,11 +60,13 @@ aws:
 
   test_zookeeper2:
     <<: *ZookeeperDefaults
+    myid: 2
     tag_name: test_zookeeper2
     availability_zone: us-west-2b  # need one node in each zone
 
   test_zookeeper3:
     <<: *ZookeeperDefaults
+    myid: 3
     tag_name: test_zookeeper3
     availability_zone: us-west-2c  # need one node in each zone
 
@@ -124,7 +133,10 @@ aws:
 
   # ---
   # Security Groups
-  # A 'Default VPC' can be found on the EC2 Dashboard
+  # - a 'Default VPC' can be found on the EC2 Dashboard
+  # - the `group_id` is dynamically assigned and should be blank here
+  # - creation of security groups is idempotent (AWS doesn't allow duplicates)
+  # - instance creation can validate or create a new security group, as necessary
 
   test_security_group_defaults: &TestSecurityGroupDefault
     vpc_id: vpc-14d0be7c
@@ -146,3 +158,29 @@ aws:
           ip_ranges:
             - cidr_ip: '0.0.0.0/0'
 
+  # - these ip_permissions for the test stage are wide open, for ease of use
+  # - for production, the IP CIDR needs to be specific to subnets
+  # - the public subnets should have an IPV4 CIDR for each availability_zone
+  test_zookeeper_security_group:
+    <<: *TestSecurityGroupDefault
+    tag_name: test_zookeeper_security_group
+    group_name: test_zookeeper_security_group
+    description: 'Zookeeper port access'
+    authorize_ingress:
+      group_id:
+      ip_permissions:
+        - ip_protocol: tcp
+          from_port: 2181
+          to_port: 2181
+          ip_ranges:
+            - cidr_ip: '0.0.0.0/0'
+        - ip_protocol: tcp
+          from_port: 2888
+          to_port: 2888
+          ip_ranges:
+            - cidr_ip: '0.0.0.0/0'
+        - ip_protocol: tcp
+          from_port: 3888
+          to_port: 3888
+          ip_ranges:
+            - cidr_ip: '0.0.0.0/0'
