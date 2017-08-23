@@ -141,6 +141,7 @@ module AwsHelpers
     puts "Tags:\t\t"   + i.tags.map { |t| "#{t.key}: #{t.value}" }.join('; ')
     puts "Key Pair\t"  + i.key_name.to_s
     puts "Public IP:\t"   + i.public_ip_address.to_s
+    puts "Private IP:\t"  + i.private_ip_address.to_s
     puts "Public DNS:\t"  + i.public_dns_name.to_s
     puts "Private DNS:\t" + i.private_dns_name.to_s
     puts
