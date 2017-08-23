@@ -1,4 +1,5 @@
 require 'aws-sdk'
+require_relative 'aws_security_groups_settings'
 
 # Utilities for working with the AWS API, see
 # http://docs.aws.amazon.com/sdk-for-ruby/v2/developer-guide/ec2-working-with-security-groups.html
@@ -35,9 +36,9 @@ module AwsSecurityGroups
     security_group_names.all? do |group_name|
       sg = ec2_security_group_find(group_name) || begin
         # Cannot find it, try to create it
-        sg_settings = SettingsSecurityGroups.find(group_name)
+        sg_settings = AwsSecurityGroupsSettings.find(group_name)
         raise "Not Found: security group settings for '#{group_name}'" if sg_settings.nil?
-        params = SettingsSecurityGroups.to_params(sg_settings)
+        params = AwsSecurityGroupsSettings.to_params(sg_settings)
         ec2_security_group_create(params)
       end
     end

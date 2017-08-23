@@ -14,8 +14,8 @@ Config.load_and_set_settings(
 )
 
 require_relative 'lib/aws/aws_helpers'
+require_relative 'lib/aws/aws_security_groups_settings'
 require_relative 'lib/aws/aws_security_groups'
-require_relative 'lib/settings/settings_security_groups'
 require_relative 'lib/aws/aws_vpc'
 require_relative 'lib/kafka/kafka_helpers'
 require_relative 'lib/puppet/puppet_helpers'

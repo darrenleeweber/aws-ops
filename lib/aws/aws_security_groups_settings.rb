@@ -1,6 +1,6 @@
 
 # Utilities for working with the settings for security groups
-module SettingsSecurityGroups
+module AwsSecurityGroupsSettings
 
   module_function
 

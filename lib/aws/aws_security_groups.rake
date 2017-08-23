@@ -1,3 +1,5 @@
+require_relative 'aws_security_groups_settings'
+require_relative 'aws_security_groups'
 
 namespace :ops do
   namespace :aws do
@@ -5,16 +7,16 @@ namespace :ops do
 
       desc 'List security group settings in this project'
       task :check_settings do
-        SettingsSecurityGroups.security_groups.each do |sg|
-          puts SettingsSecurityGroups.to_params(sg)
+        AwsSecurityGroupsSettings.security_groups.each do |sg|
+          puts AwsSecurityGroupsSettings.to_params(sg)
         end
       end
 
       desc 'Create security group'
       task :create, :group_name do |task, args|
-        sg_settings = SettingsSecurityGroups.find(args.group_name)
+        sg_settings = AwsSecurityGroupsSettings.find(args.group_name)
         raise "Not Found: security group '#{args.group_name}'" if sg_settings.nil?
-        params = SettingsSecurityGroups.to_params(sg_settings)
+        params = AwsSecurityGroupsSettings.to_params(sg_settings)
         sg = AwsSecurityGroups.ec2_security_group_create(params)
         AwsSecurityGroups.ec2_security_group_describe(sg) unless sg.nil?
       end
