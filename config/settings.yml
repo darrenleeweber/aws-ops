@@ -25,6 +25,7 @@ aws:
     region: us-west-2
     image_id: ami-6e1a0117  # Ubuntu
     distrib_id: Ubuntu
+    user: ubuntu
     min_count: 1
     max_count: 1
     instance_type: t2.micro
