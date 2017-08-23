@@ -1,5 +1,6 @@
 
 # Utilities for working with Kafka
+# See also https://www.confluent.io/blog/design-and-deployment-considerations-for-deploying-apache-kafka-on-aws/
 module KafkaHelpers
   module_function
 
@@ -39,6 +40,18 @@ module KafkaHelpers
   # Find and describe all Kafka nodes
   def describe_instances
     kafka_instances.each { |i| AwsHelpers.ec2_instance_info(i) }
+  end
+
+  # Create entries for ~/.ssh/config
+  def ssh_config
+    kafka_settings.each do |kafka|
+      i = AwsHelpers.ec2_find_name_instances(kafka.tag_name).first
+      next if i.nil?
+      hosts = AwsHelpers.ec2_instance_ssh_config(i)
+      hosts.sub!('{HOST}', kafka.tag_name)
+      hosts.sub!('{USER}', kafka.user)
+      puts hosts
+    end
   end
 
   # Create Kafka nodes

@@ -73,6 +73,7 @@ aws:
 
   # ---
   # Kafka Nodes
+  # See also https://www.confluent.io/blog/design-and-deployment-considerations-for-deploying-apache-kafka-on-aws/
   # - note definition and use of defaults: KafkaDefaults
   # - it's important that each instance has 'kafka' in the key and tag_name (case sensitive)
 
