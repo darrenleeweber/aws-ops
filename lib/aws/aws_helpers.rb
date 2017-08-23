@@ -149,6 +149,27 @@ module AwsHelpers
     # binding.pry
   end
 
+  # Content for /etc/hosts
+  # @param i [Aws::EC2::Instance]
+  # @param public [Boolean] use public or private IP
+  def ec2_instance_etc_hosts(i, public = true)
+    ip = public ? i.public_ip_address : i.private_ip_address
+    "#{ip}\t{HOST}" # template for HOST in settings
+  end
+
+  # Content for ~/.ssh/config
+  # @param i [Aws::EC2::Instance]
+  # @param public [Boolean] use public or private DNS name
+  def ec2_instance_ssh_config(i, public = true)
+    hostname = public ? i.public_dns_name : i.private_dns_name
+    ssh_config =  "Host {HOST}\n" # template for HOST in settings
+    ssh_config += "    User {USER}\n" # template for USER in settings
+    ssh_config += "    Hostname #{hostname}\n"
+    ssh_config += "    IdentityFile ~/.ssh/#{i.key_name}.pem\n"
+    ssh_config += "    Port 22\n\n"
+    ssh_config
+  end
+
   # Start an instance
   def ec2_start_instance(instance_id)
     i = ec2_find_instance(instance_id)
