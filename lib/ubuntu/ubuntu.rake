@@ -22,6 +22,20 @@ namespace :ubuntu do
     end
   end
 
+
+  namespace :check do
+
+    desc 'docker'
+    task :docker do
+      on roles(:ubuntu), in: :parallel do |host|
+        execute('sudo usermod -a -G docker $USER')
+        execute("docker run hello-world | grep -A1 'Hello.*Docker'")
+      end
+    end
+
+  end
+
+
   namespace :install do
 
     desc 'common build tools'
@@ -36,10 +50,12 @@ namespace :ubuntu do
       end
     end
 
-    desc 'common network tools'
-    task :network_tools do
+    desc 'docker'
+    task :docker do
       on roles(:ubuntu), in: :parallel do |host|
-        sudo("#{current_path}/lib/bash/debian/network.sh > #{current_path}/log/bash_network.log")
+        sudo("#{current_path}/lib/bash/debian/docker_ce.sh > #{current_path}/log/bash_docker_ce.log")
+        execute('sudo usermod -a -G docker $USER')
+        execute("docker run hello-world | grep -A1 'Hello.*Docker'")
       end
     end
 
@@ -63,6 +79,20 @@ namespace :ubuntu do
       Rake::Task['ubuntu:install:java_oracle_license'].invoke
       on roles(:ubuntu), in: :parallel do |host|
         sudo("#{current_path}/lib/bash/debian/java_8_oracle.sh > #{current_path}/log/bash_java_8_oracle.log")
+      end
+    end
+
+    desc 'network tools'
+    task :network_tools do
+      on roles(:ubuntu), in: :parallel do |host|
+        sudo("#{current_path}/lib/bash/debian/network.sh > #{current_path}/log/bash_network.log")
+      end
+    end
+
+    desc 'OS utils'
+    task :os_utils do
+      on roles(:ubuntu), in: :parallel do |host|
+        sudo("#{current_path}/lib/bash/debian/htop.sh > #{current_path}/log/bash_htop.log")
       end
     end
   end
