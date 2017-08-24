@@ -182,14 +182,14 @@ AWS_ENV={stage} bundle exec cap {stage} shell
 # when multiple hosts are configured, it prompts for a specific host to connect to.
 ```
 
-# Capistrano Namespaces
+# Capistrano Namespaces and Services Available
  - `ops:aws`
  - `hdfs`
  - `spark`
  - `zookeeper`
  - TODO: `mesos` and others
  - the rest are capistrano defaults, like `deploy`
- - see `lib/capistrano/tasks` for details
+ - see `find . -name '*.rake'` for details
  - task helpers are in `lib/**` and included in `Capfile`
 
 # Licence
