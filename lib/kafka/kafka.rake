@@ -4,32 +4,50 @@ namespace :kafka do
 
   namespace :nodes do
 
-    desc 'List kafka settings in this project'
+    desc 'List settings in this project'
     task :check_settings do
-      KafkaHelpers.kafka_settings.each { |params| puts params.to_json }
+      KafkaHelpers.settings.nodes.each do |params|
+        puts JSON.pretty_generate(JSON.parse(params.to_json))
+      end
     end
 
-    desc 'Create Kafka nodes'
+    desc 'Create nodes'
     task :create do
-      KafkaHelpers.create_instances
+      KafkaHelpers.manager.create_nodes
     end
 
-    desc 'Terminate Kafka nodes'
+    desc 'Terminate nodes'
     task :terminate do
-      KafkaHelpers.terminate_instances
+      KafkaHelpers.manager.terminate_nodes
     end
 
-    desc 'Find and describe all Kafka nodes'
+    desc 'Find and describe all nodes'
     task :find do
-      KafkaHelpers.describe_instances
+      KafkaHelpers.manager.describe_nodes
     end
 
-    desc 'Compose entries for ~/.ssh/config for Kafka nodes'
-    task :ssh_config do
-      KafkaHelpers.ssh_config
+    desc 'Compose public entries for ~/.ssh/config for nodes'
+    task :ssh_config_public do
+      puts KafkaHelpers.manager.ssh_config
+    end
+
+    desc 'Compose private entries for ~/.ssh/config for nodes'
+    task :ssh_config_private do
+      puts KafkaHelpers.manager.ssh_config(false)
+    end
+
+    desc 'Compose entries for /etc/hosts using public IPs'
+    task :etc_hosts_public do
+      puts KafkaHelpers.manager.etc_hosts.join("\n")
+    end
+
+    desc 'Compose entries for /etc/hosts using private IPs'
+    task :etc_hosts_private do
+      puts KafkaHelpers.manager.etc_hosts(false).join("\n")
     end
 
   end
+
 
   namespace :service do
 
