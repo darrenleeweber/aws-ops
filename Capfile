@@ -17,9 +17,11 @@ require_relative 'lib/aws/aws_helpers'
 require_relative 'lib/aws/aws_security_groups_settings'
 require_relative 'lib/aws/aws_security_groups'
 require_relative 'lib/aws/aws_vpc'
+
+require_relative 'lib/service/service_manager'
+require_relative 'lib/service/service_settings'
+
 require_relative 'lib/kafka/kafka_helpers'
-require_relative 'lib/puppet/puppet_helpers'
-require_relative 'lib/zookeeper/zookeeper_settings'
 require_relative 'lib/zookeeper/zookeeper_helpers'
 
 # ---

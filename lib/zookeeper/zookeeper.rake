@@ -1,4 +1,3 @@
-require_relative 'zookeeper_settings'
 require_relative 'zookeeper_helpers'
 
 namespace :zookeeper do
@@ -7,44 +6,44 @@ namespace :zookeeper do
 
     desc 'List settings in this project'
     task :check_settings do
-      ZookeeperSettings.instance_settings.each do |params|
+      ZookeeperHelpers.settings.nodes.each do |params|
         puts JSON.pretty_generate(JSON.parse(params.to_json))
       end
     end
 
     desc 'Create nodes'
     task :create do
-      ZookeeperHelpers.create_instances
+      ZookeeperHelpers.manager.create_nodes
     end
 
     desc 'Terminate nodes'
     task :terminate do
-      ZookeeperHelpers.terminate_instances
+      ZookeeperHelpers.manager.terminate_nodes
     end
 
     desc 'Find and describe all nodes'
     task :find do
-      ZookeeperHelpers.describe_instances
+      ZookeeperHelpers.manager.describe_nodes
     end
 
     desc 'Compose public entries for ~/.ssh/config for nodes'
     task :ssh_config_public do
-      puts ZookeeperHelpers.ssh_config
+      puts ZookeeperHelpers.manager.ssh_config
     end
 
     desc 'Compose private entries for ~/.ssh/config for nodes'
     task :ssh_config_private do
-      puts ZookeeperHelpers.ssh_config(false)
+      puts ZookeeperHelpers.manager.ssh_config(false)
     end
 
     desc 'Compose entries for /etc/hosts using public IPs'
     task :etc_hosts_public do
-      puts ZookeeperHelpers.etc_hosts.join("\n")
+      puts ZookeeperHelpers.manager.etc_hosts.join("\n")
     end
 
     desc 'Compose entries for /etc/hosts using private IPs'
     task :etc_hosts_private do
-      puts ZookeeperHelpers.etc_hosts(false).join("\n")
+      puts ZookeeperHelpers.manager.etc_hosts(false).join("\n")
     end
 
     desc 'Compose entries for zoo.cfg'
@@ -54,16 +53,8 @@ namespace :zookeeper do
 
   end
 
-  namespace :service do
 
-    # desc 'Debug service'
-    # task :debug do
-    #   on roles(:zookeeper) do |host|
-    #     puts host.hostname
-    #     # require 'pry'
-    #     # binding.pry
-    #   end
-    # end
+  namespace :service do
 
     desc 'Install service'
     task :install do
@@ -118,13 +109,13 @@ namespace :zookeeper do
 
         # Setup the /etc/hosts file
         # Associate all the private IPs for each zookeeper instance with
-        # their instance names on the {stage} cluster.  Consider additional
+        # their instance node_names on the {stage} cluster.  Consider additional
         # instance services also (Kafka, Mesos, etc.).  This will have to
         # be done automatically and updated whenever an instance is created
         # or terminated (unless their network interfaces are retained and
         # their IP address can be assigned).
 
-        etc_hosts_new = ZookeeperHelpers.etc_hosts(false) # use private IPs
+        etc_hosts_new = ZookeeperHelpers.manager.etc_hosts(false) # use private IPs
         # remove any existing server entries in /etc/hosts
         sudo("sudo sed -i -e '/BEGIN_ZOO_SERVERS/,/END_ZOO_SERVERS/{ d; }' /etc/hosts")
         # append new entries to the /etc/hosts file (one line at a time)
