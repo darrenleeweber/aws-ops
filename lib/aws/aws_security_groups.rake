@@ -8,7 +8,8 @@ namespace :ops do
       desc 'List security group settings in this project'
       task :check_settings do
         AwsSecurityGroupsSettings.security_groups.each do |sg|
-          puts AwsSecurityGroupsSettings.to_params(sg)
+          params = AwsSecurityGroupsSettings.to_params(sg)
+          puts JSON.pretty_generate(JSON.parse(params.to_json))
         end
       end
 

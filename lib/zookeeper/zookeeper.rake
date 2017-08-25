@@ -11,6 +11,11 @@ namespace :zookeeper do
       end
     end
 
+    desc 'Compose connection string'
+    task :connections do
+      puts ZookeeperHelpers.manager.node_names.map { |n| n + ':2181' }.join(',')
+    end
+
     desc 'Create nodes'
     task :create do
       ZookeeperHelpers.manager.create_nodes

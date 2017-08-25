@@ -177,13 +177,28 @@ aws:
           to_port: 2181
           ip_ranges:
             - cidr_ip: '0.0.0.0/0'
+          ipv_6_ranges:
+            - cidr_ipv_6: '::/0'
         - ip_protocol: tcp
           from_port: 2888
           to_port: 2888
           ip_ranges:
             - cidr_ip: '0.0.0.0/0'
+          ipv_6_ranges:
+            - cidr_ipv_6: '::/0'
         - ip_protocol: tcp
           from_port: 3888
           to_port: 3888
           ip_ranges:
             - cidr_ip: '0.0.0.0/0'
+          ipv_6_ranges:
+            - cidr_ipv_6: '::/0'
+        - ip_protocol: tcp
+          from_port: 8001  # see lib/zoonavigator/zoonavigator-docker-compose.yml
+          to_port: 8001
+          ip_ranges:
+            - cidr_ip: '0.0.0.0/0'
+          ipv_6_ranges:
+            - cidr_ipv_6: '::/0'
+
+
