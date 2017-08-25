@@ -83,6 +83,9 @@ aws:
     tag_group: test_kafka
     tag_name: test_kafka1
     availability_zone: us-west-2a  # need one node in each zone
+    kafka_home: "/opt/kafka" # symlinks to /opt/kafka_{SCALA_VERSION}-{KAFKA_VERSION}
+    kafka_version: "0.11.0.0"
+    scala_version: "2.11"
 
   test_kafka2:
     <<: *KafkaDefaults
