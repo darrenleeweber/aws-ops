@@ -210,7 +210,8 @@ AWS_ENV={stage} bundle exec cap {stage} shell
 
 # Capistrano Namespaces and Services Available
 
-See `bundle exec cap -T` for a complete listing.
+See `bundle exec cap -T` for a complete listing.  Additional README docs might be
+added to `lib/{service}/README.md`.
 
  - `ops:aws`
  - `hdfs`
