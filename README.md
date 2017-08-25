@@ -62,9 +62,11 @@ bundle exec cap dev ops:aws:check_credentials
 
 Once any instance is created and assigned a public DNS, it can be added to
 your `~/.ssh/config` file, along with the required AWS Key Pair used to
-access it.  It recommended that `Host` value matches the instance name in
+access it.  It's recommended that a `Host` value matches the instance name in
 `config/settings/{stage}.yml` and it's essential that the `Host` value
-is used in the Capistrano `config/deploy/{stage}.rb` settings.
+is used in the Capistrano `config/deploy/{stage}.rb` settings.  (Note that
+it is easier to use the same `AWS_ENV` name as the capistrano `{stage}` name,
+but this is not an essential requirement, they could be different.)
 
 An example of an `~/.ssh/config` entry:
 ```
@@ -83,6 +85,16 @@ ssh -i ~/.ssh/{AWS_Key_Pair_Name}.pem {user}@{AWS_EC2_PUBLIC_DNS}
 If that works and the `~/.ssh/config` entry is made, try:
 ```bash
 ssh {HOST value from ~/.ssh/config}
+```
+
+There are capistrano tasks to provide all the details of the `~/.ssh/config` and
+related `/etc/hosts` values, e.g.
+```bash
+cap zookeeper:nodes:find                 # Find and describe all nodes
+cap zookeeper:nodes:etc_hosts_private    # Compose entries for /etc/hosts using private IPs
+cap zookeeper:nodes:etc_hosts_public     # Compose entries for /etc/hosts using public IPs
+cap zookeeper:nodes:ssh_config_private   # Compose private entries for ~/.ssh/config for nodes
+cap zookeeper:nodes:ssh_config_public    # Compose public entries for ~/.ssh/config for nodes
 ```
 
 
@@ -128,6 +140,17 @@ Public DNS:	ec2-52-32-121-252.us-west-2.compute.amazonaws.com
 Private DNS:	ip-172-31-23-169.us-west-2.compute.internal
 ```
 
+As noted above, there are also tasks to provide all the details
+for `~/.ssh/config` and `/etc/hosts`, e.g.
+```bash
+cap zookeeper:nodes:find                 # Find and describe all nodes
+cap zookeeper:nodes:etc_hosts_private    # Compose entries for /etc/hosts using private IPs
+cap zookeeper:nodes:etc_hosts_public     # Compose entries for /etc/hosts using public IPs
+cap zookeeper:nodes:ssh_config_private   # Compose private entries for ~/.ssh/config for nodes
+cap zookeeper:nodes:ssh_config_public    # Compose public entries for ~/.ssh/config for nodes
+```
+
+
 # Capistrano configuration
 
 Once AWS EC2 instances are running, add their connection details to the
@@ -155,9 +178,12 @@ Host test_zookeeper1
 ```
 
 Their connection details can be found using various `aws:ops` tasks or more specific
-service tasks, like `zookeeper:nodes:find`.  NOTE: if the systems are stopped or
-restarted, AWS could reassign the public DNS entries and wipe out these settings, which
-have to be updated again.
+service tasks, like `zookeeper:nodes:find`.  
+
+WARNING: if the systems are stopped and restarted, AWS can reassign the public
+DNS entries, which must be updated again.  (There are solutions to this problem that
+require additional IP management for instances.)
+
 
 # Capistrano Deployment and Connections
 
@@ -165,7 +191,7 @@ The `config/deploy.rb` and the `config/deploy/{stage}.rb` files contain the conn
 information for all the systems.  By default, `cap {stage} deploy` will deploy this code
 repository to the `~/aws-ops` path (using conventional capistrano deployment directories).
 Some of the capistrano tasks require access to the files in this project on the remote hosts,
-so it's best to deploy this project and then run run some system/service package installation
+so it's best to deploy this project and then run some system/service package installation
 and configuration tasks.
 
 To test the deployment, use
@@ -183,12 +209,17 @@ AWS_ENV={stage} bundle exec cap {stage} shell
 ```
 
 # Capistrano Namespaces and Services Available
+
+See `bundle exec cap -T` for a complete listing.
+
  - `ops:aws`
  - `hdfs`
- - `spark`
+ - `kafka`
+ - `mesos` (TODO)
+ - `spark` (TODO)
  - `zookeeper`
- - TODO: `mesos` and others
- - the rest are capistrano defaults, like `deploy`
+ - `zoonavigator`
+ - others include many common capistrano tasks, like `deploy`
  - see `find . -name '*.rake'` for details
  - task helpers are in `lib/**` and included in `Capfile`
 
