@@ -8,6 +8,7 @@ GEM
       tzinfo (~> 1.1)
     airbrussh (1.3.0)
       sshkit (>= 1.6.1, != 1.7.0)
+    ast (2.3.0)
     aws-sdk (2.10.26)
       aws-sdk-resources (= 2.10.26)
     aws-sdk-core (2.10.26)
@@ -55,6 +56,10 @@ GEM
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (4.1.0)
+    parallel (1.12.0)
+    parser (2.4.0.0)
+      ast (~> 2.2)
+    powerpack (0.1.1)
     pry (0.10.4)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -62,6 +67,8 @@ GEM
     pry-doc (0.10.0)
       pry (~> 0.9)
       yard (~> 0.9)
+    rainbow (2.2.2)
+      rake
     rake (12.0.0)
     rspec (3.6.0)
       rspec-core (~> 3.6.0)
@@ -76,6 +83,14 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.6.0)
     rspec-support (3.6.0)
+    rubocop (0.49.1)
+      parallel (~> 1.10)
+      parser (>= 2.3.3.1, < 3.0)
+      powerpack (~> 0.1)
+      rainbow (>= 1.99.1, < 3.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (~> 1.0, >= 1.0.1)
+    ruby-progressbar (1.8.1)
     simplecov (0.14.1)
       docile (~> 1.1.0)
       json (>= 1.8, < 3)
@@ -93,6 +108,7 @@ GEM
     tins (1.15.0)
     tzinfo (1.2.3)
       thread_safe (~> 0.1)
+    unicode-display_width (1.3.0)
     vcr (3.0.3)
     yard (0.9.9)
 
@@ -111,6 +127,7 @@ DEPENDENCIES
   pry
   pry-doc
   rspec
+  rubocop
   simplecov
   single_cov
   vcr

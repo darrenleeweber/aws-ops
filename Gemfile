@@ -9,6 +9,7 @@ gem 'pry'
 gem 'pry-doc'
 
 group :development, :test do
+  gem 'rubocop', require: false
   gem 'yard'
 end
 
