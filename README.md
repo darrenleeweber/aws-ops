@@ -184,6 +184,14 @@ WARNING: if the systems are stopped and restarted, AWS can reassign the public
 DNS entries, which must be updated again.  (There are solutions to this problem that
 require additional IP management for instances.)
 
+WARNING: Some service installation set environment variables in `/etc/profile.d/*.sh`, like
+`KAFKA_HOME`, and add some entries to the PATH, like `$KAFKA_HOME/bin` to the `PATH`.
+While these are available to a login shell, capistrano explicitly ignores them, see
+http://capistranorb.com/documentation/faq/why-does-something-work-in-my-ssh-session-but-not-in-capistrano/#
+To work around this, the values in `config/settings/{stage}.yml` that are used to set the
+environment variables are also used explicitly in some capistrano tasks.  (Note, to avoid
+confusion in this project, the settings/variable names for these are lower case.)
+
 
 # Capistrano Deployment and Connections
 
