@@ -4,10 +4,20 @@ gem 'aws-sdk'
 gem 'config'
 gem 'highline', '~> 1.7', '>= 1.7.8'
 
-group :development do
-  gem 'pry'
-  gem 'pry-doc'
+# lib/capistrano/tasks/console.rake uses pry
+gem 'pry'
+gem 'pry-doc'
+
+group :development, :test do
   gem 'yard'
+end
+
+group :test do
+  gem 'coveralls', require: false
+  gem 'rspec'
+  gem 'simplecov', require: false
+  gem 'single_cov'
+  gem 'vcr'
 end
 
 # Do not place the capistrano-related gems in the default or Rails.env bundle group
