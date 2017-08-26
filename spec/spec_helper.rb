@@ -13,7 +13,6 @@
 # it.
 
 require 'pry' # for debugging specs
-
 require_relative 'spec_coverage'
 
 ENV['AWS_ENV'] ||= 'test'
@@ -32,6 +31,15 @@ REGION = 'us-west-2'.freeze
 # manually toggled to work with specific tests to debug EC2 interactions.
 # MOCK = ENV['AWS_MOCK'].nil? || ENV['AWS_MOCK'].to_s =~ /true/i ? true : false
 MOCK = true
+
+# Use VCR for debugging some of the payload data.  It can also help
+# to speed up specs when the fixture data is not changing much.  Note
+# that the `vcr_config` has filters in it to strip out sensitive
+# information and replace AWS resource IDs with random values.  The
+# random values can help to ensure that specs using these fixtures
+# do not get fixated on static values, because the AWS resources IDs
+# can be replaced any time a resource is restarted or replaced.
+require_relative 'vcr_config'
 
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
@@ -66,9 +74,9 @@ RSpec.configure do |config|
   # triggering implicit auto-inclusion in groups with matching metadata.
   config.shared_context_metadata_behavior = :apply_to_host_groups
 
-# The settings below are suggested to provide a good initial experience
-# with RSpec, but feel free to customize to your heart's content.
-=begin
+  # The settings below are suggested to provide a good initial experience
+  # with RSpec, but feel free to customize to your heart's content.
+
   # This allows you to limit a spec run to individual examples or groups
   # you care about by tagging them with `:focus` metadata. When nothing
   # is tagged with `:focus`, all examples get run. RSpec also provides
@@ -118,5 +126,4 @@ RSpec.configure do |config|
   # test failures related to randomization by passing the same `--seed` value
   # as the one that triggered the failure.
   Kernel.srand config.seed
-=end
 end

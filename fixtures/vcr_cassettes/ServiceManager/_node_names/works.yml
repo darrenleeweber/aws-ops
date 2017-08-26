@@ -1,0 +1,567 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://ec2.us-west-2.amazonaws.com/
+    body:
+      encoding: UTF-8
+      string: Action=DescribeInstances&Filter.1.Name=tag%3AName&Filter.1.Value.1=test_zookeeper1&Version=2016-11-15
+    headers:
+      Content-Type:
+      - application/x-www-form-urlencoded; charset=utf-8
+      Accept-Encoding:
+      - ''
+      User-Agent:
+      - aws-sdk-ruby2/2.10.26 ruby/2.4.1 x86_64-linux resources
+      X-Amz-Date:
+      - 20170827T002349Z
+      Host:
+      - ec2.us-west-2.amazonaws.com
+      X-Amz-Content-Sha256:
+      - 53fc4bf505da5cb4cb61521b1fb68d81319bdcb6774f2e8e8cc7157c454ca69b
+      Authorization:
+      - AWS4-HMAC-SHA256 Credential=UCZ4XDS17EB2F0TMNJYV/20170827/us-west-2/ec2/aws4_request,
+        SignedHeaders=content-type;host;x-amz-content-sha256;x-amz-date, Signature=A72LRZ8V1XNDGS4T6YPKH9FE0QUBJ5WM3OIC
+      Content-Length:
+      - '101'
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      Date:
+      - Sun, 27 Aug 2017 00:23:49 GMT
+      Server:
+      - AmazonEC2
+    body:
+      encoding: UTF-8
+      string: |-
+        <?xml version="1.0" encoding="UTF-8"?>
+        <DescribeInstancesResponse xmlns="http://ec2.amazonaws.com/doc/2016-11-15/">
+            <requestId>bb4753c4-b6a6-4f79-bfe9-055f23aefc37</requestId>
+            <reservationSet>
+                <item>
+                    <reservationId>r-01107c54156f3adc8</reservationId>
+                    <ownerId>000000000000</ownerId>
+                    <groupSet/>
+                    <instancesSet>
+                        <item>
+                            <instanceId>i-f340715a6b2dce98</instanceId>
+                            <imageId>ami-6e1a0117</imageId>
+                            <instanceState>
+                                <code>16</code>
+                                <name>running</name>
+                            </instanceState>
+                            <privateDnsName>ip-105-49-168-148.us-west-2.compute.internal</privateDnsName>
+                            <dnsName>ec2-54-202-26-118.us-west-2.compute.amazonaws.com</dnsName>
+                            <reason/>
+                            <keyName>B62OQ1UNIRZKDJ7M5X3V9E</keyName>
+                            <amiLaunchIndex>0</amiLaunchIndex>
+                            <productCodes/>
+                            <instanceType>t2.micro</instanceType>
+                            <launchTime>2017-08-23T00:48:05.000Z</launchTime>
+                            <placement>
+                                <availabilityZone>us-west-2a</availabilityZone>
+                                <groupName/>
+                                <tenancy>default</tenancy>
+                            </placement>
+                            <monitoring>
+                                <state>disabled</state>
+                            </monitoring>
+                            <subnetId>subnet-17d0be7f</subnetId>
+                            <vpcId>vpc-14d0be7c</vpcId>
+                            <privateIpAddress>105.49.168.148</privateIpAddress>
+                            <ipAddress>54.202.26.118</ipAddress>
+                            <sourceDestCheck>true</sourceDestCheck>
+                            <groupSet>
+                                <item>
+                                    <groupId>sg-8f31a2c7</groupId>
+                                    <groupName>test_ssh_security_group</groupName>
+                                </item>
+                                <item>
+                                    <groupId>sg-c1431bbb</groupId>
+                                    <groupName>test_zookeeper_security_group</groupName>
+                                </item>
+                            </groupSet>
+                            <architecture>x86_64</architecture>
+                            <rootDeviceType>ebs</rootDeviceType>
+                            <rootDeviceName>/dev/sda1</rootDeviceName>
+                            <blockDeviceMapping>
+                                <item>
+                                    <deviceName>/dev/sda1</deviceName>
+                                    <ebs>
+                                        <volumeId>vol-914c80da36fe7b52</volumeId>
+                                        <status>attached</status>
+                                        <attachTime>2017-08-23T00:48:06.000Z</attachTime>
+                                        <deleteOnTermination>true</deleteOnTermination>
+                                    </ebs>
+                                </item>
+                            </blockDeviceMapping>
+                            <virtualizationType>hvm</virtualizationType>
+                            <clientToken/>
+                            <tagSet>
+                                <item>
+                                    <key>Group</key>
+                                    <value>test_zookeeper</value>
+                                </item>
+                                <item>
+                                    <key>Stage</key>
+                                    <value>test</value>
+                                </item>
+                                <item>
+                                    <key>Manager</key>
+                                    <value>dlweber</value>
+                                </item>
+                                <item>
+                                    <key>Name</key>
+                                    <value>test_zookeeper1</value>
+                                </item>
+                                <item>
+                                    <key>Service</key>
+                                    <value>zookeeper</value>
+                                </item>
+                            </tagSet>
+                            <hypervisor>xen</hypervisor>
+                            <networkInterfaceSet>
+                                <item>
+                                    <networkInterfaceId>eni-0a9d5fc2</networkInterfaceId>
+                                    <subnetId>subnet-17d0be7f</subnetId>
+                                    <vpcId>vpc-14d0be7c</vpcId>
+                                    <description/>
+                                    <ownerId>000000000000</ownerId>
+                                    <status>in-use</status>
+                                    <macAddress>02:c0:be:81:ae:0e</macAddress>
+                                    <privateIpAddress>105.49.168.148</privateIpAddress>
+                                    <privateDnsName>ip-105-49-168-148.us-west-2.compute.internal</privateDnsName>
+                                    <sourceDestCheck>true</sourceDestCheck>
+                                    <groupSet>
+                                        <item>
+                                            <groupId>sg-8f31a2c7</groupId>
+                                            <groupName>test_ssh_security_group</groupName>
+                                        </item>
+                                        <item>
+                                            <groupId>sg-c1431bbb</groupId>
+                                            <groupName>test_zookeeper_security_group</groupName>
+                                        </item>
+                                    </groupSet>
+                                    <attachment>
+                                        <attachmentId>eni-attach-b7da9516</attachmentId>
+                                        <deviceIndex>0</deviceIndex>
+                                        <status>attached</status>
+                                        <attachTime>2017-08-23T00:48:05.000Z</attachTime>
+                                        <deleteOnTermination>true</deleteOnTermination>
+                                    </attachment>
+                                    <association>
+                                        <publicIp>54.202.26.118</publicIp>
+                                        <publicDnsName>ec2-54-202-26-118.us-west-2.compute.amazonaws.com</publicDnsName>
+                                        <ipOwnerId>amazon</ipOwnerId>
+                                    </association>
+                                    <privateIpAddressesSet>
+                                        <item>
+                                            <privateIpAddress>105.49.168.148</privateIpAddress>
+                                            <privateDnsName>ip-105-49-168-148.us-west-2.compute.internal</privateDnsName>
+                                            <primary>true</primary>
+                                            <association>
+                                            <publicIp>54.202.26.118</publicIp>
+                                            <publicDnsName>ec2-54-202-26-118.us-west-2.compute.amazonaws.com</publicDnsName>
+                                            <ipOwnerId>amazon</ipOwnerId>
+                                            </association>
+                                        </item>
+                                    </privateIpAddressesSet>
+                                    <ipv6AddressesSet/>
+                                </item>
+                            </networkInterfaceSet>
+                            <ebsOptimized>false</ebsOptimized>
+                            <enaSupport>true</enaSupport>
+                        </item>
+                    </instancesSet>
+                </item>
+            </reservationSet>
+        </DescribeInstancesResponse>
+    http_version: 
+  recorded_at: Sun, 27 Aug 2017 00:23:49 GMT
+- request:
+    method: post
+    uri: https://ec2.us-west-2.amazonaws.com/
+    body:
+      encoding: UTF-8
+      string: Action=DescribeInstances&Filter.1.Name=tag%3AName&Filter.1.Value.1=test_zookeeper2&Version=2016-11-15
+    headers:
+      Content-Type:
+      - application/x-www-form-urlencoded; charset=utf-8
+      Accept-Encoding:
+      - ''
+      User-Agent:
+      - aws-sdk-ruby2/2.10.26 ruby/2.4.1 x86_64-linux resources
+      X-Amz-Date:
+      - 20170827T002349Z
+      Host:
+      - ec2.us-west-2.amazonaws.com
+      X-Amz-Content-Sha256:
+      - 4483c4c536178b236f4266868a27149941896480d90d3e7868491e13d061e99d
+      Authorization:
+      - AWS4-HMAC-SHA256 Credential=A5SJIB1DC0R8ZTY6EPOK/20170827/us-west-2/ec2/aws4_request,
+        SignedHeaders=content-type;host;x-amz-content-sha256;x-amz-date, Signature=XV51NKEO07AUPS6JYZWGCQ3H4IM9DB2R8FLT
+      Content-Length:
+      - '101'
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      Date:
+      - Sun, 27 Aug 2017 00:23:49 GMT
+      Server:
+      - AmazonEC2
+    body:
+      encoding: UTF-8
+      string: |-
+        <?xml version="1.0" encoding="UTF-8"?>
+        <DescribeInstancesResponse xmlns="http://ec2.amazonaws.com/doc/2016-11-15/">
+            <requestId>58586822-6c75-455f-b6c8-ebde0bdcdafb</requestId>
+            <reservationSet>
+                <item>
+                    <reservationId>r-01eabf61a3af464fd</reservationId>
+                    <ownerId>000000000000</ownerId>
+                    <groupSet/>
+                    <instancesSet>
+                        <item>
+                            <instanceId>i-c6e3ab45189f2d07</instanceId>
+                            <imageId>ami-6e1a0117</imageId>
+                            <instanceState>
+                                <code>16</code>
+                                <name>running</name>
+                            </instanceState>
+                            <privateDnsName>ip-151-210-170-35.us-west-2.compute.internal</privateDnsName>
+                            <dnsName>ec2-7-127-101-224.us-west-2.compute.amazonaws.com</dnsName>
+                            <reason/>
+                            <keyName>9H1UD6REJI2NQPSCW8V07Y</keyName>
+                            <amiLaunchIndex>0</amiLaunchIndex>
+                            <productCodes/>
+                            <instanceType>t2.micro</instanceType>
+                            <launchTime>2017-08-23T00:51:55.000Z</launchTime>
+                            <placement>
+                                <availabilityZone>us-west-2b</availabilityZone>
+                                <groupName/>
+                                <tenancy>default</tenancy>
+                            </placement>
+                            <monitoring>
+                                <state>disabled</state>
+                            </monitoring>
+                            <subnetId>subnet-16d0be7e</subnetId>
+                            <vpcId>vpc-14d0be7c</vpcId>
+                            <privateIpAddress>151.210.170.35</privateIpAddress>
+                            <ipAddress>7.127.101.224</ipAddress>
+                            <sourceDestCheck>true</sourceDestCheck>
+                            <groupSet>
+                                <item>
+                                    <groupId>sg-b1d3f928</groupId>
+                                    <groupName>test_ssh_security_group</groupName>
+                                </item>
+                                <item>
+                                    <groupId>sg-c1431bbb</groupId>
+                                    <groupName>test_zookeeper_security_group</groupName>
+                                </item>
+                            </groupSet>
+                            <architecture>x86_64</architecture>
+                            <rootDeviceType>ebs</rootDeviceType>
+                            <rootDeviceName>/dev/sda1</rootDeviceName>
+                            <blockDeviceMapping>
+                                <item>
+                                    <deviceName>/dev/sda1</deviceName>
+                                    <ebs>
+                                        <volumeId>vol-d1fae0c352467b89</volumeId>
+                                        <status>attached</status>
+                                        <attachTime>2017-08-23T00:51:56.000Z</attachTime>
+                                        <deleteOnTermination>true</deleteOnTermination>
+                                    </ebs>
+                                </item>
+                            </blockDeviceMapping>
+                            <virtualizationType>hvm</virtualizationType>
+                            <clientToken/>
+                            <tagSet>
+                                <item>
+                                    <key>Service</key>
+                                    <value>zookeeper</value>
+                                </item>
+                                <item>
+                                    <key>Manager</key>
+                                    <value>dlweber</value>
+                                </item>
+                                <item>
+                                    <key>Stage</key>
+                                    <value>test</value>
+                                </item>
+                                <item>
+                                    <key>Name</key>
+                                    <value>test_zookeeper2</value>
+                                </item>
+                                <item>
+                                    <key>Group</key>
+                                    <value>test_zookeeper</value>
+                                </item>
+                            </tagSet>
+                            <hypervisor>xen</hypervisor>
+                            <networkInterfaceSet>
+                                <item>
+                                    <networkInterfaceId>eni-64a01e82</networkInterfaceId>
+                                    <subnetId>subnet-16d0be7e</subnetId>
+                                    <vpcId>vpc-14d0be7c</vpcId>
+                                    <description/>
+                                    <ownerId>000000000000</ownerId>
+                                    <status>in-use</status>
+                                    <macAddress>06:b1:d8:8d:d8:06</macAddress>
+                                    <privateIpAddress>151.210.170.35</privateIpAddress>
+                                    <privateDnsName>ip-151-210-170-35.us-west-2.compute.internal</privateDnsName>
+                                    <sourceDestCheck>true</sourceDestCheck>
+                                    <groupSet>
+                                        <item>
+                                            <groupId>sg-b1d3f928</groupId>
+                                            <groupName>test_ssh_security_group</groupName>
+                                        </item>
+                                        <item>
+                                            <groupId>sg-c1431bbb</groupId>
+                                            <groupName>test_zookeeper_security_group</groupName>
+                                        </item>
+                                    </groupSet>
+                                    <attachment>
+                                        <attachmentId>eni-attach-49f076de</attachmentId>
+                                        <deviceIndex>0</deviceIndex>
+                                        <status>attached</status>
+                                        <attachTime>2017-08-23T00:51:55.000Z</attachTime>
+                                        <deleteOnTermination>true</deleteOnTermination>
+                                    </attachment>
+                                    <association>
+                                        <publicIp>7.127.101.224</publicIp>
+                                        <publicDnsName>ec2-7-127-101-224.us-west-2.compute.amazonaws.com</publicDnsName>
+                                        <ipOwnerId>amazon</ipOwnerId>
+                                    </association>
+                                    <privateIpAddressesSet>
+                                        <item>
+                                            <privateIpAddress>151.210.170.35</privateIpAddress>
+                                            <privateDnsName>ip-151-210-170-35.us-west-2.compute.internal</privateDnsName>
+                                            <primary>true</primary>
+                                            <association>
+                                            <publicIp>7.127.101.224</publicIp>
+                                            <publicDnsName>ec2-7-127-101-224.us-west-2.compute.amazonaws.com</publicDnsName>
+                                            <ipOwnerId>amazon</ipOwnerId>
+                                            </association>
+                                        </item>
+                                    </privateIpAddressesSet>
+                                    <ipv6AddressesSet/>
+                                </item>
+                            </networkInterfaceSet>
+                            <ebsOptimized>false</ebsOptimized>
+                            <enaSupport>true</enaSupport>
+                        </item>
+                    </instancesSet>
+                </item>
+            </reservationSet>
+        </DescribeInstancesResponse>
+    http_version: 
+  recorded_at: Sun, 27 Aug 2017 00:23:50 GMT
+- request:
+    method: post
+    uri: https://ec2.us-west-2.amazonaws.com/
+    body:
+      encoding: UTF-8
+      string: Action=DescribeInstances&Filter.1.Name=tag%3AName&Filter.1.Value.1=test_zookeeper3&Version=2016-11-15
+    headers:
+      Content-Type:
+      - application/x-www-form-urlencoded; charset=utf-8
+      Accept-Encoding:
+      - ''
+      User-Agent:
+      - aws-sdk-ruby2/2.10.26 ruby/2.4.1 x86_64-linux resources
+      X-Amz-Date:
+      - 20170827T002350Z
+      Host:
+      - ec2.us-west-2.amazonaws.com
+      X-Amz-Content-Sha256:
+      - '0876689360ecb33da2c9b722341b839c52c22e5c0d2924343a83378f926d0d18'
+      Authorization:
+      - AWS4-HMAC-SHA256 Credential=W0AVTOMREC2QZ34KHPFG/20170827/us-west-2/ec2/aws4_request,
+        SignedHeaders=content-type;host;x-amz-content-sha256;x-amz-date, Signature=F4EHRBVQ90CP6UJKO3A7TWZMGN1XLYDIS825
+      Content-Length:
+      - '101'
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      Date:
+      - Sun, 27 Aug 2017 00:23:49 GMT
+      Server:
+      - AmazonEC2
+    body:
+      encoding: UTF-8
+      string: |-
+        <?xml version="1.0" encoding="UTF-8"?>
+        <DescribeInstancesResponse xmlns="http://ec2.amazonaws.com/doc/2016-11-15/">
+            <requestId>468649d9-9560-4cb1-806d-7528a7fe6bcf</requestId>
+            <reservationSet>
+                <item>
+                    <reservationId>r-0b75eb29432d516be</reservationId>
+                    <ownerId>000000000000</ownerId>
+                    <groupSet/>
+                    <instancesSet>
+                        <item>
+                            <instanceId>i-1f65723ca980bde4</instanceId>
+                            <imageId>ami-6e1a0117</imageId>
+                            <instanceState>
+                                <code>16</code>
+                                <name>running</name>
+                            </instanceState>
+                            <privateDnsName>ip-85-174-18-104.us-west-2.compute.internal</privateDnsName>
+                            <dnsName>ec2-221-62-243-240.us-west-2.compute.amazonaws.com</dnsName>
+                            <reason/>
+                            <keyName>FTP4Q85KJ7O2CNXAI9EMUV</keyName>
+                            <amiLaunchIndex>0</amiLaunchIndex>
+                            <productCodes/>
+                            <instanceType>t2.micro</instanceType>
+                            <launchTime>2017-08-23T00:55:46.000Z</launchTime>
+                            <placement>
+                                <availabilityZone>us-west-2c</availabilityZone>
+                                <groupName/>
+                                <tenancy>default</tenancy>
+                            </placement>
+                            <monitoring>
+                                <state>disabled</state>
+                            </monitoring>
+                            <subnetId>subnet-15d0be7d</subnetId>
+                            <vpcId>vpc-14d0be7c</vpcId>
+                            <privateIpAddress>85.174.18.104</privateIpAddress>
+                            <ipAddress>221.62.243.240</ipAddress>
+                            <sourceDestCheck>true</sourceDestCheck>
+                            <groupSet>
+                                <item>
+                                    <groupId>sg-39ed54a7</groupId>
+                                    <groupName>test_ssh_security_group</groupName>
+                                </item>
+                                <item>
+                                    <groupId>sg-c1431bbb</groupId>
+                                    <groupName>test_zookeeper_security_group</groupName>
+                                </item>
+                            </groupSet>
+                            <architecture>x86_64</architecture>
+                            <rootDeviceType>ebs</rootDeviceType>
+                            <rootDeviceName>/dev/sda1</rootDeviceName>
+                            <blockDeviceMapping>
+                                <item>
+                                    <deviceName>/dev/sda1</deviceName>
+                                    <ebs>
+                                        <volumeId>vol-d9f483b7a1ec6250</volumeId>
+                                        <status>attached</status>
+                                        <attachTime>2017-08-23T00:55:47.000Z</attachTime>
+                                        <deleteOnTermination>true</deleteOnTermination>
+                                    </ebs>
+                                </item>
+                            </blockDeviceMapping>
+                            <virtualizationType>hvm</virtualizationType>
+                            <clientToken/>
+                            <tagSet>
+                                <item>
+                                    <key>Manager</key>
+                                    <value>dlweber</value>
+                                </item>
+                                <item>
+                                    <key>Name</key>
+                                    <value>test_zookeeper3</value>
+                                </item>
+                                <item>
+                                    <key>Stage</key>
+                                    <value>test</value>
+                                </item>
+                                <item>
+                                    <key>Group</key>
+                                    <value>test_zookeeper</value>
+                                </item>
+                                <item>
+                                    <key>Service</key>
+                                    <value>zookeeper</value>
+                                </item>
+                            </tagSet>
+                            <hypervisor>xen</hypervisor>
+                            <networkInterfaceSet>
+                                <item>
+                                    <networkInterfaceId>eni-3af927db</networkInterfaceId>
+                                    <subnetId>subnet-15d0be7d</subnetId>
+                                    <vpcId>vpc-14d0be7c</vpcId>
+                                    <description/>
+                                    <ownerId>000000000000</ownerId>
+                                    <status>in-use</status>
+                                    <macAddress>0a:ac:f5:5f:ba:e8</macAddress>
+                                    <privateIpAddress>85.174.18.104</privateIpAddress>
+                                    <privateDnsName>ip-85-174-18-104.us-west-2.compute.internal</privateDnsName>
+                                    <sourceDestCheck>true</sourceDestCheck>
+                                    <groupSet>
+                                        <item>
+                                            <groupId>sg-39ed54a7</groupId>
+                                            <groupName>test_ssh_security_group</groupName>
+                                        </item>
+                                        <item>
+                                            <groupId>sg-c1431bbb</groupId>
+                                            <groupName>test_zookeeper_security_group</groupName>
+                                        </item>
+                                    </groupSet>
+                                    <attachment>
+                                        <attachmentId>eni-attach-9d0263e4</attachmentId>
+                                        <deviceIndex>0</deviceIndex>
+                                        <status>attached</status>
+                                        <attachTime>2017-08-23T00:55:46.000Z</attachTime>
+                                        <deleteOnTermination>true</deleteOnTermination>
+                                    </attachment>
+                                    <association>
+                                        <publicIp>221.62.243.240</publicIp>
+                                        <publicDnsName>ec2-221-62-243-240.us-west-2.compute.amazonaws.com</publicDnsName>
+                                        <ipOwnerId>amazon</ipOwnerId>
+                                    </association>
+                                    <privateIpAddressesSet>
+                                        <item>
+                                            <privateIpAddress>85.174.18.104</privateIpAddress>
+                                            <privateDnsName>ip-85-174-18-104.us-west-2.compute.internal</privateDnsName>
+                                            <primary>true</primary>
+                                            <association>
+                                            <publicIp>221.62.243.240</publicIp>
+                                            <publicDnsName>ec2-221-62-243-240.us-west-2.compute.amazonaws.com</publicDnsName>
+                                            <ipOwnerId>amazon</ipOwnerId>
+                                            </association>
+                                        </item>
+                                    </privateIpAddressesSet>
+                                    <ipv6AddressesSet/>
+                                </item>
+                            </networkInterfaceSet>
+                            <ebsOptimized>false</ebsOptimized>
+                            <enaSupport>true</enaSupport>
+                        </item>
+                    </instancesSet>
+                </item>
+            </reservationSet>
+        </DescribeInstancesResponse>
+    http_version: 
+  recorded_at: Sun, 27 Aug 2017 00:23:50 GMT
+recorded_with: VCR 3.0.3
