@@ -6,6 +6,6 @@ if [ -d /usr/lib/jvm/java-8-oracle ]; then
   echo "Found java-8-oracle installation"
 else
     echo "java 8 installation"
-    apt-get install -y -q oracle-java8-installer
+    apt-get install -y -q oracle-java8-installer oracle-java8-set-default
     yes "" | apt-get -f install
 fi
