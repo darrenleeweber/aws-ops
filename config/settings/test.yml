@@ -49,6 +49,7 @@ aws:
   test_zookeeper1: &ZookeeperDefaults
     <<: *TestDefault
     myid: 1
+    client_port: 2181
     leader_port: 2888
     election_port: 3888
     security_groups:

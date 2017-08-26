@@ -13,6 +13,17 @@ module ZookeeperHelpers
     @manager ||= ServiceManager.new SERVICE
   end
 
+  # ZooKeeper connection data, something like:
+  # zookeeper1:2181,zookeeper2:2181,zookeeper3:2181
+  def connections
+    alive = manager.nodes_alive
+    settings.nodes.map do |n|
+      i = alive.find { |i| AwsHelpers.ec2_instance_tag_name?(i, n.tag_name) }
+      next if i.nil?
+      "#{n.tag_name}:#{n.client_port}"
+    end
+  end
+
   # Create zoo.cfg data, something like:
   # server.1=zookeeper1:2888:3888
   # server.2=zookeeper2:2888:3888

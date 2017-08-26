@@ -13,7 +13,7 @@ namespace :zookeeper do
 
     desc 'Compose connection string'
     task :connections do
-      puts ZookeeperHelpers.manager.node_names.map { |n| n + ':2181' }.join(',')
+      puts ZookeeperHelpers.connections.join(',')
     end
 
     desc 'Create nodes'
@@ -60,6 +60,15 @@ namespace :zookeeper do
 
 
   namespace :service do
+
+    def host_settings
+      # the `host` object is accessible to this method
+      Settings.aws[host.hostname]
+    end
+
+    def client_port
+      host_settings['client_port']
+    end
 
     desc 'Install service'
     task :install do
@@ -110,7 +119,7 @@ namespace :zookeeper do
         # This config file is heavily symlinked all over the place.
         myid = Settings.aws[host.hostname].myid
         raise 'ERROR: cannot update /etc/zookeeper/conf/myid' if myid < 1 || myid > 255
-        sudo("sudo sed -i -e 's/replace.*/#{myid}/' /etc/zookeeper/conf/myid")
+        sudo("sed -i -e 's/replace.*/#{myid}/' /etc/zookeeper/conf/myid")
 
         # Setup the /etc/hosts file
         # Associate all the private IPs for each zookeeper instance with
@@ -122,7 +131,7 @@ namespace :zookeeper do
 
         etc_hosts_new = ZookeeperHelpers.manager.etc_hosts(false) # use private IPs
         # remove any existing server entries in /etc/hosts
-        sudo("sudo sed -i -e '/BEGIN_ZOO_SERVERS/,/END_ZOO_SERVERS/{ d; }' /etc/hosts")
+        sudo("sed -i -e '/BEGIN_ZOO_SERVERS/,/END_ZOO_SERVERS/{ d; }' /etc/hosts")
         # append new entries to the /etc/hosts file (one line at a time)
         sudo("echo '### BEGIN_ZOO_SERVERS' | sudo tee -a /etc/hosts > /dev/null")
         # append new entries to the /etc/hosts file (one line at a time)
@@ -145,13 +154,16 @@ namespace :zookeeper do
         # ### END ZOO_SERVERS
         zoo_cfg_new = ZookeeperHelpers.zoo_cfg
         # remove any existing server entries in the zoo.cfg file (see lib/zookeeper/zoo.cfg.test)
-        sudo("sudo sed -i -e '/BEGIN_ZOO_SERVERS/,/END_ZOO_SERVERS/{ d; }' /etc/zookeeper/conf/zoo.cfg")
+        sudo("sed -i -e '/BEGIN_ZOO_SERVERS/,/END_ZOO_SERVERS/{ d; }' /etc/zookeeper/conf/zoo.cfg")
         # append new entries to the zoo.cfg file (one line at a time)
         sudo("echo '### BEGIN_ZOO_SERVERS' | sudo tee -a /etc/zookeeper/conf/zoo.cfg > /dev/null")
         zoo_cfg_new.each do |server_cfg|
           sudo("echo '#{server_cfg}' | sudo tee -a /etc/zookeeper/conf/zoo.cfg > /dev/null")
         end
         sudo("echo '### END_ZOO_SERVERS' | sudo tee -a /etc/zookeeper/conf/zoo.cfg > /dev/null")
+
+        # Reset the clientPort=2181 in zoo.cfg using the settings
+        sudo("sed -i -e 's/clientPort=.*/clientPort=#{client_port}/' /etc/zookeeper/conf/zoo.cfg")
       end
     end
 
@@ -166,7 +178,7 @@ namespace :zookeeper do
     task :status do
       on roles(:zookeeper) do |host|
         sudo('service zookeeper status')
-        execute("echo 'ruok' | nc localhost 2181") # should respond 'imok'
+        execute("echo 'ruok' | nc localhost #{client_port}") # should respond 'imok'
       end
     end
 
@@ -180,7 +192,7 @@ namespace :zookeeper do
     desc 'Zookeeper 4-letter commands'
     task :command, :cmd do |task, args|
       on roles(:zookeeper) do |host|
-        execute("echo '#{args.cmd}' | nc localhost 2181")
+        execute("echo '#{args.cmd}' | nc localhost #{client_port}")
       end
     end
 
