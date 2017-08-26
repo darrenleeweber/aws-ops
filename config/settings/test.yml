@@ -80,6 +80,7 @@ aws:
 
   test_kafka1: &KafkaDefaults
     <<: *TestDefault
+    broker_id: 1
     tag_service: kafka
     tag_group: test_kafka
     tag_name: test_kafka1
@@ -90,11 +91,13 @@ aws:
 
   test_kafka2:
     <<: *KafkaDefaults
+    broker_id: 2
     tag_name: test_kafka2
     availability_zone: us-west-2b  # need one node in each zone
 
   test_kafka3:
     <<: *KafkaDefaults
+    broker_id: 3
     tag_name: test_kafka3
     availability_zone: us-west-2c  # need one node in each zone
 
