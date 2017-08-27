@@ -25,3 +25,4 @@ SimpleCov::Formatter::MultiFormatter.new(
   ]
 )
 SimpleCov.start 'aws_ops'
+

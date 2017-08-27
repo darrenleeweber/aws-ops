@@ -1,9 +1,7 @@
 require_relative 'kafka_helpers'
 
 namespace :kafka do
-
   namespace :nodes do
-
     desc 'List settings in this project'
     task :check_settings do
       KafkaHelpers.settings.nodes.each do |params|
@@ -45,12 +43,9 @@ namespace :kafka do
     task :etc_hosts_private do
       puts KafkaHelpers.manager.etc_hosts(false).join("\n")
     end
-
   end
 
-
   namespace :service do
-
     # The kafka installation sets KAFKA_HOME and adds the
     # KAFKA_HOME/bin to the PATH
     # However, capistrano does not get these env values, see
@@ -136,7 +131,6 @@ namespace :kafka do
         sudo("echo '### END_ZOO_SERVERS' | sudo tee -a /etc/hosts > /dev/null")
 
         # TODO: advertised.listeners=PLAINTEXT://your.host.name:9092
-
       end
     end
 
@@ -162,8 +156,6 @@ namespace :kafka do
         sudo("#{kafka_home}/bin/kafka-server-stop.sh || true")
       end
     end
-
   end
-
 end
 

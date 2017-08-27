@@ -4,7 +4,6 @@ namespace :ops do
     desc 'initialize configuration'
     task :init do
       on roles(:all), in: :parallel do |host|
-
         # if not exists('.dotfiles'):
         #     with settings(warn_only=True):
         #     run('git clone --recursive http://github.com/bamos/dotfiles.git .dotfiles')
@@ -35,3 +34,4 @@ namespace :ops do
     end
   end
 end
+

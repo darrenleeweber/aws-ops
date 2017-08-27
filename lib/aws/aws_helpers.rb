@@ -221,4 +221,6 @@ module AwsHelpers
     ec2.client.wait_until(:instance_terminated, instance_ids: instance_ids)
     puts "instances #{instance_ids}: terminated"
   end
+
 end
+

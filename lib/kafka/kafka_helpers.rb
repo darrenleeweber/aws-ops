@@ -1,6 +1,7 @@
 
 # Utilities for working with Kafka
 module KafkaHelpers
+
   module_function
 
   SERVICE = 'kafka'.freeze
@@ -14,3 +15,4 @@ module KafkaHelpers
   end
 
 end
+
