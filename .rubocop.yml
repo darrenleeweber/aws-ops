@@ -1,3 +1,5 @@
+# https://rubocop.readthedocs.io/en/latest/
+
 inherit_from:
   - .rubocop_todo.yml
 
@@ -10,3 +12,22 @@ AllCops:
     - 'spec/fixtures/**/*'
     - 'spec/spec_helper.rb'
     - 'vendor/**/*'
+
+Layout/EmptyLinesAroundClassBody:
+  EnforcedStyle: empty_lines
+
+Layout/EmptyLinesAroundModuleBody:
+  EnforcedStyle: empty_lines
+
+Layout/ExtraSpacing:
+  AllowForAlignment: true
+
+Layout/SpaceAfterNot:
+  Enabled: false
+
+Layout/TrailingBlankLines:
+  EnforcedStyle: final_blank_line
+
+Lint/UnusedBlockArgument:
+  Enabled: false
+
