@@ -183,7 +183,7 @@ aws:
     availability_zone: us-west-2b  # need one node in each zone
 
   test_mesos_agent3:
-    <<: *MesosMasterDefaults
+    <<: *MesosAgentDefaults
     tag_name: test_mesos_agent3
     availability_zone: us-west-2c  # need one node in each zone
 
