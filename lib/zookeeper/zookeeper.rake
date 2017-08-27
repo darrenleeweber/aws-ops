@@ -1,9 +1,7 @@
 require_relative 'zookeeper_helpers'
 
 namespace :zookeeper do
-
   namespace :nodes do
-
     desc 'List settings in this project'
     task :check_settings do
       ZookeeperHelpers.settings.nodes.each do |params|
@@ -55,12 +53,9 @@ namespace :zookeeper do
     task :zoo_cfg do
       puts ZookeeperHelpers.zoo_cfg.join("\n")
     end
-
   end
 
-
   namespace :service do
-
     def host_settings
       # the `host` object is accessible to this method
       Settings.aws[host.hostname]
@@ -195,8 +190,6 @@ namespace :zookeeper do
         execute("echo '#{args.cmd}' | nc localhost #{client_port}")
       end
     end
-
   end
-
 end
 

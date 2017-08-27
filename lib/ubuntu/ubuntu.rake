@@ -1,6 +1,5 @@
 
 namespace :ubuntu do
-
   desc 'apt update'
   task :update do
     on roles(:ubuntu), in: :parallel do |host|
@@ -22,9 +21,7 @@ namespace :ubuntu do
     end
   end
 
-
   namespace :check do
-
     desc 'docker'
     task :docker do
       on roles(:ubuntu), in: :parallel do |host|
@@ -32,12 +29,9 @@ namespace :ubuntu do
         execute("docker run hello-world | grep -A1 'Hello.*Docker'")
       end
     end
-
   end
 
-
   namespace :install do
-
     desc 'common build tools'
     task :build_tools do
       on roles(:ubuntu), in: :parallel do |host|
@@ -96,6 +90,5 @@ namespace :ubuntu do
       end
     end
   end
-
 end
 

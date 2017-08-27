@@ -1,8 +1,9 @@
 
 module PuppetHelpers
+
   module_function
 
-  DEPLOY_DIR = 'initial-deployment-puppet'
+  DEPLOY_DIR = 'initial-deployment-puppet'.freeze
 
   def puppet_apply(manifest)
     rsync
@@ -12,10 +13,11 @@ module PuppetHelpers
 
   def rsync
     rsync_project(
-      remote_dir=DEPLOY_DIR,
-      local_dir=PROJECT_PATH + '/initial-deployment-puppet/',
-      extra_opts='--delete'
+      remote_dir = DEPLOY_DIR,
+      local_dir = PROJECT_PATH + '/initial-deployment-puppet/',
+      extra_opts = '--delete'
     )
   end
 
 end
+

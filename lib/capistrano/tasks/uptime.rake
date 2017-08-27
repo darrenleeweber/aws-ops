@@ -1,5 +1,5 @@
 
-#role :demo, %w{example.com example.org example.net}
+# role :demo, %w{example.com example.org example.net}
 
 task :uptime do
   on roles(:all), in: :parallel do |host|
@@ -7,3 +7,4 @@ task :uptime do
     puts "#{host.hostname} reports: #{uptime}"
   end
 end
+

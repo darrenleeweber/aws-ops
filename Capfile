@@ -1,4 +1,4 @@
-PROJECT_PATH=Dir.pwd
+PROJECT_PATH = Dir.pwd
 
 require 'highline/import'
 def confirmation?(msg)
@@ -27,7 +27,6 @@ require_relative 'lib/zookeeper/zookeeper_helpers'
 # ---
 # Standard Capfile content below here.
 # ---
-
 
 # Load DSL and set up stages
 require 'capistrano/setup'

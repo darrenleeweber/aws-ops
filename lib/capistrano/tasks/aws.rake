@@ -1,7 +1,6 @@
 
 namespace :ops do
   namespace :aws do
-
     desc 'Check credentials for AWS SDK'
     task :check_credentials do
       puts AwsHelpers.aws_credentials? ? 'OK' : 'Failed to init credentials'
@@ -13,7 +12,6 @@ namespace :ops do
     end
 
     namespace :ec2 do
-
       desc 'Create an EC2 instance by NAME'
       task :create_instance_by_name, :name do |task, args|
         instance_params = Settings.aws[args.name]
@@ -75,7 +73,6 @@ namespace :ops do
       task :stop_instance, :instance_id do |task, args|
         AwsHelpers.ec2_stop_instance(args.instance_id)
       end
-
     end
   end
 end

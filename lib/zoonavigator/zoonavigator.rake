@@ -1,6 +1,5 @@
 
 namespace :zoonavigator do
-
   # ZooNavigator
   # https://github.com/elkozmon/zoonavigator
   #
@@ -10,11 +9,9 @@ namespace :zoonavigator do
   #  - there is no authorization in test
 
   namespace :service do
-
     desc 'Install service'
     task :install do
       on roles(:zookeeper), in: :parallel do |host|
-
         # Install zooNavigator on myid==1
         myid = Settings.aws[host.hostname].myid
         if myid == 1
@@ -28,8 +25,6 @@ namespace :zoonavigator do
     task :connections do
       Rake::Task['zookeeper:nodes:connections'].invoke
     end
-
   end
-
 end
 

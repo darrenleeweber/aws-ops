@@ -1,6 +1,7 @@
 
 # Utilities for working with Zookeeper
 module ZookeeperHelpers
+
   module_function
 
   SERVICE = 'zookeeper'.freeze

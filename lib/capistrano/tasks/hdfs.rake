@@ -1,6 +1,5 @@
 
 namespace :hdfs do
-
   desc 'Hadoop initialize'
   task :init do
     on roles(:hdfs), in: :parallel do |host|

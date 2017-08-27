@@ -3,5 +3,5 @@ rvm:
  - 2.4
 
 sudo: false
-script: bundle exec rspec
+script: bundle exec rubocop && bundle exec rspec
 

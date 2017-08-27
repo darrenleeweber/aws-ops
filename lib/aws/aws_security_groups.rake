@@ -4,7 +4,6 @@ require_relative 'aws_security_groups'
 namespace :ops do
   namespace :aws do
     namespace :security_groups do
-
       desc 'List security group settings in this project'
       task :check_settings do
         AwsSecurityGroupsSettings.security_groups.each do |sg|
@@ -38,7 +37,6 @@ namespace :ops do
         sg = AwsSecurityGroups.ec2_security_group_find(args.group_name)
         AwsSecurityGroups.ec2_security_group_describe(sg) unless sg.nil?
       end
-
     end
   end
 end
