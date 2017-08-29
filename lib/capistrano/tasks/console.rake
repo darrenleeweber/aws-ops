@@ -1,8 +1,7 @@
 require 'pry'
 
-namespace :development do
-  task :console do
-    binding.pry
-  end
+desc 'console'
+task :console do
+  binding.pry
 end
 
