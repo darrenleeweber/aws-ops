@@ -71,6 +71,10 @@ class UbuntuHelper
     "#{script_path}/java_8_oracle.sh > #{log_path}/java_8_oracle.log"
   end
 
+  def kafka_bin(kafka_ver = '')
+    "#{script_path}/kafka_bin.sh #{kafka_ver} > #{log_path}/kafka_bin.log"
+  end
+
   def log_path_files
     "find #{log_path} -type f"
   end

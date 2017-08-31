@@ -81,16 +81,40 @@ aws:
   # - note definition and use of defaults: KafkaDefaults
   # - it's important that each instance has 'kafka' in the key and tag_name (case sensitive)
 
+  # See server.properties for details
+  # - settings that are handled dynamically include:
+  #   - broker.id
+  #   - zookeeper.connect
+  #   - advertised.listeners
+  test_kafka_configuration:
+    resource: configuration
+    kafka_home: "/opt/kafka" # symlinks to /opt/kafka_{SCALA_VERSION}-{KAFKA_VERSION}
+    kafka_version: "0.11.0.0"
+    scala_version: "2.11"
+    # Note on a t1.micro we need KAFKA_HEAP_OPTS="-Xmx512M -Xms512M"
+    kafka_heap_opts: "-Xmx512M -Xms512M"  # defaults to "-Xmx1G -Xms1G"
+    delete.topic.enable: true # use 'false' in production
+    auto.create.topics.enable: true # use 'false' in production
+    log.dirs: /data/kafka  # CSV, best to match N log.dirs to partitions
+    num.partitions: 8
+    default.replication.factor: 3
+    min.insync.replicas: 2
+    log.retention.hours: 168
+    log.segment.bytes: 1073741824
+    log.retention.check.interval.ms: 300000
+    zookeeper.connection.timeout.ms: 6000
+
   test_kafka1: &KafkaDefaults
     <<: *TestDefault
     broker_id: 1
+    client_port: 9092 # AFAIK, it's always 9092
     tag_service: kafka
     tag_group: test_kafka
     tag_name: test_kafka1
     availability_zone: us-west-2a  # need one node in each zone
-    kafka_home: "/opt/kafka" # symlinks to /opt/kafka_{SCALA_VERSION}-{KAFKA_VERSION}
-    kafka_version: "0.11.0.0"
-    scala_version: "2.11"
+    security_groups:
+      - test_ssh_security_group
+      - test_kafka_security_group
 
   test_kafka2:
     <<: *KafkaDefaults
@@ -211,4 +235,21 @@ aws:
           ipv_6_ranges:
             - cidr_ipv_6: '::/0'
 
-
+  # - these ip_permissions for the test stage are wide open, for ease of use
+  # - for production, the IP CIDR needs to be specific to subnets
+  # - the public subnets should have an IPV4 CIDR for each availability_zone
+  test_kafka_security_group:
+    <<: *TestSecurityGroupDefault
+    tag_name: test_kafka_security_group
+    group_name: test_kafka_security_group
+    description: 'Kafka port access'
+    authorize_ingress:
+      group_id:
+      ip_permissions:
+        - ip_protocol: tcp
+          from_port: 9092
+          to_port: 9092
+          ip_ranges:
+            - cidr_ip: '0.0.0.0/0'
+          ipv_6_ranges:
+            - cidr_ipv_6: '::/0'

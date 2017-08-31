@@ -13,6 +13,10 @@ AllCops:
     - 'spec/spec_helper.rb'
     - 'vendor/**/*'
 
+
+# ---
+# Layout
+
 Layout/EmptyLinesAroundClassBody:
   EnforcedStyle: empty_lines
 
@@ -28,6 +32,29 @@ Layout/SpaceAfterNot:
 Layout/TrailingBlankLines:
   EnforcedStyle: final_blank_line
 
+
+# ---
+# Lint
+
 Lint/UnusedBlockArgument:
   Enabled: false
+
+
+# ---
+# Metrics
+
+Metrics/ModuleLength:
+  CountComments: false
+  Max: 150
+
+Metrics/ClassLength:
+  CountComments: false
+  Max: 150
+
+Metrics/MethodLength:
+  CountComments: false
+  Max: 20
+
+Metrics/LineLength:
+  Max: 120
 
