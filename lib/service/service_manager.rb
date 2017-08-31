@@ -93,6 +93,26 @@ class ServiceManager
     end
   end
 
+  # Reboot node
+  def reboot_node(params)
+    alive = nodes_alive
+    i = alive.find { |i| AwsHelpers.ec2_instance_tag_name?(i, params.tag_name) }
+    return if i.nil?
+    puts "Rebooting active node named: #{params.tag_name}"
+    AwsHelpers.ec2_reboot_instance(i.id)
+  end
+
+  # Reboot nodes
+  def reboot_nodes
+    alive = nodes_alive
+    settings.nodes.each do |params|
+      i = alive.find { |i| AwsHelpers.ec2_instance_tag_name?(i, params.tag_name) }
+      next if i.nil?
+      puts "Rebooting active node named: #{params.tag_name}"
+      AwsHelpers.ec2_reboot_instance(i.id)
+    end
+  end
+
   # Terminate nodes
   # Requests confirmations for destructive actions
   def terminate_nodes
