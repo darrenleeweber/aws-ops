@@ -12,11 +12,12 @@
 # the additional setup, and require it from the spec files that actually need
 # it.
 
-ENV['AWS_ENV'] ||= 'test'
-
 require 'pry' # for debugging specs
 
 require_relative 'spec_coverage'
+
+ENV['AWS_ENV'] ||= 'test'
+require_relative '../lib/boot'
 
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
