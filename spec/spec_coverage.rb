@@ -4,7 +4,7 @@ SingleCov.setup :rspec
 
 require 'simplecov'
 require 'coveralls'
-Coveralls.wear!
+Coveralls.wear! if ENV['TRAVIS']
 
 SimpleCov.profiles.define 'aws_ops' do
   add_filter '.gems'
