@@ -9,18 +9,26 @@ class ServiceSettings
   end
 
   def service_keys
-    Settings.aws.keys.select { |k| k.to_s.include? service }
+    @service_keys ||= Settings.aws.keys.select { |k| k.to_s.include? service }
+  end
+
+  def service_values
+    @service_values ||= service_keys.map { |k| Settings.aws[k] }
+  end
+
+  def configuration
+    @configuration ||= service_values.select { |v| v.resource == 'configuration' }.first
   end
 
   def nodes
-    keys = service_keys
-    values = keys.map { |k| Settings.aws[k] }
-    nodes = values.select { |v| v.resource == 'instance' }
-    nodes.select { |n| n.tag_service == service }
+    @nodes ||= begin
+      nodes = service_values.select { |v| v.resource == 'instance' }
+      nodes.select { |n| n.tag_service == service }
+    end
   end
 
   def node_names
-    nodes.map(&:tag_name)
+    @node_names ||= nodes.map(&:tag_name)
   end
 
 end

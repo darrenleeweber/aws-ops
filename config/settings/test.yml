@@ -46,6 +46,9 @@ aws:
   # - it's important that each instance has a 'myid' with a unique integer between 1-255 (inclusive)
   # - the `leader_port` and the `election_port` must match up with security_group settings
 
+  test_zookeeper_configuration:
+    resource: configuration
+
   test_zookeeper1: &ZookeeperDefaults
     <<: *TestDefault
     myid: 1
