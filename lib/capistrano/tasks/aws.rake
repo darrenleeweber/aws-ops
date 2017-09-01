@@ -8,7 +8,7 @@ namespace :ops do
 
     desc 'Check AWS settings'
     task :check_settings do
-      puts JSON.pretty_generate(JSON.parse(Settings.aws.to_json))
+      pp_json Settings.aws.to_json
     end
 
     namespace :ec2 do
@@ -36,32 +36,32 @@ namespace :ops do
       desc 'Find an EC2 instance by "Group" tag'
       task :find_instances_by_group, :group do |task, args|
         instances = AwsHelpers.ec2_find_group_instances(args.group)
-        instances.each { |i| AwsHelpers.ec2_instance_info(i) }
+        AwsHelpers.ec2_instances_describe(instances)
       end
 
       desc 'Find an EC2 instance by "Name" tag'
       task :find_instance_by_name, :name do |task, args|
         instances = AwsHelpers.ec2_find_name_instances(args.name)
-        instances.each { |i| AwsHelpers.ec2_instance_info(i) }
+        AwsHelpers.ec2_instances_describe(instances)
       end
 
       desc 'Find an EC2 instance by "Service" tag'
       task :find_instances_by_service, :service do |task, args|
         instances = AwsHelpers.ec2_find_service_instances(args.service)
-        instances.each { |i| AwsHelpers.ec2_instance_info(i) }
+        AwsHelpers.ec2_instances_describe(instances)
       end
 
       desc 'Find an EC2 instance by "Stage" tag'
       task :find_instances_by_stage, :stage do |task, args|
         stage = args.stage || fetch(:stage)
         instances = AwsHelpers.ec2_find_stage_instances(stage)
-        instances.each { |i| AwsHelpers.ec2_instance_info(i) }
+        AwsHelpers.ec2_instances_describe(instances)
       end
 
       desc 'Find an EC2 instance by ID'
       task :find_instance, :instance_id do |task, args|
         i = AwsHelpers.ec2_find_instance(args.instance_id)
-        AwsHelpers.ec2_instance_info(i)
+        AwsHelpers.ec2_instance_describe(i)
       end
 
       desc 'Start an EC2 instance by ID'

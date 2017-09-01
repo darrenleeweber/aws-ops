@@ -29,6 +29,11 @@ def ubuntu_helper
   end
 end
 
+# @param json [String]
+def pp_json(json)
+  puts JSON.pretty_generate(JSON.parse(json))
+end
+
 # PRIVATE IPs for the /etc/hosts file with zookeeper nodes
 # This utility method may be used by any services that depend on zookeeper.
 # The PRIVATE IPs should persist when instances are stopped and restarted.

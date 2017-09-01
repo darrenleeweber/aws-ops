@@ -62,10 +62,11 @@ class ServiceManager
   # Find and describe all nodes
   # @return [nil] prints information
   def describe_nodes
-    nodes.each { |i| AwsHelpers.ec2_instance_info(i) }
+    nodes.each { |i| AwsHelpers.ec2_instance_describe(i) }
   end
 
   # Create /etc/hosts data
+  # @param public [Boolean]
   def etc_hosts(public = true)
     alive = nodes_alive
     settings.nodes.map do |n|
@@ -182,6 +183,7 @@ class ServiceManager
 
   private
 
+  # @return [Boolean]
   def confirmation?(msg)
     require 'highline/import'
     cli = HighLine.new
