@@ -21,6 +21,12 @@ class ServiceManager
     nodes.reject { |i| i.state.name.to_s == 'terminated' }
   end
 
+  # All AWS::EC2::Instances for a service that are "stopped"
+  # @return [Array<Aws::EC2::Instance>]
+  def nodes_stopped
+    nodes.select { |i| i.state.name.to_s == 'stopped' }
+  end
+
   def nodes_terminated
     nodes.select { |i| i.state.name.to_s == 'terminated' }
   end
