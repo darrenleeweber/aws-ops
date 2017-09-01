@@ -1,32 +1,47 @@
+require_relative 'ubuntu_helper'
 
 namespace :ubuntu do
+  def ubuntu_helper
+    @ubuntu_helper ||= begin
+      helper = UbuntuHelper.new(current_path)
+      execute("mkdir -p #{helper.log_path}")
+      helper
+    end
+  end
+
+  desc 'logs'
+  task :logs do
+    on roles(:ubuntu), in: :parallel do |host|
+      execute(ubuntu_helper.log_path_files)
+    end
+  end
+
   desc 'apt update'
   task :update do
     on roles(:ubuntu), in: :parallel do |host|
-      sudo("apt-get -y -q update > #{current_path}/log/apt_get_update.log")
+      sudo(ubuntu_helper.apt_update)
     end
   end
 
   desc 'apt upgrade'
   task :upgrade do
     on roles(:ubuntu), in: :parallel do |host|
-      sudo("apt-get -y -q upgrade > #{current_path}/log/apt_get_upgrade.log")
+      sudo(ubuntu_helper.apt_upgrade)
     end
   end
 
   desc 'apt auto-remove'
   task :auto_remove do
     on roles(:ubuntu), in: :parallel do |host|
-      sudo("apt-get -y -q auto-remove > #{current_path}/log/apt_get_auto_remove.log")
+      sudo(ubuntu_helper.apt_auto_remove)
     end
   end
 
   namespace :check do
-    desc 'docker'
-    task :docker do
+    desc 'docker hello world'
+    task :docker_hello_world do
       on roles(:ubuntu), in: :parallel do |host|
-        execute('sudo usermod -a -G docker $USER')
-        execute("docker run hello-world | grep -A1 'Hello.*Docker'")
+        execute(ubuntu_helper.docker_hello_world)
       end
     end
   end
@@ -35,28 +50,40 @@ namespace :ubuntu do
     desc 'common build tools'
     task :build_tools do
       on roles(:ubuntu), in: :parallel do |host|
-        sudo("#{current_path}/lib/bash/debian/build.sh  > #{current_path}/log/bash_build.log")
-        sudo("#{current_path}/lib/bash/debian/ctags.sh  > #{current_path}/log/bash_ctags.log")
-        sudo("#{current_path}/lib/bash/debian/git.sh    > #{current_path}/log/bash_git.log")
-        sudo("#{current_path}/lib/bash/debian/gradle.sh > #{current_path}/log/bash_gradle.log")
-        sudo("#{current_path}/lib/bash/debian/maven.sh  > #{current_path}/log/bash_maven.log")
-        sudo("#{current_path}/lib/bash/debian/sbt.sh    > #{current_path}/log/bash_sbt.log")
+        sudo(ubuntu_helper.build)
+        sudo(ubuntu_helper.ctags)
+        sudo(ubuntu_helper.git)
+        sudo(ubuntu_helper.gradle)
+        sudo(ubuntu_helper.maven)
+        sudo(ubuntu_helper.sbt)
       end
     end
 
     desc 'docker'
     task :docker do
+      Rake::Task['ubuntu:install:docker_ce'].invoke
+      Rake::Task['ubuntu:install:docker_user_add'].invoke
+      Rake::Task['ubuntu:check:docker_hello_world'].invoke
+    end
+
+    desc 'docker community edition (CE)'
+    task :docker_ce do
       on roles(:ubuntu), in: :parallel do |host|
-        sudo("#{current_path}/lib/bash/debian/docker_ce.sh > #{current_path}/log/bash_docker_ce.log")
-        execute('sudo usermod -a -G docker $USER')
-        execute("docker run hello-world | grep -A1 'Hello.*Docker'")
+        sudo(ubuntu_helper.docker_ce)
+      end
+    end
+
+    desc 'docker - grand user permission to run docker'
+    task :docker_user_add do
+      on roles(:ubuntu), in: :parallel do |host|
+        execute(ubuntu_helper.docker_add_user)
       end
     end
 
     desc 'java oracle license'
     task :java_oracle_license do
       on roles(:ubuntu), in: :parallel do |host|
-        sudo("#{current_path}/lib/bash/debian/java_oracle_license.sh  > #{current_path}/log/bash_java_oracle_license.log")
+        sudo(ubuntu_helper.java_oracle_license)
       end
     end
 
@@ -64,7 +91,7 @@ namespace :ubuntu do
     task :java_7_oracle do
       Rake::Task['ubuntu:install:java_oracle_license'].invoke
       on roles(:ubuntu), in: :parallel do |host|
-        sudo("#{current_path}/lib/bash/debian/java_7_oracle.sh > #{current_path}/log/bash_java_7_oracle.log")
+        sudo(ubuntu_helper.java_7_oracle)
       end
     end
 
@@ -72,21 +99,21 @@ namespace :ubuntu do
     task :java_8_oracle do
       Rake::Task['ubuntu:install:java_oracle_license'].invoke
       on roles(:ubuntu), in: :parallel do |host|
-        sudo("#{current_path}/lib/bash/debian/java_8_oracle.sh > #{current_path}/log/bash_java_8_oracle.log")
+        sudo(ubuntu_helper.java_8_oracle)
       end
     end
 
     desc 'network tools'
     task :network_tools do
       on roles(:ubuntu), in: :parallel do |host|
-        sudo("#{current_path}/lib/bash/debian/network.sh > #{current_path}/log/bash_network.log")
+        sudo(ubuntu_helper.network_tools)
       end
     end
 
     desc 'OS utils'
     task :os_utils do
       on roles(:ubuntu), in: :parallel do |host|
-        sudo("#{current_path}/lib/bash/debian/htop.sh > #{current_path}/log/bash_htop.log")
+        sudo(ubuntu_helper.htop)
       end
     end
   end
