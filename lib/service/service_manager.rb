@@ -11,12 +11,17 @@ class ServiceManager
     @settings = ServiceSettings.new(service)
   end
 
+  # All AWS::EC2::Instances for a service
+  # @return [Array<Aws::EC2::Instance>]
   def nodes
     settings.node_names.map do |tag_name|
       AwsHelpers.ec2_find_name_instances(tag_name)
     end.flatten
   end
 
+  # TODO: refactor nodes_alive to nodes_running?
+  # All AWS::EC2::Instances for a service that are "alive"
+  # @return [Array<Aws::EC2::Instance>]
   def nodes_alive
     nodes.reject { |i| i.state.name.to_s == 'terminated' }
   end
@@ -27,15 +32,21 @@ class ServiceManager
     nodes.select { |i| i.state.name.to_s == 'stopped' }
   end
 
+  # All AWS::EC2::Instances for a service that are "terminated"
+  # - terminated instances are accessible for a short period
+  # @return [Array<Aws::EC2::Instance>]
   def nodes_terminated
     nodes.select { |i| i.state.name.to_s == 'terminated' }
   end
 
+  # The tag 'Name' of AWS::EC2::Instances in a service
+  # @return [Array<String>]
   def node_names
     nodes.map { |i| AwsHelpers.ec2_instance_tag_name(i) }
   end
 
   # Assumes the node name is unique for nodes that are not terminated
+  # @return [Aws::EC2::Instance]
   def find_node_by_name(name)
     nodes = nodes_alive.select { |i| AwsHelpers.ec2_instance_tag_name?(i, name) }
     raise 'Found too many nodes' if nodes.length > 1
@@ -44,6 +55,7 @@ class ServiceManager
   end
 
   # Find and describe all nodes
+  # @return [nil] prints information
   def describe_nodes
     nodes.each { |i| AwsHelpers.ec2_instance_info(i) }
   end
