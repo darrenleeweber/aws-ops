@@ -1,14 +1,6 @@
 require_relative 'ubuntu_helper'
 
 namespace :ubuntu do
-  def ubuntu_helper
-    @ubuntu_helper ||= begin
-      helper = UbuntuHelper.new(current_path)
-      execute("mkdir -p #{helper.log_path}")
-      helper
-    end
-  end
-
   desc 'logs'
   task :logs do
     on roles(:ubuntu), in: :parallel do |host|

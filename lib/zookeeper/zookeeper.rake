@@ -56,29 +56,19 @@ namespace :zookeeper do
   end
 
   namespace :service do
-    def host_settings
-      # the `host` object is accessible to this method
-      Settings.aws[host.hostname]
-    end
-
-    def client_port
-      host_settings['client_port']
-    end
-
     desc 'Install service'
     task :install do
       on roles(:zookeeper), in: :parallel do |host|
         # PuppetHelpers.puppet_apply('zookeeper.pp')
-        sudo("#{current_path}/lib/bash/debian/java_oracle_license.sh  > #{current_path}/log/bash_java_oracle_license.log")
-        sudo("#{current_path}/lib/bash/debian/java_8_oracle.sh > #{current_path}/log/bash_java_8_oracle.log")
-        sudo("#{current_path}/lib/bash/debian/zookeeper.sh > #{current_path}/log/bash_zookeeper.log")
+        install_java8
+        sudo(ubuntu_helper.zookeeper)
       end
     end
 
     desc 'Upgrade service'
     task :upgrade do
       on roles(:zookeeper), in: :parallel do |host|
-        sudo('apt-get install -y -q --only-upgrade zookeeper')
+        sudo(ubuntu_helper.zookeeper_upgrade)
       end
     end
 

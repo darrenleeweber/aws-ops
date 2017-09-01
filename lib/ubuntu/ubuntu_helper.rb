@@ -87,5 +87,13 @@ class UbuntuHelper
     "#{script_path}/sbt.sh > #{log_path}/sbt.log"
   end
 
+  def zookeeper
+    "#{script_path}/zookeeper.sh > #{log_path}/zookeeper.log"
+  end
+
+  def zookeeper_upgrade
+    "apt-get install -y -q --only-upgrade zookeeper > #{log_path}/zookeeper_upgrade.log"
+  end
+
 end
 
