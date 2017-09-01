@@ -19,11 +19,16 @@ class ServiceManager
     end.flatten
   end
 
-  # TODO: refactor nodes_alive to nodes_running?
   # All AWS::EC2::Instances for a service that are "alive"
   # @return [Array<Aws::EC2::Instance>]
   def nodes_alive
     nodes.reject { |i| i.state.name.to_s == 'terminated' }
+  end
+
+  # All AWS::EC2::Instances for a service that are "running"
+  # @return [Array<Aws::EC2::Instance>]
+  def nodes_running
+    nodes.reject { |i| i.state.name.to_s == 'running' }
   end
 
   # All AWS::EC2::Instances for a service that are "stopped"
