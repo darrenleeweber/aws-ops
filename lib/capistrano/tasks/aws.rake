@@ -73,6 +73,13 @@ namespace :ops do
       task :stop_instance, :instance_id do |task, args|
         AwsHelpers.ec2_stop_instance(args.instance_id)
       end
+
+      desc 'Stop all EC2 instances by "Stage" tag'
+      task :stop_instances_by_stage, :stage do |task, args|
+        stage = args.stage || fetch(:stage)
+        instances = AwsHelpers.ec2_find_stage_instances(stage)
+        instances.each { |i| AwsHelpers.ec2_stop_instance(i.id) }
+      end
     end
   end
 end
