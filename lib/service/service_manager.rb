@@ -64,9 +64,9 @@ class ServiceManager
   def etc_hosts(public = true)
     alive = nodes_alive
     settings.nodes.map do |n|
-      i = alive.find { |i| AwsHelpers.ec2_instance_tag_name?(i, n.tag_name) }
-      next if i.nil?
-      hosts = AwsHelpers.ec2_instance_etc_hosts(i, public)
+      inst = alive.find { |i| AwsHelpers.ec2_instance_tag_name?(i, n.tag_name) }
+      next if inst.nil?
+      hosts = AwsHelpers.ec2_instance_etc_hosts(inst, public)
       hosts.sub!('{HOST}', n.tag_name)
     end
   end
@@ -75,9 +75,9 @@ class ServiceManager
   def ssh_config(public = true)
     alive = nodes_alive
     settings.nodes.map do |n|
-      i = alive.find { |i| AwsHelpers.ec2_instance_tag_name?(i, n.tag_name) }
-      next if i.nil?
-      hosts = AwsHelpers.ec2_instance_ssh_config(i, public)
+      inst = alive.find { |i| AwsHelpers.ec2_instance_tag_name?(i, n.tag_name) }
+      next if inst.nil?
+      hosts = AwsHelpers.ec2_instance_ssh_config(inst, public)
       hosts.sub!('{HOST}', n.tag_name)
       hosts.sub!('{USER}', n.user)
     end
@@ -87,8 +87,8 @@ class ServiceManager
   def create_nodes
     alive = nodes_alive
     settings.nodes.each do |params|
-      i = alive.find { |i| AwsHelpers.ec2_instance_tag_name?(i, params.tag_name) }
-      if i.nil?
+      inst = alive.find { |i| AwsHelpers.ec2_instance_tag_name?(i, params.tag_name) }
+      if inst.nil?
         AwsHelpers.ec2_create params
       else
         puts "Found existing active node named: #{params.tag_name}"
@@ -101,10 +101,10 @@ class ServiceManager
   # it cannot inspect everything to detect updates or node replacements.
   # To replace nodes and change their settings, terminate them and recreate them.
   def create_node(params)
-    i = find_node_by_name(params.tag_name)
-    if i.nil?
+    inst = find_node_by_name(params.tag_name)
+    if inst.nil?
       AwsHelpers.ec2_create params
-    elsif i.state.name.to_s == 'terminated'
+    elsif inst.state.name.to_s == 'terminated'
       AwsHelpers.ec2_create params
     else
       puts "Found existing node named: #{params.tag_name}"
@@ -114,40 +114,40 @@ class ServiceManager
   # Reboot node
   def reboot_node(params)
     alive = nodes_alive
-    i = alive.find { |i| AwsHelpers.ec2_instance_tag_name?(i, params.tag_name) }
-    return if i.nil?
+    inst = alive.find { |i| AwsHelpers.ec2_instance_tag_name?(i, params.tag_name) }
+    return if inst.nil?
     puts "Rebooting active node named: #{params.tag_name}"
-    AwsHelpers.ec2_reboot_instance(i.id)
+    AwsHelpers.ec2_reboot_instance(inst.id)
   end
 
   # Reboot nodes
   def reboot_nodes
     alive = nodes_alive
     settings.nodes.each do |params|
-      i = alive.find { |i| AwsHelpers.ec2_instance_tag_name?(i, params.tag_name) }
-      next if i.nil?
+      inst = alive.find { |i| AwsHelpers.ec2_instance_tag_name?(i, params.tag_name) }
+      next if inst.nil?
       puts "Rebooting active node named: #{params.tag_name}"
-      AwsHelpers.ec2_reboot_instance(i.id)
+      AwsHelpers.ec2_reboot_instance(inst.id)
     end
   end
 
   # Stop node
   def stop_node(params)
     alive = nodes_alive
-    i = alive.find { |i| AwsHelpers.ec2_instance_tag_name?(i, params.tag_name) }
-    return if i.nil?
+    inst = alive.find { |i| AwsHelpers.ec2_instance_tag_name?(i, params.tag_name) }
+    return if inst.nil?
     puts "Stoping active node named: #{params.tag_name}"
-    AwsHelpers.ec2_stop_instance(i.id)
+    AwsHelpers.ec2_stop_instance(inst.id)
   end
 
   # Stop nodes
   def stop_nodes
     alive = nodes_alive
     settings.nodes.each do |params|
-      i = alive.find { |i| AwsHelpers.ec2_instance_tag_name?(i, params.tag_name) }
-      next if i.nil?
+      inst = alive.find { |i| AwsHelpers.ec2_instance_tag_name?(i, params.tag_name) }
+      next if inst.nil?
       puts "Stoping active node named: #{params.tag_name}"
-      AwsHelpers.ec2_stop_instance(i.id)
+      AwsHelpers.ec2_stop_instance(inst.id)
     end
   end
 
@@ -158,10 +158,10 @@ class ServiceManager
     all = confirmation?("DANGER: terminate all #{service} nodes")
     alive = nodes_alive
     settings.nodes.each do |params|
-      i = alive.find { |i| AwsHelpers.ec2_instance_tag_name?(i, params.tag_name) }
-      next if i.nil?
+      inst = alive.find { |i| AwsHelpers.ec2_instance_tag_name?(i, params.tag_name) }
+      next if inst.nil?
       next unless all || confirmation?("DANGER: terminate #{params.tag_name}")
-      AwsHelpers.ec2_terminate_instance(i.id)
+      AwsHelpers.ec2_terminate_instance(inst.id)
     end
   end
 
@@ -169,10 +169,10 @@ class ServiceManager
   # Attempts to be idempotent
   # Requests confirmations for destructive actions using `Capfile#confirmation?` (find a better pattern)
   def terminate_node(params)
-    i = find_node_by_name(params.tag_name)
-    return if i.nil?
+    inst = find_node_by_name(params.tag_name)
+    return if inst.nil?
     return unless confirmation?("Terminate: #{params.tag_name}")
-    AwsHelpers.ec2_terminate_instance(i.id)
+    AwsHelpers.ec2_terminate_instance(inst.id)
   end
 
 end
