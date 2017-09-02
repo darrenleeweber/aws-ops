@@ -19,6 +19,19 @@ require_relative 'spec_coverage'
 ENV['AWS_ENV'] ||= 'test'
 require_relative '../lib/boot'
 
+# the config/settings/test.yml settings contains 'zookeeper' services
+SERVICE = 'zookeeper'.freeze
+REGION = 'us-west-2'.freeze
+
+# TODO: try to enable tests against live EC2 interactions;
+# All of the test EC2 resources should be dispensable and a command line
+# option could toggle live vs. mocked testing.  However, it's disabled
+# to ensure mocked testing, for now, because it's difficult to get all
+# the test permutations working with live EC2 resources.  This can be
+# manually toggled to work with specific tests to debug EC2 interactions.
+# MOCK = ENV['AWS_MOCK'].nil? || ENV['AWS_MOCK'].to_s =~ /true/i ? true : false
+MOCK = true
+
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
