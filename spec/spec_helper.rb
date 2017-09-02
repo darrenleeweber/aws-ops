@@ -18,6 +18,7 @@ require_relative 'spec_coverage'
 
 ENV['AWS_ENV'] ||= 'test'
 require_relative '../lib/boot'
+require_relative '../lib/aws/aws_mocks'
 
 # the config/settings/test.yml settings contains 'zookeeper' services
 SERVICE = 'zookeeper'.freeze
