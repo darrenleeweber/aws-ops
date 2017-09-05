@@ -84,7 +84,7 @@ class UbuntuHelper
   end
 
   def network_tools
-    "#{script_path}/network.sh > #{log_path}/network.log"
+    "#{script_path}/network_tools.sh > #{log_path}/network_tools.log"
   end
 
   def sbt
