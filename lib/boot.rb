@@ -17,10 +17,3 @@ require_relative 'ubuntu/ubuntu_helper'
 require_relative 'kafka/kafka_helpers'
 require_relative 'zookeeper/zookeeper_helpers'
 
-require 'highline/import'
-def confirmation?(msg)
-  cli = HighLine.new
-  confirm = cli.ask("#{msg}; do it? [y/n] ") { |yn| yn.limit = 1, yn.validate = /[yn]/i }
-  confirm.casecmp('y').zero?
-end
-

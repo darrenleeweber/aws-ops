@@ -180,5 +180,14 @@ class ServiceManager
     AwsHelpers.ec2_terminate_instance(inst.id)
   end
 
+  private
+
+  def confirmation?(msg)
+    require 'highline/import'
+    cli = HighLine.new
+    confirm = cli.ask("#{msg}; do it? [y/n] ") { |yn| yn.limit = 1, yn.validate = /[yn]/i }
+    confirm.downcase == 'y' # rubocop:disable Performance/Casecmp
+  end
+
 end
 
