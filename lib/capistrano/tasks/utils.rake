@@ -29,3 +29,17 @@ def ubuntu_helper
   end
 end
 
+# Setup the /etc/hosts file with zookeeper nodes, using private IPs
+# This utility method may be used by any services that depend on zookeeper
+def zookeeper_etc_hosts
+  zk_hosts = ZookeeperHelpers.manager.etc_hosts(false)
+  # remove any existing server entries in /etc/hosts
+  sudo("sed -i -e '/BEGIN_ZOO_SERVERS/,/END_ZOO_SERVERS/{ d; }' /etc/hosts")
+  # append new entries to the /etc/hosts file (one line at a time)
+  sudo("echo '### BEGIN_ZOO_SERVERS' | sudo tee -a /etc/hosts > /dev/null")
+  zk_hosts.each do |etc_host|
+    sudo("echo '#{etc_host}' | sudo tee -a /etc/hosts > /dev/null")
+  end
+  sudo("echo '### END_ZOO_SERVERS' | sudo tee -a /etc/hosts > /dev/null")
+end
+

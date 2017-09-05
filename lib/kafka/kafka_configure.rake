@@ -7,19 +7,6 @@ require_relative 'kafka_helpers'
 #
 namespace :kafka do
   namespace :service do
-    # Setup the /etc/hosts file for zookeeper nodes, using private IPs
-    def update_etc_hosts
-      zk_hosts = ZookeeperHelpers.manager.etc_hosts(false)
-      # remove any existing server entries in /etc/hosts
-      sudo("sed -i -e '/BEGIN_ZOO_SERVERS/,/END_ZOO_SERVERS/{ d; }' /etc/hosts")
-      # append new entries to the /etc/hosts file (one line at a time)
-      sudo("echo '### BEGIN_ZOO_SERVERS' | sudo tee -a /etc/hosts > /dev/null")
-      zk_hosts.each do |etc_host|
-        sudo("echo '#{etc_host}' | sudo tee -a /etc/hosts > /dev/null")
-      end
-      sudo("echo '### END_ZOO_SERVERS' | sudo tee -a /etc/hosts > /dev/null")
-    end
-
     # ${KAFKA_HOME}/config/server.properties
     def kafka_server_properties
       @kafka_server_properties ||= capture("ls #{KafkaHelpers.kafka_home}/config/server.properties")
