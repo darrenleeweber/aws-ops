@@ -100,6 +100,9 @@ cap zookeeper:nodes:ssh_config_private   # Compose private entries for ~/.ssh/co
 cap zookeeper:nodes:ssh_config_public    # Compose public entries for ~/.ssh/config for nodes
 ```
 
+WARNING: the `~/.ssh/config` entries must be updated whenever an instance is
+stopped and restarted, because the public network interface can change.
+
 
 ### Settings
 
@@ -153,6 +156,8 @@ cap zookeeper:nodes:ssh_config_private   # Compose private entries for ~/.ssh/co
 cap zookeeper:nodes:ssh_config_public    # Compose public entries for ~/.ssh/config for nodes
 ```
 
+WARNING: the `/etc/hosts` entries must be updated whenever an instance is
+stopped and restarted, because the public network interface can change.
 
 # Capistrano configuration
 
