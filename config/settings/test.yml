@@ -48,6 +48,12 @@ aws:
 
   test_zookeeper_configuration:
     resource: configuration
+    maxClientCnxns: 0
+    client_port: 2181
+    leader_port: 2888
+    election_port: 3888
+    dataLogDir: "/var/log/zookeeper"
+    dataDir: "/var/lib/zookeeper"
 
   test_zookeeper1: &ZookeeperDefaults
     <<: *TestDefault

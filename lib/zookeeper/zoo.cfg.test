@@ -12,10 +12,6 @@ initLimit=10
 # The number of ticks that can pass between 
 # sending a request and getting an acknowledgement
 syncLimit=5
-# the directory where the snapshot is stored.
-dataDir=/var/lib/zookeeper
-# Place the dataLogDir to a separate physical disc for better performance
-# dataLogDir=/disk2/zookeeper
 
 # To avoid seeks ZooKeeper allocates space in the transaction log file in
 # blocks of preAllocSize kilobytes. The default block size is 64M. One reason
@@ -52,6 +48,15 @@ maxClientCnxns=0
 
 # the port at which the clients will connect
 clientPort=2181
+
+# the directory where the snapshot is stored.
+dataDir=/var/lib/zookeeper
+
+# To get low latencies on updates it is important to have a dedicated transaction
+# log directory. By default transaction logs are put in the same directory as the
+# data snapshots and myid file. The dataLogDir parameters indicates a different
+# directory to use for the transaction logs.
+dataLogDir=/var/log/zookeeper
 
 # specify all zookeeper servers
 # these hostnames such as `zookeeper1` must be in the /etc/hosts file
