@@ -103,6 +103,21 @@ cap zookeeper:nodes:ssh_config_public    # Compose public entries for ~/.ssh/con
 WARNING: the `~/.ssh/config` entries must be updated whenever an instance is
 stopped and restarted, because the public network interface can change.
 
+### AWS Switching Accounts
+
+- reset the AWS environment variables with access credentials
+```bash
+AWS_DEFAULT_REGION={region}
+AWS_SECRET_ACCESS_KEY={key}
+AWS_ACCESS_KEY_ID={id}
+```
+- update the `config/settings/{stage}.yml`
+  - update the instance default details for the `{key-name}.pem`, i.e.
+    - `key_name: {key-name}`
+  - update the VPC settings for security groups, i.e.
+    - `vpc_id: {vpc-id}`
+    - the "Default VPC" is displayed on the EC2 dashboard, "Account Attributes"
+
 
 ### Settings
 
@@ -116,38 +131,132 @@ AWS_ENV=stage       bundle exec cap stage ops:aws:check_settings
 AWS_ENV=test        bundle exec cap test ops:aws:check_settings
 ```
 
-# Use
+#### Adding a Stage
+
+Copy test settings into a few new `{stage}` files, i.e.:
+- `config/deploy/{stage}.rb`
+- `config/settings/{stage}.yml`
+- `lib/zookeeper/zoo.cfg.{stage}` (TODO: eliminate this)
+
+Review and modify all the values in those files.  Make sure you have the access
+token details and the PEM access file.  
+
+
+# General Use
+
+Try to create new instances for
+the services to provision (e.g., zookeeper and kafka).
 ```bash
-# Test creating a new instance
-bundle exec cap dev ops:aws:ec2:create_instance_test
-# Create a named instance using the settings params
-bundle exec cap dev ops:aws:ec2:create_instance_by_name['dev_zookeeper1']
-# Find an instance by tags
-bundle exec cap dev ops:aws:ec2:find_instance_by_name['dev_zookeeper1']
-# Record instance public DNS in the servers/roles details in
-# config/deploy/*.rb as required. (This is not automated yet.)
+AWS_ENV={stage} bundle exec cap {stage} ops:aws:check_settings
+AWS_ENV={stage} bundle exec cap {stage} zookeeper:nodes:create
+AWS_ENV={stage} bundle exec cap {stage} zookeeper:nodes:find
+AWS_ENV={stage} bundle exec cap {stage} kafka:nodes:create
+AWS_ENV={stage} bundle exec cap {stage} kafka:nodes:find
+# create nodes for additional services and then get the /etc/hosts details, e.g.
+AWS_ENV={stage} bundle exec cap {stage} zookeeper:nodes:etc_hosts_public | sudo tee -a /etc/hosts
+AWS_ENV={stage} bundle exec cap {stage} kafka:nodes:etc_hosts_public | sudo tee -a /etc/hosts
+# ensure the hostnames in /etc/hosts match those in /config/deploy/{stage}.rb,
+# then deploy the aws-ops code (be sure the code is pushed to github)
+AWS_ENV={stage} bundle exec cap deploy:check
+AWS_ENV={stage} bundle exec cap deploy
 ```
 
-# AWS EC2 Instance Information
+At this point, the capistrano tasks coordinate software installation and
+configuration on the servers, identified by their `roles` in `config/deploy/{stage}.yml`.
+
+Usually, the first things to provision are general OS utilities and build tools.
+```bash
+AWS_ENV={stage} bundle exec cap -T | grep ubuntu
+AWS_ENV={stage} bundle exec cap {stage} ubuntu:update
+AWS_ENV={stage} bundle exec cap {stage} ubuntu:install:build_tools
+AWS_ENV={stage} bundle exec cap {stage} ubuntu:install:java_8_oracle
+AWS_ENV={stage} bundle exec cap {stage} ubuntu:install:network_tools
+AWS_ENV={stage} bundle exec cap {stage} ubuntu:install:os_utils
+```
+
+Then provision services (see the "*:service:install" and "*:service:configure" tasks)
+and then run services (see the "*:service:start" tasks).  Be careful to provision
+configure and start services in order (e.g., zookeeper before anything that
+depends on it).
+
+## ZooKeeper
+
+```bash
+AWS_ENV={stage} bundle exec cap -T | grep zookeeper
+AWS_ENV={stage} bundle exec cap {stage} zookeeper:nodes:find
+AWS_ENV={stage} bundle exec cap {stage} zookeeper:service:install
+AWS_ENV={stage} bundle exec cap {stage} zookeeper:service:configure
+AWS_ENV={stage} bundle exec cap {stage} zookeeper:service:start
+AWS_ENV={stage} bundle exec cap {stage} zookeeper:service:status
+# if all goes well, the status should report 'imok'
+```
+
+## ZooNavigator
+
+```bash
+AWS_ENV={stage} bundle exec cap {stage} zoonavigator:service:install
+# If it fails, try it again (it might require the user to reconnect to enable docker)
+AWS_ENV={stage} bundle exec cap {stage} zoonavigator:service:connections
+# {stage}_zookeeper1:2181,{stage}_zookeeper2:2181,{stage}_zookeeper3:2181
+```
+
+Visit http://{stage}_zookeeper1:8001 and copy and paste the "connections"
+information into the 'Connection string' on the login dialog.
+Unless authorization is enabled, leave those fields blank
+
+## Kafka
+
+```bash
+AWS_ENV={stage} bundle exec cap {stage} kafka:nodes:find
+AWS_ENV={stage} bundle exec cap {stage} kafka:service:install
+AWS_ENV={stage} bundle exec cap {stage} kafka:service:configure
+AWS_ENV={stage} bundle exec cap {stage} kafka:service:start
+AWS_ENV={stage} bundle exec cap {stage} kafka:service:status
+```
+
+If the `start` succeeds, it does not mean that Kafka is running.  When the `status`
+indicates that Kafka is running, it's running.  If not, then check the Kafka logs
+and trouble shoot the startup.  Sometimes Kafka fails to startup when the
+Zookeeper `/kafka` node is first created; the logs will indicate that Kafka
+created it but then couldn't find it.  Just wait a minute and try to start
+Kafka again.  To view logs, try
+```bash
+AWS_ENV={stage} bundle exec cap {stage} kafka:service:tail_server_log['{stage}_kafka1']
+```
+
+## Kafka Manager
+
+TODO
+
+
+# Explanation of enabling AWS hosts for Capistrano
+
+## AWS EC2 Instance Information
 
 To get AWS EC2 instance connection details, e.g.
 
-```
-$ AWS_ENV=test bundle exec cap test zookeeper:nodes:create
+```bash
+AWS_ENV=test bundle exec cap test zookeeper:nodes:create
 # Wait a while for the Public IP and Public DNS values to be available, then:
-$ AWS_ENV=test bundle exec cap test zookeeper:nodes:find
-ID:		i-08ccd8ef0540b2b15
-Type:		t2.micro
-AMI ID:		ami-6e1a0117
-State:		running
-Tags:		Group: test_zookeeper; Name: test_zookeeper1; Service: zookeeper
-Public IP:	52.32.121.252
-Public DNS:	ec2-52-32-121-252.us-west-2.compute.amazonaws.com
-Private DNS:	ip-172-31-23-169.us-west-2.compute.internal
+AWS_ENV=test bundle exec cap test zookeeper:nodes:find
+# {
+#   "ID": "i-0fd060e5124453b11",
+#   "Type": "t2.medium",
+#   "AMI ID": "ami-6e1a0117",
+#   "A. Zone": "us-west-2a",
+#   "State": "running",
+#   "Tags": "Group: test_zookeeper; Name: test_zookeeper1; Service: zookeeper; Manager: dlweber; Stage: test",
+#   "Key Pair": "test",
+#   "Public IP": "55.27.247.237",
+#   "Private IP": "172.31.22.75",
+#   "Public DNS": "ec2-55-27-247-237.us-west-2.compute.amazonaws.com",
+#   "Private DNS": "ip-172-31-22-75.us-west-2.compute.internal"
+# }
+# etc.
 ```
 
 As noted above, there are also tasks to provide all the details
-for `~/.ssh/config` and `/etc/hosts`, e.g.
+for `~/.ssh/config` and `/etc/hosts` for each service, e.g.
 ```bash
 cap zookeeper:nodes:find                 # Find and describe all nodes
 cap zookeeper:nodes:etc_hosts_private    # Compose entries for /etc/hosts using private IPs
@@ -156,10 +265,12 @@ cap zookeeper:nodes:ssh_config_private   # Compose private entries for ~/.ssh/co
 cap zookeeper:nodes:ssh_config_public    # Compose public entries for ~/.ssh/config for nodes
 ```
 
-WARNING: the `/etc/hosts` entries must be updated whenever an instance is
-stopped and restarted, because the public network interface can change.
+WARNING: the `~/.ssh/config` and `/etc/hosts` entries must be updated whenever an instance is
+stopped and restarted, because the public network interface can change.  Also, there might be
+problems with the `~/.ssh/known_hosts` file when a system is restarted and assigned a new
+host fingerprint.
 
-# Capistrano configuration
+## Capistrano configuration
 
 Once AWS EC2 instances are running, add their connection details to the
 `config/deploy/*.rb` files and assign roles to each instance; e.g.
@@ -201,7 +312,7 @@ environment variables are also used explicitly in some capistrano tasks.  (Note,
 confusion in this project, the settings/variable names for these are lower case.)
 
 
-# Capistrano Deployment and Connections
+## Capistrano Deployment and Connections
 
 The `config/deploy.rb` and the `config/deploy/{stage}.rb` files contain the connection
 information for all the systems.  By default, `cap {stage} deploy` will deploy this code
