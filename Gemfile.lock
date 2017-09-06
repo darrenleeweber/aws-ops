@@ -138,7 +138,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  aws-sdk
+  aws-sdk (~> 2.0)
   capistrano (> 3.1)
   capistrano-bundle_audit
   capistrano-bundler (> 1.1)
