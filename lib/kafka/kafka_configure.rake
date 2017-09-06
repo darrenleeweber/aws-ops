@@ -57,6 +57,16 @@ namespace :kafka do
       sudo("sed -i -e 's#advertised.listeners=.*##{advertised_listener}#' #{kafka_server_properties}")
     end
 
+    desc 'Compose public brokers for client connections'
+    task :brokers do
+      puts KafkaHelpers.brokers
+    end
+
+    desc 'Compose private brokers for client connections'
+    task :brokers_private do
+      puts KafkaHelpers.brokers(false)
+    end
+
     desc 'Compose private listeners for brokers'
     task :listeners do
       params = KafkaHelpers.listeners

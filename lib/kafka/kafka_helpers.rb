@@ -37,6 +37,20 @@ module KafkaHelpers
     ].join(' ')
   end
 
+  # broker list, something like:
+  # ec2-58-213-10-149.us-west-2.compute.amazonaws.com:9092,etc.
+  # @param public [Boolean]
+  # @return [String]
+  def brokers(public = true)
+    alive = manager.nodes_alive
+    settings.nodes.map do |n|
+      inst = alive.find { |i| AwsHelpers.ec2_instance_tag_name?(i, n.tag_name) }
+      next if inst.nil?
+      dns = public ? inst.public_dns_name : inst.private_dns_name
+      "#{dns}:#{n.client_port}"
+    end.join(',')
+  end
+
   # listeners value, something like:
   # PLAINTEXT://your.host.name:9092
   #

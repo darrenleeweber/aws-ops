@@ -53,6 +53,20 @@ describe KafkaHelpers do
     end
   end
 
+  describe '#brokers' do
+    let(:brokers) { kafka_helpers.brokers }
+    it 'is a String' do
+      expect(brokers).to be_an String
+    end
+    it 'has brokers for private-dns:port' do
+      brokers = kafka_helpers.brokers(false)
+      expect(brokers).to match(/compute.internal:9092/)
+    end
+    it 'has brokers for public-dns:port (default)' do
+      expect(brokers).to match(/amazonaws.com:9092/)
+    end
+  end
+
   describe '#kafka_home' do
     it 'is a configuration parameter' do
       expect(kafka_helpers.kafka_home).to eq service_config['kafka_home']
