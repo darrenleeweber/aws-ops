@@ -125,6 +125,14 @@ describe UbuntuHelper do
     end
   end
 
+  describe '#java_oracle_repository' do
+    let(:result) { ubuntu_helper.java_oracle_repository }
+    it_behaves_like 'logs_output'
+    it 'calls java_oracle_repository.sh' do
+      expect(result).to include 'java_oracle_repository.sh'
+    end
+  end
+
   describe '#java_7_oracle' do
     let(:result) { ubuntu_helper.java_7_oracle }
     it_behaves_like 'logs_output'
