@@ -8,15 +8,21 @@ namespace :zoonavigator do
   #  - test_zookeeper1:2181,test_zookeeper2:2181,test_zookeeper3:2181
   #  - there is no authorization in test
 
+  # Install docker and docker-compose
+  def zoonavigator_install_docker
+    sudo(ubuntu_helper.docker_ce)
+    execute(ubuntu_helper.docker_add_user)
+    execute(ubuntu_helper.docker_hello_world)
+  end
+
   namespace :service do
     desc 'Install service'
     task :install do
       on roles(:zookeeper), in: :parallel do |host|
-        # Install zooNavigator on myid==1
-        myid = Settings.aws[host.hostname].myid
-        if myid == 1
+        if host_settings['myid'] == 1
           puts host.hostname
-          sudo("docker-compose -f #{current_path}/lib/zoonavigator/docker-compose-#{fetch(:stage)}.yml up -d")
+          zoonavigator_install_docker
+          sudo("docker-compose -f #{current_path}/lib/zoonavigator/docker-compose.yml up -d")
         end
       end
     end
