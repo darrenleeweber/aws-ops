@@ -11,32 +11,32 @@
 # what services are installed and configured on the server.  The
 # operating system on the server is a defined `role` (e.g. 'ubuntu'). The
 # software to be installed/configured etc. is a `role`. For example,
-# the lib/zookeeper/zookeeper.rake#service namespace refers to the `role`
+# the lib/zookeeper/zookeeper_service.rake namespace refers to the `role`
 # of each server.  Although the general assumption is that each server is
 # dedicated to running one service, it's possible to assign multiple
 # services to any server.  For example, it should be possible to run
 # zookeeper and kafka on the same server, just by adding those roles:
 # server 'test_zookeeper_kafka1', user: 'ubuntu', roles: %w[kafka ubuntu zookeeper]
-# Note that this example illustrates a convention that the server hostname
-# contains the service(s)/role(s) that it runs (this convention applies to
-# services on an OS, not to the OS name itself and, of course,
-# cluster managers like mesos can run any framework that will not be
-# known in advance, so just noting 'mesos' suffices).
 
 # These server aliases match the instance tag:Name and the connection details
 # are managed in ~/.ssh/config
 
-# It's important that each zookeeper host name ends with a unique digit
-# in the range of i in 1 <= i <= 255; this value will be used to set the
-# /etc/zookeeper/conf/myid value on zookeeper servers.  Also, these hostnames
+# A convention here is that each zookeeper host name ends with a unique digit
+# in the range of i in 1 <= i <= 255; this value corresponds to the value in
+# /etc/zookeeper/conf/myid on zookeeper servers.  Also, these hostnames
 # will be added to the /etc/hosts file on zookeeper servers and associated with
 # AWS IPs. See related zookeeper details in:
 # - lib/zookeeper/zoo.cfg.{stage}
-# - lib/zookeeper/zookeeper.rake#configure
+# - lib/zookeeper/zookeeper_configure.rake
 
 server 'test_zookeeper1', user: 'ubuntu', roles: %w[ubuntu zookeeper]
 server 'test_zookeeper2', user: 'ubuntu', roles: %w[ubuntu zookeeper]
 server 'test_zookeeper3', user: 'ubuntu', roles: %w[ubuntu zookeeper]
+
+
+# A convention here is that each kafka host name ends with a unique digit;
+# this value corresponds to the broker.id in the server.properties file.
+# Also, these hostnames are added to the /etc/hosts file.
 
 server 'test_kafka1', user: 'ubuntu', roles: %w[ubuntu kafka]
 server 'test_kafka2', user: 'ubuntu', roles: %w[ubuntu kafka]
