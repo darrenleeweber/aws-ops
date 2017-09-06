@@ -133,20 +133,35 @@ module AwsHelpers
     ec2_instance_tag_name(i) == tag_name
   end
 
-  def ec2_instance_info(i)
-    puts "ID:\t\t"     + i.id.to_s
-    puts "Type:\t\t"   + i.instance_type.to_s
-    puts "AMI ID:\t\t" + i.image_id.to_s
-    puts "State:\t\t"  + i.state.name.to_s
-    puts "Tags:\t\t"   + i.tags.map { |t| "#{t.key}: #{t.value}" }.join('; ')
-    puts "Key Pair\t"  + i.key_name.to_s
-    puts "Public IP:\t"   + i.public_ip_address.to_s
-    puts "Private IP:\t"  + i.private_ip_address.to_s
-    puts "Public DNS:\t"  + i.public_dns_name.to_s
-    puts "Private DNS:\t" + i.private_dns_name.to_s
-    puts
-    # require 'pry'
-    # binding.pry
+  # Extract instance information
+  # @param inst [Aws::EC2::Instance]
+  # @return [Hash]
+  def ec2_instance_info(inst)
+    {
+      'ID'          => inst.id.to_s,
+      'Type'        => inst.instance_type.to_s,
+      'AMI ID'      => inst.image_id.to_s,
+      'A. Zone'     => inst.placement.availability_zone.to_s,
+      'State'       => inst.state.name.to_s,
+      'Tags'        => inst.tags.map { |t| "#{t.key}: #{t.value}" }.join('; '),
+      'Key Pair'    => inst.key_name.to_s,
+      'Public IP'   => inst.public_ip_address.to_s,
+      'Private IP'  => inst.private_ip_address.to_s,
+      'Public DNS'  => inst.public_dns_name.to_s,
+      'Private DNS' => inst.private_dns_name.to_s
+    }
+  end
+
+  # Print instances information
+  # @param instances [Array<Aws::EC2::Instance>]
+  def ec2_instances_describe(instances)
+    instances.each { |i| ec2_instance_describe(i) }
+  end
+
+  # Print instance information
+  # @param instance [Aws::EC2::Instance]
+  def ec2_instance_describe(inst)
+    pp_json ec2_instance_info(inst).to_json
   end
 
   # Content for /etc/hosts
@@ -220,6 +235,13 @@ module AwsHelpers
     puts "instances #{instance_ids}: waiting to terminate"
     ec2.client.wait_until(:instance_terminated, instance_ids: instance_ids)
     puts "instances #{instance_ids}: terminated"
+  end
+
+  private
+
+  # @param json [String]
+  def pp_json(json)
+    puts JSON.pretty_generate(JSON.parse(json))
   end
 
 end
