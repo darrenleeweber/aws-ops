@@ -74,8 +74,16 @@ namespace :ubuntu do
 
     desc 'java oracle license'
     task :java_oracle_license do
+      Rake::Task['ubuntu:install:java_oracle_repository'].invoke
       on roles(:ubuntu), in: :parallel do |host|
         sudo(ubuntu_helper.java_oracle_license)
+      end
+    end
+
+    desc 'java oracle repository'
+    task :java_oracle_repository do
+      on roles(:ubuntu), in: :parallel do |host|
+        sudo(ubuntu_helper.java_oracle_repository)
       end
     end
 

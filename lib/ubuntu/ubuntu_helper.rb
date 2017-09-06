@@ -60,7 +60,11 @@ class UbuntuHelper
   end
 
   def java_oracle_license
-    "#{script_path}/java_oracle_license.sh  > #{log_path}/java_oracle_license.log"
+    "#{script_path}/java_oracle_license.sh > #{log_path}/java_oracle_license.log"
+  end
+
+  def java_oracle_repository
+    "#{script_path}/java_oracle_repository.sh > #{log_path}/java_oracle_repository.log"
   end
 
   def java_7_oracle

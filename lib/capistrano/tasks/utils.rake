@@ -10,13 +10,18 @@ def host_settings
   Settings.aws[host.hostname]
 end
 
-def install_java7
+def install_java_license
+  sudo(ubuntu_helper.java_oracle_repository)
   sudo(ubuntu_helper.java_oracle_license)
+end
+
+def install_java7
+  install_java_license
   sudo(ubuntu_helper.java_7_oracle)
 end
 
 def install_java8
-  sudo(ubuntu_helper.java_oracle_license)
+  install_java_license
   sudo(ubuntu_helper.java_8_oracle)
 end
 
