@@ -43,9 +43,6 @@ apt-get install -y -q docker-ce docker-compose
 #apt-cache madison docker-ce
 #apt-get install docker-ce=<VERSION>
 
-# Verify that Docker CE is installed correctly by running the hello-world image.
-docker run hello-world
-
 # configure docker to start on boot
 systemctl enable docker
 
