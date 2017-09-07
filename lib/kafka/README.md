@@ -39,18 +39,27 @@ cap kafka:service:stop                                # Stop Kafka service
 cap kafka:service:tail_server_log[server]             # tail -n250 ${KAFKA_HOME}/logs/server.log
 ```
 
-### Examples of Using Kafka
+### Using Kafka
 
 ```bash
 export KAFKA_HOME=/opt/kafka
 
+# get the zookeeper connection details (replace 'test' with your capistrano {stage})
+ZK=$(AWS_ENV=test bundle exec cap test zookeeper:service:connections)
+KAFKA_ZK="${ZK}/kafka"
+echo $KAFKA_ZK
+
+# get the kafka broker list (replace 'test' with your capistrano {stage})
+KAFKA_BROKERS=$(AWS_ENV=test bundle exec cap test kafka:service:brokers)
+echo $KAFKA_BROKERS
+
 # list all the topics (should be zero for first installation)
-${KAFKA_HOME}/bin/kafka-topics.sh --zookeeper localhost:2181 --list
+${KAFKA_HOME}/bin/kafka-topics.sh --zookeeper ${KAFKA_ZK} --list
 
 # create a 'test' topic
-# - replication-factor must be 1 because there is only one broker (one node)
-${KAFKA_HOME}/bin/kafka-topics.sh --zookeeper localhost:2181 --create   --topic test --partitions 2 --replication-factor 1 --if-not-exists
-${KAFKA_HOME}/bin/kafka-topics.sh --zookeeper localhost:2181 --describe --topic test
+# - replication-factor must be less than or equal to the number of brokers
+${KAFKA_HOME}/bin/kafka-topics.sh --zookeeper ${KAFKA_ZK} --create   --topic test --partitions 2 --replication-factor 1 --if-not-exists
+${KAFKA_HOME}/bin/kafka-topics.sh --zookeeper ${KAFKA_ZK} --describe --topic test
 
 # use console utils to observe pub/sub activity
 # - use screen to create a vertical split window for the producer and consumer:
@@ -58,8 +67,8 @@ ${KAFKA_HOME}/bin/kafka-topics.sh --zookeeper localhost:2181 --describe --topic 
 #   - `^A c` to create a new session in the right side window
 
 # - in the left window, create the producer using:
-${KAFKA_HOME}/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test
+${KAFKA_HOME}/bin/kafka-console-producer.sh --broker-list ${KAFKA_BROKERS} --topic test
 
 # - in the right window, create the consumer using:
-${KAFKA_HOME}/bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic test
+${KAFKA_HOME}/bin/kafka-console-consumer.sh --zookeeper ${KAFKA_ZK} --topic test
 ```
