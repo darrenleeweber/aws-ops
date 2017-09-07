@@ -16,9 +16,8 @@ Look for "zookeeper" in:
 ## Capistrano tasks
 
 ```bash
-$ bundle exec cap -T | grep zookeeper
+$ bundle exec cap -T | grep zoo
 cap zookeeper:nodes:check_settings                    # List settings in this project
-cap zookeeper:nodes:connections                       # Compose connection string
 cap zookeeper:nodes:create                            # Create nodes
 cap zookeeper:nodes:etc_hosts_private                 # Compose entries for /etc/hosts using private IPs
 cap zookeeper:nodes:etc_hosts_public                  # Compose entries for /etc/hosts using public IPs
@@ -26,14 +25,18 @@ cap zookeeper:nodes:find                              # Find and describe all no
 cap zookeeper:nodes:ssh_config_private                # Compose private entries for ~/.ssh/config for nodes
 cap zookeeper:nodes:ssh_config_public                 # Compose public entries for ~/.ssh/config for nodes
 cap zookeeper:nodes:terminate                         # Terminate nodes
-cap zookeeper:nodes:zoo_cfg                           # Compose entries for zoo.cfg
 cap zookeeper:service:command[cmd]                    # Zookeeper 4-letter commands
 cap zookeeper:service:configure                       # Configure service
+cap zookeeper:service:connections                     # Compose connection string
 cap zookeeper:service:install                         # Install service
+cap zookeeper:service:restart                         # Restart service
 cap zookeeper:service:start                           # Start service
 cap zookeeper:service:status                          # Status of service
 cap zookeeper:service:stop                            # Stop service
 cap zookeeper:service:upgrade                         # Upgrade service
+cap zookeeper:service:zoo_cfg                         # Compose entries for zoo.cfg
+cap zoonavigator:service:connections                  # Zookeeper connections
+cap zoonavigator:service:install                      # Install service
 ```
 
 ### Examples
