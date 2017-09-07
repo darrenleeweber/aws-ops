@@ -57,6 +57,16 @@ namespace :zookeeper do
         zoo_cfg
       end
     end
+
+    desc 'Compose connection string'
+    task :connections do
+      puts ZookeeperHelpers.connections.join(',')
+    end
+
+    desc 'Compose entries for zoo.cfg'
+    task :zoo_cfg do
+      puts ZookeeperHelpers.zoo_cfg.join("\n")
+    end
   end
 end
 
