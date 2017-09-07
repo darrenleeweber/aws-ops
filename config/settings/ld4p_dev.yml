@@ -88,22 +88,27 @@ aws:
   #   - broker.id
   #   - zookeeper.connect
   #   - advertised.listeners
+  #
+  # TODO: add more JVM options, see https://github.com/darrenleeweber/aws-ops/issues/49
+  # -Xms4g -Xmx4g -XX:PermSize=48m -XX:MaxPermSize=48m -XX:+UseG1GC
+  # -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35
+
   ld4p_dev_kafka_configuration:
     resource: configuration
     kafka_home: "/opt/kafka" # symlinks to /opt/kafka_{SCALA_VERSION}-{KAFKA_VERSION}
     kafka_version: "0.11.0.0"
     scala_version: "2.11"
-    kafka_heap_opts: "-Xmx12G -Xms4G"  # defaults to "-Xmx1G -Xms1G"
+    kafka_heap_opts: "-Xmx4G -Xms4G"
     delete.topic.enable: false # use 'false' in production
     auto.create.topics.enable: false # use 'false' in production
     log.dirs: /data/kafka  # CSV, best to match N log.dirs to partitions
     num.partitions: 8
-    default.replication.factor: 3
+    default.replication.factor: 2
     min.insync.replicas: 2
     log.retention.hours: 168
     log.segment.bytes: 1073741824
     log.retention.check.interval.ms: 300000
-    zookeeper.connection.timeout.ms: 6000
+    zookeeper.connection.timeout.ms:  10000 # 10 sec
 
   ld4p_dev_kafka1: &KafkaDefaults
     <<: *InstanceDefault
