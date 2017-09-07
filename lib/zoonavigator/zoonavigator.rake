@@ -29,7 +29,7 @@ namespace :zoonavigator do
 
     desc 'Zookeeper connections'
     task :connections do
-      Rake::Task['zookeeper:nodes:connections'].invoke
+      Rake::Task['zookeeper:service:connections'].invoke
     end
   end
 end

@@ -161,6 +161,16 @@ AWS_ENV={stage} bundle exec cap deploy:check
 AWS_ENV={stage} bundle exec cap deploy
 ```
 
+## Login shell on remote servers
+
+The capistrano-shell plugin can drop you into a shell on a remote server into the
+project deployment directory.
+```bash
+AWS_ENV={stage} bundle exec cap {stage} shell
+```
+
+## Provision Software with Capistrano
+
 At this point, the capistrano tasks coordinate software installation and
 configuration on the servers, identified by their `roles` in `config/deploy/{stage}.yml`.
 

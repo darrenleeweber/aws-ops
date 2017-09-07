@@ -9,11 +9,6 @@ namespace :zookeeper do
       end
     end
 
-    desc 'Compose connection string'
-    task :connections do
-      puts ZookeeperHelpers.connections.join(',')
-    end
-
     desc 'Create nodes'
     task :create do
       ZookeeperHelpers.manager.create_nodes
@@ -47,11 +42,6 @@ namespace :zookeeper do
     desc 'Compose entries for /etc/hosts using private IPs'
     task :etc_hosts_private do
       puts ZookeeperHelpers.manager.etc_hosts(false).join("\n")
-    end
-
-    desc 'Compose entries for zoo.cfg'
-    task :zoo_cfg do
-      puts ZookeeperHelpers.zoo_cfg.join("\n")
     end
   end
 end
