@@ -26,8 +26,8 @@ namespace :kafka do
     #   comma-separated string listing the IP addresses and port numbers
     #   of all the ZooKeeper instances.
     def kafka_zookeeper_connect
-      # Note the use of a '#' delimiter for sed here, because listener contains `/` chars
-      zk = ZookeeperHelpers.connections.join(',')
+      # Note the use of a '#' in sed delimiter, because connections may contain `/` chars
+      zk = ZookeeperHelpers.connections(false).join(',')
       zoo_connect = "zookeeper.connect=#{zk}/kafka"
       sudo("sed -i -e 's#zookeeper.connect=.*##{zoo_connect}#' #{kafka_server_properties}")
     end
