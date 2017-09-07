@@ -19,6 +19,12 @@ namespace :kafka do
       sudo("sed -i -e 's/broker.id=.*/broker.id=#{broker_id}/' #{kafka_server_properties}")
     end
 
+    # Set or update the system ENV for KAFKA_HEAP_OPTS
+    def update_kafka_heap_opts
+      sudo("sed -i -e '/export KAFKA_HEAP_OPTS/d' /etc/profile.d/kafka.sh > /dev/null 2>&1 || true")
+      sudo("echo \"export KAFKA_HEAP_OPTS='#{KafkaHelpers.kafka_heap_opts}'\" | sudo tee -a /etc/profile.d/kafka.sh")
+    end
+
     # Set zookeeper.connect (note the /kafka chroot path)
     # - the zookeeper.connect should be set to point to the same
     #   ZooKeeper instances
@@ -84,6 +90,7 @@ namespace :kafka do
     task :configure do
       on roles(:kafka), in: :parallel do |host|
         zookeeper_etc_hosts
+        update_kafka_heap_opts
         kafka_broker_id
         kafka_zookeeper_connect
         kafka_listeners
