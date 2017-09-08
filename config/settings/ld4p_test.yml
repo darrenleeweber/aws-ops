@@ -1,0 +1,223 @@
+# These settings are merged into config/settings.yml
+
+# These settings are for a POC project on linked-data for libraries
+
+# IMPORTANT - Get an AWS Key Pair from the AWS EC2 console and use the name of that key
+#             in the `key_name` field for the instance default settings.
+
+# IMPORTANT - Find an AMI image_id and set it, ensure the OS on that AMI matches the
+#             value in `Distributor ID:`, which can be found from the `lsb_release -a`.
+#             This makes a difference for package installations.
+#
+# It might be possible to dynamically detect the OS, e.g.
+# https://unix.stackexchange.com/questions/6345/how-can-i-get-distribution-name-and-version-number-in-a-simple-shell-script
+
+
+aws:
+
+  ld4p_test_instance_default: &InstanceDefault
+    resource: instance
+    region: us-west-2
+    image_id: ami-6e1a0117  # Ubuntu
+    distrib_id: Ubuntu
+    user: ubuntu
+    min_count: 1
+    max_count: 1
+    instance_type: t2.small
+    availability_zone: us-west-2a
+    security_groups:
+      - ld4p_test_ssh_security_group
+    key_name: ld4p
+    tag_name: ld4p_test_default
+    tag_group: ld4p_test_nodes
+    tag_manager: dlweber
+    tag_service:
+    tag_stage: ld4p_test
+
+  # ---
+  # Zookeeper Nodes
+  # - note definition and use of defaults: ZookeeperDefaults
+  # - it's important that each instance has 'zookeeper' in the key and tag_name (case sensitive)
+  # - it's important that each instance has a 'myid' with a unique integer between 1-255 (inclusive)
+  # - the `leader_port` and the `election_port` must match up with security_group settings
+
+  ld4p_test_zookeeper_configuration:
+    resource: configuration
+    maxClientCnxns: 0
+    client_port: 2181
+    leader_port: 2888
+    election_port: 3888
+    dataLogDir: "/var/log/zookeeper"
+    dataDir: "/var/lib/zookeeper"
+
+  ld4p_test_zookeeper1: &ZookeeperDefaults
+    <<: *InstanceDefault
+    myid: 1
+    client_port: 2181
+    leader_port: 2888
+    election_port: 3888
+    #instance_type: t2.medium
+    security_groups:
+      - ld4p_test_ssh_security_group
+      - ld4p_test_zookeeper_security_group
+    tag_service: zookeeper
+    tag_group: ld4p_test_zookeeper
+    tag_name: ld4p_test_zookeeper1
+    availability_zone: us-west-2a  # need one node in each zone
+
+  ld4p_test_zookeeper2:
+    <<: *ZookeeperDefaults
+    myid: 2
+    tag_name: ld4p_test_zookeeper2
+    availability_zone: us-west-2b  # need one node in each zone
+
+  ld4p_test_zookeeper3:
+    <<: *ZookeeperDefaults
+    myid: 3
+    tag_name: ld4p_test_zookeeper3
+    availability_zone: us-west-2c  # need one node in each zone
+
+  # ---
+  # Kafka Nodes
+  # See also https://www.confluent.io/blog/design-and-deployment-considerations-for-deploying-apache-kafka-on-aws/
+  # - note definition and use of defaults: KafkaDefaults
+  # - it's important that each instance has 'kafka' in the key and tag_name (case sensitive)
+
+  # See server.properties for details
+  # - settings that are handled dynamically include:
+  #   - broker.id
+  #   - zookeeper.connect
+  #   - advertised.listeners
+  #
+  # TODO: add more JVM options, see https://github.com/darrenleeweber/aws-ops/issues/49
+  # -Xms4g -Xmx4g -XX:PermSize=48m -XX:MaxPermSize=48m -XX:+UseG1GC
+  # -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35
+
+  ld4p_test_kafka_configuration:
+    resource: configuration
+    kafka_home: "/opt/kafka" # symlinks to /opt/kafka_{SCALA_VERSION}-{KAFKA_VERSION}
+    kafka_version: "0.11.0.0"
+    scala_version: "2.11"
+    kafka_heap_opts: "-Xmx1G -Xms1G"  # A t2.small has 2G total (leave mem for disk cache)
+    delete.topic.enable: false # use 'false' in production
+    auto.create.topics.enable: false # use 'false' in production
+    log.dirs: /data/kafka  # CSV, best to match N log.dirs to partitions
+    num.partitions: 8
+    default.replication.factor: 2
+    min.insync.replicas: 2
+    log.retention.hours: 168
+    log.segment.bytes: 1073741824
+    log.retention.check.interval.ms: 300000
+    zookeeper.connection.timeout.ms:  10000 # 10 sec
+
+  ld4p_test_kafka1: &KafkaDefaults
+    <<: *InstanceDefault
+    #instance_type: i3.xlarge
+    broker_id: 1
+    client_port: 9092 # AFAIK, it's always 9092
+    tag_service: kafka
+    tag_group: ld4p_test_kafka
+    tag_name: ld4p_test_kafka1
+    availability_zone: us-west-2a  # need one node in each zone
+    security_groups:
+      - ld4p_test_ssh_security_group
+      - ld4p_test_kafka_security_group
+
+  ld4p_test_kafka2:
+    <<: *KafkaDefaults
+    broker_id: 2
+    tag_name: ld4p_test_kafka2
+    availability_zone: us-west-2b  # need one node in each zone
+
+  ld4p_test_kafka3:
+    <<: *KafkaDefaults
+    broker_id: 3
+    tag_name: ld4p_test_kafka3
+    availability_zone: us-west-2c  # need one node in each zone
+
+  # ---
+  # Security Groups
+  # - a 'Default VPC' can be found on the EC2 Dashboard
+  # - the `group_id` is dynamically assigned and should be blank here
+  # - creation of security groups is idempotent (AWS doesn't allow duplicates)
+  # - instance creation can validate or create a new security group, as necessary
+
+  ld4p_test_security_group_defaults: &SecurityGroupDefault
+    resource: security_group
+    vpc_id: vpc-d84467b3
+    tag_group: ld4p_test_security_groups
+    tag_manager: dlweber
+    tag_stage: ld4p_test
+
+  ld4p_test_ssh_security_group:
+    <<: *SecurityGroupDefault
+    tag_name: ld4p_test_ssh_security_group
+    group_name: ld4p_test_ssh_security_group
+    description: 'SSH access'
+    authorize_ingress:
+      group_id:
+      ip_permissions:
+        - ip_protocol: tcp
+          from_port: 22
+          to_port: 22
+          ip_ranges:
+            - cidr_ip: '0.0.0.0/0'
+
+  # - these ip_permissions for the test stage are wide open, for ease of use
+  # - for production, the IP CIDR needs to be specific to subnets
+  # - the public subnets should have an IPV4 CIDR for each availability_zone
+  ld4p_test_zookeeper_security_group:
+    <<: *SecurityGroupDefault
+    tag_name: ld4p_test_zookeeper_security_group
+    group_name: ld4p_test_zookeeper_security_group
+    description: 'Zookeeper port access'
+    authorize_ingress:
+      group_id:
+      ip_permissions:
+        - ip_protocol: tcp
+          from_port: 2181
+          to_port: 2181
+          ip_ranges:
+            - cidr_ip: '0.0.0.0/0'
+          ipv_6_ranges:
+            - cidr_ipv_6: '::/0'
+        - ip_protocol: tcp
+          from_port: 2888
+          to_port: 2888
+          ip_ranges:
+            - cidr_ip: '0.0.0.0/0'
+          ipv_6_ranges:
+            - cidr_ipv_6: '::/0'
+        - ip_protocol: tcp
+          from_port: 3888
+          to_port: 3888
+          ip_ranges:
+            - cidr_ip: '0.0.0.0/0'
+          ipv_6_ranges:
+            - cidr_ipv_6: '::/0'
+        - ip_protocol: tcp
+          from_port: 8001  # see lib/zoonavigator/zoonavigator-docker-compose.yml
+          to_port: 8001
+          ip_ranges:
+            - cidr_ip: '0.0.0.0/0'
+          ipv_6_ranges:
+            - cidr_ipv_6: '::/0'
+
+  # - these ip_permissions for the test stage are wide open, for ease of use
+  # - for production, the IP CIDR needs to be specific to subnets
+  # - the public subnets should have an IPV4 CIDR for each availability_zone
+  ld4p_test_kafka_security_group:
+    <<: *SecurityGroupDefault
+    tag_name: ld4p_test_kafka_security_group
+    group_name: ld4p_test_kafka_security_group
+    description: 'Kafka port access'
+    authorize_ingress:
+      group_id:
+      ip_permissions:
+        - ip_protocol: tcp
+          from_port: 9092
+          to_port: 9092
+          ip_ranges:
+            - cidr_ip: '0.0.0.0/0'
+          ipv_6_ranges:
+            - cidr_ipv_6: '::/0'
