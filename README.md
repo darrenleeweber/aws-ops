@@ -56,7 +56,7 @@ export AWS_DEFAULT_REGION=<YourRegion>
 
 Use the AWS console to create and save any Key Pairs to be used for access
 to any or all of the AWS EC2 instances.  Add the name of a key pair to the
-`/config/settings/{AWS_ENV}.rb` instances.
+`/config/settings/{stage}.rb` instances.
 
 ```bash
 # Setup your AWS credentials using ENV values or config/setting.yml
@@ -124,11 +124,10 @@ AWS_ACCESS_KEY_ID={id}
 Check details of config/settings.yml and subdirectories;
 modify the settings as required, esp. AWS details in the
 instance defaults, like: AMI, AWS region, instance types and tags.
+
 ```bash
-AWS_ENV=development bundle exec cap development ops:aws:check_settings
-AWS_ENV=production  bundle exec cap production ops:aws:check_settings
-AWS_ENV=stage       bundle exec cap stage ops:aws:check_settings
-AWS_ENV=test        bundle exec cap test ops:aws:check_settings
+export STAGE={stage}
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} ops:aws:check_settings
 ```
 
 #### Adding a Stage
@@ -147,18 +146,19 @@ token details and the PEM access file.
 Try to create new instances for
 the services to provision (e.g., zookeeper and kafka).
 ```bash
-AWS_ENV={stage} bundle exec cap {stage} ops:aws:check_settings
-AWS_ENV={stage} bundle exec cap {stage} zookeeper:nodes:create
-AWS_ENV={stage} bundle exec cap {stage} zookeeper:nodes:find
-AWS_ENV={stage} bundle exec cap {stage} kafka:nodes:create
-AWS_ENV={stage} bundle exec cap {stage} kafka:nodes:find
+export STAGE={stage}
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} ops:aws:check_settings
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} zookeeper:nodes:create
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} zookeeper:nodes:find
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} kafka:nodes:create
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} kafka:nodes:find
 # create nodes for additional services and then get the /etc/hosts details, e.g.
-AWS_ENV={stage} bundle exec cap {stage} zookeeper:nodes:etc_hosts_public | sudo tee -a /etc/hosts
-AWS_ENV={stage} bundle exec cap {stage} kafka:nodes:etc_hosts_public | sudo tee -a /etc/hosts
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} zookeeper:nodes:etc_hosts_public | sudo tee -a /etc/hosts
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} kafka:nodes:etc_hosts_public | sudo tee -a /etc/hosts
 # ensure the hostnames in /etc/hosts match those in /config/deploy/{stage}.rb,
 # then deploy the aws-ops code (be sure the code is pushed to github)
-AWS_ENV={stage} bundle exec cap deploy:check
-AWS_ENV={stage} bundle exec cap deploy
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} deploy:check
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} deploy
 ```
 
 ## Login shell on remote servers
@@ -166,7 +166,8 @@ AWS_ENV={stage} bundle exec cap deploy
 The capistrano-shell plugin can drop you into a shell on a remote server into the
 project deployment directory.
 ```bash
-AWS_ENV={stage} bundle exec cap {stage} shell
+export STAGE={stage}
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} shell
 ```
 
 ## Provision Software with Capistrano
@@ -176,12 +177,13 @@ configuration on the servers, identified by their `roles` in `config/deploy/{sta
 
 Usually, the first things to provision are general OS utilities and build tools.
 ```bash
-AWS_ENV={stage} bundle exec cap -T | grep ubuntu
-AWS_ENV={stage} bundle exec cap {stage} ubuntu:update
-AWS_ENV={stage} bundle exec cap {stage} ubuntu:install:build_tools
-AWS_ENV={stage} bundle exec cap {stage} ubuntu:install:java_8_oracle
-AWS_ENV={stage} bundle exec cap {stage} ubuntu:install:network_tools
-AWS_ENV={stage} bundle exec cap {stage} ubuntu:install:os_utils
+export STAGE={stage}
+AWS_ENV=${STAGE} bundle exec cap -T | grep ubuntu
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} ubuntu:update
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} ubuntu:install:build_tools
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} ubuntu:install:java_8_oracle
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} ubuntu:install:network_tools
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} ubuntu:install:os_utils
 ```
 
 Then provision services (see the "*:service:install" and "*:service:configure" tasks)
@@ -192,21 +194,27 @@ depends on it).
 ## ZooKeeper
 
 ```bash
-AWS_ENV={stage} bundle exec cap -T | grep zookeeper
-AWS_ENV={stage} bundle exec cap {stage} zookeeper:nodes:find
-AWS_ENV={stage} bundle exec cap {stage} zookeeper:service:install
-AWS_ENV={stage} bundle exec cap {stage} zookeeper:service:configure
-AWS_ENV={stage} bundle exec cap {stage} zookeeper:service:start
-AWS_ENV={stage} bundle exec cap {stage} zookeeper:service:status
+export STAGE={stage}
+AWS_ENV=${STAGE} bundle exec cap -T | grep zookeeper
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} zookeeper:nodes:find
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} zookeeper:service:install
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} zookeeper:service:configure
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} zookeeper:service:start
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} zookeeper:service:status
 # if all goes well, the status should report 'imok'
+# Also check the 'srvr' details and look for leader/follower 'Mode';
+# if the 'Mode: standalone', stop and restart the service until the
+# 'Mode' shows the servers have formed a quorum and elected a leader.
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} zookeeper:service:command['srvr']
 ```
 
 ## ZooNavigator
 
 ```bash
-AWS_ENV={stage} bundle exec cap {stage} zoonavigator:service:install
+export STAGE={stage}
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} zoonavigator:service:install
 # If it fails, try it again (it might require the user to reconnect to enable docker)
-AWS_ENV={stage} bundle exec cap {stage} zoonavigator:service:connections
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} zoonavigator:service:connections
 # {stage}_zookeeper1:2181,{stage}_zookeeper2:2181,{stage}_zookeeper3:2181
 ```
 
@@ -217,11 +225,12 @@ Unless authorization is enabled, leave those fields blank
 ## Kafka
 
 ```bash
-AWS_ENV={stage} bundle exec cap {stage} kafka:nodes:find
-AWS_ENV={stage} bundle exec cap {stage} kafka:service:install
-AWS_ENV={stage} bundle exec cap {stage} kafka:service:configure
-AWS_ENV={stage} bundle exec cap {stage} kafka:service:start
-AWS_ENV={stage} bundle exec cap {stage} kafka:service:status
+export STAGE={stage}
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} kafka:nodes:find
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} kafka:service:install
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} kafka:service:configure
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} kafka:service:start
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} kafka:service:status
 ```
 
 If the `start` succeeds, it does not mean that Kafka is running.  When the `status`
@@ -231,7 +240,8 @@ Zookeeper `/kafka` node is first created; the logs will indicate that Kafka
 created it but then couldn't find it.  Just wait a minute and try to start
 Kafka again.  To view logs, try
 ```bash
-AWS_ENV={stage} bundle exec cap {stage} kafka:service:tail_server_log['{stage}_kafka1']
+export STAGE={stage}
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} kafka:service:tail_server_log["${STAGE}_kafka1"]
 ```
 
 ## Kafka Manager
@@ -246,9 +256,10 @@ TODO
 To get AWS EC2 instance connection details, e.g.
 
 ```bash
-AWS_ENV=test bundle exec cap test zookeeper:nodes:create
+export STAGE={stage}
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} zookeeper:nodes:create
 # Wait a while for the Public IP and Public DNS values to be available, then:
-AWS_ENV=test bundle exec cap test zookeeper:nodes:find
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} zookeeper:nodes:find
 # {
 #   "ID": "i-0fd060e5124453b11",
 #   "Type": "t2.medium",
@@ -333,15 +344,18 @@ and configuration tasks.
 
 To test the deployment, use
 ```bash
-AWS_ENV={stage} bundle exec cap {stage} deploy:check
+export STAGE={stage}
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} deploy:check
 ```
 To run the deployment, use
 ```bash
-AWS_ENV={stage} bundle exec cap {stage} deploy
+export STAGE={stage}
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} deploy
 ```
 To connect to a remote host, this project includes the `capistrano-shell` gem, e.g.
 ```bash
-AWS_ENV={stage} bundle exec cap {stage} shell
+export STAGE={stage}
+AWS_ENV=${STAGE} bundle exec cap ${STAGE} shell
 # when multiple hosts are configured, it prompts for a specific host to connect to.
 ```
 
