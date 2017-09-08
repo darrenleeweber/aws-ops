@@ -49,10 +49,6 @@ ZK=$(AWS_ENV=test bundle exec cap test zookeeper:service:connections)
 KAFKA_ZK="${ZK}/kafka"
 echo $KAFKA_ZK
 
-# get the kafka broker list (replace 'test' with your capistrano {stage})
-KAFKA_BROKERS=$(AWS_ENV=test bundle exec cap test kafka:service:brokers)
-echo $KAFKA_BROKERS
-
 # list all the topics (should be zero for first installation)
 ${KAFKA_HOME}/bin/kafka-topics.sh --zookeeper ${KAFKA_ZK} --list
 
@@ -66,9 +62,20 @@ ${KAFKA_HOME}/bin/kafka-topics.sh --zookeeper ${KAFKA_ZK} --describe --topic tes
 #   - `^A |` to split vertically and `^A tab` to jump between them
 #   - `^A c` to create a new session in the right side window
 
-# - in the left window, create the producer using:
+# - in the left window:
+# get the kafka broker list (replace 'test' with your capistrano {stage})
+KAFKA_BROKERS=$(AWS_ENV=test bundle exec cap test kafka:service:brokers)
+echo $KAFKA_BROKERS
+# create the producer using:
 ${KAFKA_HOME}/bin/kafka-console-producer.sh --broker-list ${KAFKA_BROKERS} --topic test
 
-# - in the right window, create the consumer using:
-${KAFKA_HOME}/bin/kafka-console-consumer.sh --zookeeper ${KAFKA_ZK} --topic test
+# - in the right window:
+# get the kafka broker list (replace 'test' with your capistrano {stage})
+KAFKA_BROKERS=$(AWS_ENV=test bundle exec cap test kafka:service:brokers)
+echo $KAFKA_BROKERS
+# create the consumer using:
+${KAFKA_HOME}/bin/kafka-console-consumer.sh --bootstrap-server ${KAFKA_BROKERS} --topic test
+
+# - back in the left window, `^A |`, type in some one-line messages to the 'test' topic
+# - watch the consumer in the right window echo back the messages
 ```
