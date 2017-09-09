@@ -1,4 +1,4 @@
-require 'aws-sdk'
+require 'aws-sdk-ec2'
 
 # Utilities for working with the AWS API, see
 # http://docs.aws.amazon.com/sdk-for-ruby/v2/developer-guide/examples.html

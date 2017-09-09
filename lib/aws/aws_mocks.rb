@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-require 'aws-sdk'
+require 'aws-sdk-ec2'
 require 'rspec'
 
 # Mocks for AWS EC2 resources

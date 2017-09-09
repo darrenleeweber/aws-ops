@@ -1,4 +1,4 @@
-require 'aws-sdk'
+require 'aws-sdk-ec2'
 require_relative 'aws_security_groups_settings'
 
 # Utilities for working with the AWS API, see

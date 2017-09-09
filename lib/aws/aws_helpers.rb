@@ -1,4 +1,4 @@
-require 'aws-sdk'
+require 'aws-sdk-ec2'
 require_relative 'aws_security_groups'
 require_relative 'aws_vpc'
 
