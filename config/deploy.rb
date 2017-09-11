@@ -1,5 +1,3 @@
-# config valid only for current version of Capistrano
-lock '3.9.0'
 
 set :application, 'aws-ops'
 set :repo_url, 'git@github.com:darrenleeweber/aws-ops.git'
