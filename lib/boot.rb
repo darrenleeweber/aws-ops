@@ -24,5 +24,6 @@ require_relative 'ubuntu/ubuntu_helper'
 require_relative 'redhat/redhat_helper'
 
 require_relative 'kafka/kafka_helpers'
+require_relative 'kafka_manager/kafka_manager_helpers'
 require_relative 'zookeeper/zookeeper_helpers'
 

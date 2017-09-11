@@ -1,6 +1,13 @@
+#!/usr/bin/env bash
+
+if [ -d /usr/share/kafka-manager ]; then
+    echo "Kafka manager is installed"
+    exit
+fi
 
 # ---
 # Download
+cd /tmp
 git clone https://github.com/yahoo/kafka-manager
 
 
@@ -10,16 +17,9 @@ cd kafka-manager
 sbt debian:packageBin
 
 
-exit
-
-
 # ---
 # Install
-cd ../
-DIST=$(basename ${SRC}/core/build/distributions/kafka_*-${VER}.tgz .tgz)
-tar zxf ${SRC}/core/build/distributions/${DIST}.tgz -C /usr/local/
-rm -f /usr/local/kafka
-ln -s /usr/local/$DIST /usr/local/kafka
 
+sudo dpkg -i -R target/
 
-
+# dpkg -L kafka-manager

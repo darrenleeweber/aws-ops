@@ -42,6 +42,8 @@ server 'test_kafka1', user: 'ubuntu', roles: %w[ubuntu kafka]
 server 'test_kafka2', user: 'ubuntu', roles: %w[ubuntu kafka]
 server 'test_kafka3', user: 'ubuntu', roles: %w[ubuntu kafka]
 
+server 'test_kafka_manager', user: 'ubuntu', roles: %w[ubuntu kafka_manager]
+
 
 # role-based syntax
 # ==================

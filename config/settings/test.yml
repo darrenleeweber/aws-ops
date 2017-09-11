@@ -108,6 +108,7 @@ aws:
   #   - advertised.listeners
   test_kafka_configuration:
     resource: configuration
+    tag_service: kafka
     kafka_home: "/opt/kafka" # symlinks to /opt/kafka_{SCALA_VERSION}-{KAFKA_VERSION}
     kafka_version: "0.11.0.0"
     scala_version: "2.11"
@@ -147,6 +148,38 @@ aws:
     broker_id: 3
     tag_name: test_kafka3
     availability_zone: us-west-2c  # need one node in each zone
+
+  # ---
+  # Kafka Manager
+
+  test_kafka_manager_configuration:
+    resource: configuration
+    tag_service: kafka_manager
+    basicAuthentication:
+      enabled: false
+      username: "admin"
+      password: "password"
+      realm: "Kafka-Manager"
+      excluded:
+        - "/api/health"
+    # KMClusterManagerFeature - allows adding, updating, deleting cluster from Kafka Manager
+    # KMTopicManagerFeature - allows adding, updating, deleting topic from a Kafka cluster
+    # KMPreferredReplicaElectionFeature - allows running of preferred replica election for a Kafka cluster
+    # KMReassignPartitionsFeature - allows generating partition assignments and reassigning partitions
+    features:
+      - KMClusterManagerFeature
+      - KMTopicManagerFeature
+      - KMPreferredReplicaElectionFeature
+      - KMReassignPartitionsFeature
+
+  test_kafka_manager:
+    <<: *TestDefault
+    tag_service: kafka_manager
+    tag_group: test_kafka
+    tag_name: test_kafka_manager
+    security_groups:
+      - test_ssh_security_group
+      - test_kafka_security_group
 
   # ---
   # Mesos Nodes
@@ -267,8 +300,15 @@ aws:
       group_id:
       ip_permissions:
         - ip_protocol: tcp
-          from_port: 9092
+          from_port: 9092  # kafka clients
           to_port: 9092
+          ip_ranges:
+            - cidr_ip: '0.0.0.0/0'
+          ipv_6_ranges:
+            - cidr_ipv_6: '::/0'
+        - ip_protocol: tcp
+          from_port: 9000  # kafka manager
+          to_port: 9000
           ip_ranges:
             - cidr_ip: '0.0.0.0/0'
           ipv_6_ranges:
