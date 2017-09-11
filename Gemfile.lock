@@ -9,13 +9,14 @@ GEM
     airbrussh (1.3.0)
       sshkit (>= 1.6.1, != 1.7.0)
     ast (2.3.0)
-    aws-sdk (2.10.39)
-      aws-sdk-resources (= 2.10.39)
-    aws-sdk-core (2.10.39)
+    aws-partitions (1.20.0)
+    aws-sdk-core (3.3.0)
+      aws-partitions (~> 1.0)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.10.39)
-      aws-sdk-core (= 2.10.39)
+    aws-sdk-ec2 (1.2.0)
+      aws-sdk-core (~> 3)
+      aws-sigv4 (~> 1.0)
     aws-sigv4 (1.0.2)
     axiom-types (0.1.1)
       descendants_tracker (~> 0.0.4)
@@ -138,7 +139,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  aws-sdk (~> 2.0)
+  aws-sdk-ec2 (~> 1)
   capistrano (> 3.1)
   capistrano-bundle_audit
   capistrano-bundler (> 1.1)

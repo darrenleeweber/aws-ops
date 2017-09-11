@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'aws-sdk', '~> 2.0'
+gem 'aws-sdk-ec2', '~> 1'
 gem 'config'
 gem 'highline', '~> 1.7', '>= 1.7.8'
 
