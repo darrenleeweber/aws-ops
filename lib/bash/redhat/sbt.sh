@@ -9,5 +9,5 @@ else
     if [ ! -f /etc/yum.repos.d/bintray-sbt-rpm.repo ]; then
         curl https://bintray.com/sbt/rpm/rpm | sudo tee /etc/yum.repos.d/bintray-sbt-rpm.repo
     fi
-    sudo yum install sbt
+    sudo yum install -y sbt
 fi
