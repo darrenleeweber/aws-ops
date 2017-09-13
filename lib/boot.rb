@@ -1,5 +1,5 @@
 require 'config'
-app_env = ENV['AWS_ENV'] || 'development'
+app_env = ENV['AWS_ENV'] || 'test'
 Config.load_and_set_settings(
   Config.setting_files('config', app_env)
 )
