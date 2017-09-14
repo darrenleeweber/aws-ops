@@ -1,8 +1,16 @@
 require 'config'
-app_env = ENV['AWS_ENV'] || 'test'
-Config.load_and_set_settings(
-  Config.setting_files('config', app_env)
-)
+
+# CLUSTER_SETTINGS="file1.yml,file2.yml,...,fileN.yml"
+cluster_settings = ENV['CLUSTER_SETTINGS']
+if cluster_settings
+  files = cluster_settings.split(',').map(&:strip)
+  Config.load_and_set_settings(files)
+else
+  cluster_env = ENV['CLUSTER_ENV'] || 'test'
+  Config.load_and_set_settings(
+    Config.setting_files('config', cluster_env)
+  )
+end
 
 require_relative 'aws/aws_helpers'
 require_relative 'aws/aws_security_groups_settings'

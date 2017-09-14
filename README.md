@@ -12,14 +12,9 @@ Incomplete - work in progress.
  - use bash scripts and/or puppet provision tools
  - use convenient capistrano/rake tasks
  - manage settings with the config gem
-    - default settings are in config/settings.yml
-    - AWS_ENV=development (default)
-        - settings are merged with config/settings/development.yml
-    - AWS_ENV=production
-        - settings are merged with config/settings/production.yml
- - TODO: persist the AWS resource details in a local DB
-   - or use AWS discovery services to find them dynamically
-   
+    - default settings are in config/settings/test.yml
+ - use AWS discovery services to find everything dynamically
+
 # Background information and resources
  - https://aws.amazon.com/blogs/devops/tag/capistrano/
  - http://fuzzyblog.io/blog/aws/2016/09/23/aws-tutorial-09-deploying-rails-apps-to-aws-with-capistrano-take-1.html
@@ -64,17 +59,22 @@ bundle exec cap dev ops:aws:check_credentials
 ```
 
 Once any instance is created and assigned a public DNS, it can be added to
-your `~/.ssh/config` file, along with the required AWS Key Pair used to
-access it.  It's recommended that a `Host` value matches the instance name in
-`config/settings/{stage}.yml` and it's essential that the `Host` value
-is used in the Capistrano `config/deploy/{stage}.rb` settings.  (Note that
-it is easier to use the same `AWS_ENV` name as the capistrano `{stage}` name,
-but this is not an essential requirement, they could be different.)
+your `/etc/hosts` file and a corresponding entry in `~/.ssh/config` file,
+along with the required AWS Key Pair used to access it.  It's recommended
+that a `Host` value matches the instance name in `config/settings/{stage}.yml`
+and it's essential that the `Host` value is used in the Capistrano stage file
+to define a "server" entry by that name (e.g. `config/deploy/{stage}.rb` settings).
+(Note that it is easier to use the same `CLUSTER_SETTINGS` or `CLUSTER_ENV` name
+as the capistrano `{stage}` name, but this is not essential, they can be different.)
 
-An example of an `~/.ssh/config` entry:
+An example of an `/etc/hosts/` and matching `~/.ssh/config` entry:
 ```
+# /etc/hosts entry
+{AWS_PUBLIC_IP} {AWS_PUBLIC_DNS} {YourHostAlias}
+
+# ~/.ssh/config entry
 Host <Instance name in your config/settings/{stage}.yml>
-  Hostname {AWS_EC2_PUBLIC_DNS}
+  Hostname {YourHostAlias}
   user {ubuntu or something}
   IdentityFile ~/.ssh/{AWS_Key_Pair_Name}.pem
   Port 22
@@ -82,15 +82,15 @@ Host <Instance name in your config/settings/{stage}.yml>
 
 To test the ssh access to any AWS EC2 public DNS, try something like:
 ```bash
-ssh -i ~/.ssh/{AWS_Key_Pair_Name}.pem {user}@{AWS_EC2_PUBLIC_DNS}
+ssh -i ~/.ssh/{AWS_Key_Pair_Name}.pem {user}@{AWS_PUBLIC_DNS}
 ```
 
-If that works and the `~/.ssh/config` entry is made, try:
+If that works and the `/etc/hosts` and `~/.ssh/config` entries exist, try:
 ```bash
-ssh {HOST value from ~/.ssh/config}
+ssh {YourHostAlias}
 ```
 
-There are capistrano tasks to provide all the details of the `~/.ssh/config` and
+There are some capistrano tasks to provide details for the `~/.ssh/config` and
 related `/etc/hosts` values, e.g.
 ```bash
 cap zookeeper:nodes:find                 # Find and describe all nodes
@@ -100,8 +100,10 @@ cap zookeeper:nodes:ssh_config_private   # Compose private entries for ~/.ssh/co
 cap zookeeper:nodes:ssh_config_public    # Compose public entries for ~/.ssh/config for nodes
 ```
 
-WARNING: the `~/.ssh/config` entries must be updated whenever an instance is
-stopped and restarted, because the public network interface can change.
+WARNING: the `/etc/hosts` entries must be updated whenever an instance is
+stopped and restarted, because the public network interface can change.  Also, there might be
+problems with the `~/.ssh/known_hosts` file when a system is restarted and assigned a new
+host fingerprint.
 
 ### AWS Switching Accounts
 
@@ -118,17 +120,21 @@ AWS_ACCESS_KEY_ID={id}
     - `vpc_id: {vpc-id}`
     - the "Default VPC" is displayed on the EC2 dashboard, "Account Attributes"
 
-
 ### Settings
 
-Check details of config/settings.yml and subdirectories;
+Check details of `config/settings.yml` and subdirectories;
 modify the settings as required, esp. AWS details in the
 instance defaults, like: AMI, AWS region, instance types and tags.
 
 ```bash
-export STAGE={stage}
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} ops:aws:check_settings
+export CLUSTER_ENV='test' # or whatever {env} in config/settings/{env}.yml
+export STAGE='test' # or whatever {stage} in config/deploy/{stage}.rb
+bundle exec cap ${STAGE} ops:aws:check_settings
 ```
+
+Note, the `CLUSTER_ENV` and `STAGE` here assume the default capistrano
+paths are used for configs.  Below there are options for using custom
+paths for configs that will override these settings.
 
 #### Adding a Stage
 
@@ -140,25 +146,65 @@ Copy test settings into a few new `{stage}` files, i.e.:
 Review and modify all the values in those files.  Make sure you have the access
 token details and the PEM access file.  
 
+Alternatively, try the custom config paths described below.
+
+#### Using Custom Config Paths
+
+It's possible to use config paths that are outside the paths of this aws-ops
+project.
+
+Custom settings:  the default settings are in `config/settings.yml` merged with
+`config/settings/test.yml`.  These can be replaced by a single custom settings file.
+Use an absolute path to a settings file in the environment variable `CLUSTER_SETTINGS`, e.g.
+```bash
+export CLUSTER_SETTINGS="${HOME}/my_cluster/settings/test.yml"
+```
+
+Custom deploy:  the default deploy file is in `config/deploy.rb`.  This
+path can be replaced with a custom deploy file, by giving an absolute path to
+a deploy file in the environment variable `CLUSTER_DEPLOY_PATH`, e.g.
+```bash
+export CLUSTER_DEPLOY_PATH="${HOME}/my_cluster/deploy/deploy.rb"
+```
+
+Custom stage:  the default stage file is in `config/deploy/test.rb`.  This
+path can be replaced with a custom stage file, by giving an absolute path to
+a stage file in the environment variable `CLUSTER_STAGE_PATH`, e.g.
+```bash
+export CLUSTER_STAGE_PATH="${HOME}/my_cluster/stage/stage.rb"
+```
+
+Custom tasks:  the default tasks are in `lib/**/*.rake`.  These can be
+supplemented (or overriden) by adding a custom tasks path.  Add an
+absolute path to the environment variable `CLUSTER_TASKS_PATH`; this
+should be the root path of all the tasks and it gets expanded to find
+all the `*.rake` files anywhere below that path, e.g.
+```bash
+export CLUSTER_TASKS_PATH="${HOME}/my_cluster/lib"
+```
+
+WARNING: these are experimental features that have not been fully tested.
+
 
 # General Use
 
 Try to create new instances for
 the services to provision (e.g., zookeeper and kafka).
 ```bash
+# Always set the environment variables noted above to configure capistrano.
 export STAGE={stage}
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} ops:aws:check_settings
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} zookeeper:nodes:create
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} zookeeper:nodes:find
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} kafka:nodes:create
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} kafka:nodes:find
+bundle exec cap ${STAGE} ops:aws:check_settings
+bundle exec cap ${STAGE} zookeeper:nodes:create
+bundle exec cap ${STAGE} zookeeper:nodes:find
+bundle exec cap ${STAGE} kafka:nodes:create
+bundle exec cap ${STAGE} kafka:nodes:find
 # create nodes for additional services and then get the /etc/hosts details, e.g.
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} zookeeper:nodes:etc_hosts_public | sudo tee -a /etc/hosts
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} kafka:nodes:etc_hosts_public | sudo tee -a /etc/hosts
+bundle exec cap ${STAGE} zookeeper:nodes:etc_hosts_public | sudo tee -a /etc/hosts
+bundle exec cap ${STAGE} kafka:nodes:etc_hosts_public | sudo tee -a /etc/hosts
 # ensure the hostnames in /etc/hosts match those in /config/deploy/{stage}.rb,
 # then deploy the aws-ops code (be sure the code is pushed to github)
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} deploy:check
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} deploy
+bundle exec cap ${STAGE} deploy:check
+bundle exec cap ${STAGE} deploy
 ```
 
 ## Login shell on remote servers
@@ -167,7 +213,7 @@ The capistrano-shell plugin can drop you into a shell on a remote server into th
 project deployment directory.
 ```bash
 export STAGE={stage}
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} shell
+bundle exec cap ${STAGE} shell
 ```
 
 ## Provision Software with Capistrano
@@ -178,12 +224,12 @@ configuration on the servers, identified by their `roles` in `config/deploy/{sta
 Usually, the first things to provision are general OS utilities and build tools.
 ```bash
 export STAGE={stage}
-AWS_ENV=${STAGE} bundle exec cap -T | grep ubuntu
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} ubuntu:update
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} ubuntu:install:build_tools
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} ubuntu:install:java_8_oracle
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} ubuntu:install:network_tools
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} ubuntu:install:os_utils
+bundle exec cap -T | grep ubuntu
+bundle exec cap ${STAGE} ubuntu:update
+bundle exec cap ${STAGE} ubuntu:install:build_tools
+bundle exec cap ${STAGE} ubuntu:install:java_8_oracle
+bundle exec cap ${STAGE} ubuntu:install:network_tools
+bundle exec cap ${STAGE} ubuntu:install:os_utils
 ```
 
 Then provision services (see the "*:service:install" and "*:service:configure" tasks)
@@ -195,26 +241,26 @@ depends on it).
 
 ```bash
 export STAGE={stage}
-AWS_ENV=${STAGE} bundle exec cap -T | grep zookeeper
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} zookeeper:nodes:find
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} zookeeper:service:install
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} zookeeper:service:configure
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} zookeeper:service:start
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} zookeeper:service:status
+bundle exec cap -T | grep zookeeper
+bundle exec cap ${STAGE} zookeeper:nodes:find
+bundle exec cap ${STAGE} zookeeper:service:install
+bundle exec cap ${STAGE} zookeeper:service:configure
+bundle exec cap ${STAGE} zookeeper:service:start
+bundle exec cap ${STAGE} zookeeper:service:status
 # if all goes well, the status should report 'imok'
 # Also check the 'srvr' details and look for leader/follower 'Mode';
 # if the 'Mode: standalone', stop and restart the service until the
 # 'Mode' shows the servers have formed a quorum and elected a leader.
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} zookeeper:service:command['srvr']
+bundle exec cap ${STAGE} zookeeper:service:command['srvr']
 ```
 
 ## ZooNavigator
 
 ```bash
 export STAGE={stage}
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} zoonavigator:service:install
+bundle exec cap ${STAGE} zoonavigator:service:install
 # If it fails, try it again (it might require the user to reconnect to enable docker)
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} zoonavigator:service:connections
+bundle exec cap ${STAGE} zoonavigator:service:connections
 # {stage}_zookeeper1:2181,{stage}_zookeeper2:2181,{stage}_zookeeper3:2181
 ```
 
@@ -226,11 +272,11 @@ Unless authorization is enabled, leave those fields blank
 
 ```bash
 export STAGE={stage}
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} kafka:nodes:find
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} kafka:service:install
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} kafka:service:configure
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} kafka:service:start
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} kafka:service:status
+bundle exec cap ${STAGE} kafka:nodes:find
+bundle exec cap ${STAGE} kafka:service:install
+bundle exec cap ${STAGE} kafka:service:configure
+bundle exec cap ${STAGE} kafka:service:start
+bundle exec cap ${STAGE} kafka:service:status
 ```
 
 If the `start` succeeds, it does not mean that Kafka is running.  When the `status`
@@ -241,7 +287,7 @@ created it but then couldn't find it.  Just wait a minute and try to start
 Kafka again.  To view logs, try
 ```bash
 export STAGE={stage}
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} kafka:service:tail_server_log["${STAGE}_kafka1"]
+bundle exec cap ${STAGE} kafka:service:tail_server_log["${STAGE}_kafka1"]
 ```
 
 ## Kafka Manager
@@ -257,9 +303,9 @@ To get AWS EC2 instance connection details, e.g.
 
 ```bash
 export STAGE={stage}
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} zookeeper:nodes:create
+bundle exec cap ${STAGE} zookeeper:nodes:create
 # Wait a while for the Public IP and Public DNS values to be available, then:
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} zookeeper:nodes:find
+bundle exec cap ${STAGE} zookeeper:nodes:find
 # {
 #   "ID": "i-0fd060e5124453b11",
 #   "Type": "t2.medium",
@@ -285,11 +331,6 @@ cap zookeeper:nodes:etc_hosts_public     # Compose entries for /etc/hosts using 
 cap zookeeper:nodes:ssh_config_private   # Compose private entries for ~/.ssh/config for nodes
 cap zookeeper:nodes:ssh_config_public    # Compose public entries for ~/.ssh/config for nodes
 ```
-
-WARNING: the `~/.ssh/config` and `/etc/hosts` entries must be updated whenever an instance is
-stopped and restarted, because the public network interface can change.  Also, there might be
-problems with the `~/.ssh/known_hosts` file when a system is restarted and assigned a new
-host fingerprint.
 
 ## Capistrano configuration
 
@@ -345,17 +386,17 @@ and configuration tasks.
 To test the deployment, use
 ```bash
 export STAGE={stage}
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} deploy:check
+bundle exec cap ${STAGE} deploy:check
 ```
 To run the deployment, use
 ```bash
 export STAGE={stage}
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} deploy
+bundle exec cap ${STAGE} deploy
 ```
 To connect to a remote host, this project includes the `capistrano-shell` gem, e.g.
 ```bash
 export STAGE={stage}
-AWS_ENV=${STAGE} bundle exec cap ${STAGE} shell
+bundle exec cap ${STAGE} shell
 # when multiple hosts are configured, it prompts for a specific host to connect to.
 ```
 
@@ -365,8 +406,9 @@ See `bundle exec cap -T` for a complete listing.  Additional README docs might b
 added to `lib/{service}/README.md`.
 
  - `ops:aws`
- - `hdfs`
+ - `hdfs` (TODO)
  - `kafka`
+ - `kafka_manager` (TODO)
  - `mesos` (TODO)
  - `spark` (TODO)
  - `zookeeper`
