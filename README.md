@@ -1,5 +1,5 @@
 
-[![Build Status](https://travis-ci.org/darrenleeweber/aws-ops.svg?branch=master)](https://travis-ci.org/darrenleeweber/aws-ops) [![Coverage Status](https://coveralls.io/repos/github/darrenleeweber/aws-ops/badge.svg)](https://coveralls.io/github/darrenleeweber/aws-ops)
+[![Build Status](https://travis-ci.org/darrenleeweber/aws-ops.svg?branch=master)](https://travis-ci.org/darrenleeweber/aws-ops) [![Coverage Status](https://coveralls.io/repos/github/darrenleeweber/aws-ops/badge.svg?branch=master)](https://coveralls.io/github/darrenleeweber/aws-ops?branch=master)
 
 # aws-ops
 Utils to provision services on AWS
