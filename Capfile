@@ -3,6 +3,22 @@ PROJECT_PATH = Dir.pwd
 require_relative 'lib/boot'
 
 # ---
+# Allow a custom config path for capistrano deploy and stages
+# http://capistranorb.com/documentation/faq/how-can-i-set-capistrano-configuration-paths/
+
+# default deploy_config_path is 'config/deploy.rb'
+cluster_deploy_path = ENV['CLUSTER_DEPLOY_PATH']
+if cluster_deploy_path
+  set :deploy_config_path, File.expand_path(cluster_deploy_path)
+end
+
+# default stage_config_path is 'config/deploy'
+cluster_stage_path = ENV['CLUSTER_STAGE_PATH']
+if cluster_stage_path
+  set :stage_config_path, File.expand_path(cluster_stage_path)
+end
+
+# ---
 # Standard Capfile content below here.
 # ---
 
@@ -43,6 +59,17 @@ install_plugin Capistrano::SCM::Git
 # require "capistrano/passenger"
 require 'capistrano/shell'
 
-# Load custom tasks from `lib/capistrano/tasks` if you have any defined
+# ---
+# Allow a custom rake tasks path
+# http://capistranorb.com/documentation/faq/how-can-i-set-capistrano-configuration-paths/
+cluster_tasks_path = ENV['CLUSTER_TASKS_PATH']
+if cluster_tasks_path
+  tasks_path = File.expand_path(cluster_tasks_path)
+  Dir.glob("#{tasks_path}/**/*.rake").each { |r| import r }
+end
+
+# Load all the aws-ops tasks after any custom tasks, so
+# the custom tasks can override these tasks when they use the
+# same namespace and task names.
 Dir.glob('lib/**/*.rake').each { |r| import r }
 
