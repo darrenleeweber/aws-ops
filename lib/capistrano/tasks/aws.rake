@@ -3,7 +3,7 @@ namespace :ops do
   namespace :aws do
     desc 'Check credentials for AWS SDK'
     task :check_credentials do
-      puts AwsHelpers.aws_credentials? ? 'OK' : 'Failed to init credentials'
+      puts AwsHelpers.credentials? ? 'OK' : 'Failed to init credentials'
     end
 
     desc 'Check AWS settings'

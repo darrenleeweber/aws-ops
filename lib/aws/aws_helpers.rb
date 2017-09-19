@@ -9,18 +9,21 @@ module AwsHelpers
 
   module_function
 
-  def aws_credentials
+  def config
     # http://docs.aws.amazon.com/sdk-for-ruby/v2/developer-guide/setup-config.html
+    Aws.config.update(credentials: credentials)
+  end
+
+  def credentials
     @aws_credentials ||= begin
       access_key_id = Settings.aws.access_key_id || ENV['AWS_ACCESS_KEY_ID']
       secret_access_key = Settings.aws.secret_access_key || ENV['AWS_SECRET_ACCESS_KEY']
       Aws::Credentials.new(access_key_id, secret_access_key)
     end
-    Aws.config.update(credentials: @aws_credentials)
   end
 
-  def aws_credentials?
-    aws_credentials
+  def credentials?
+    credentials
     true
   rescue
     false
