@@ -16,7 +16,6 @@ require_relative 'aws/aws_helpers'
 require_relative 'aws/aws_security_groups_settings'
 require_relative 'aws/aws_security_groups'
 require_relative 'aws/aws_vpc'
-AwsHelpers.config
 
 require_relative 'service/service_manager'
 require_relative 'service/service_settings'

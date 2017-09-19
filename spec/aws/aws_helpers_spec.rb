@@ -5,22 +5,9 @@ require 'spec_helper'
 describe AwsHelpers do
   let(:aws_helpers) { AwsHelpers }
 
-  let(:aws_region) { 'us-west-2' }
-  let(:service) { 'zookeeper' }
-  let(:aws_mocks) { AwsMocks.new(region: aws_region, service: service) }
+  let(:aws_mocks) { AWS_MOCKS }
 
   let(:inst) { aws_mocks.instance }
-
-  before do
-    if MOCK
-      stub_const('ENV',
-        "AWS_ACCESS_KEY_ID" => SecureRandom.hex(12),
-        "AWS_SECRET_ACCESS_KEY" => SecureRandom.hex(20),
-        "AWS_DEFAULT_REGION" => "us-west-2"
-      )
-      allow(AwsHelpers).to receive(:ec2).and_return(aws_mocks.resource)
-    end
-  end
 
   describe '#config' do
     it 'works' do
@@ -46,7 +33,7 @@ describe AwsHelpers do
 
   describe '#ec2' do
     it 'works' do
-      result = aws_helpers.ec2(aws_region)
+      result = aws_helpers.ec2(REGION)
       expect(result).to be_an Aws::EC2::Resource
     end
   end

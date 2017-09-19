@@ -15,9 +15,7 @@ describe ZookeeperHelpers do
 
   before do
     if MOCK
-      allow(AwsHelpers).to receive(:ec2).and_return(aws_mocks.resource)
       allow(service_manager).to receive(:nodes).and_return(aws_mocks.instances)
-      allow(service_manager).to receive(:nodes_alive).and_return(aws_mocks.instances)
       allow(zookeeper_helpers).to receive(:manager).and_return(service_manager)
     end
   end

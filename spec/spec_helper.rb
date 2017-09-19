@@ -32,6 +32,7 @@ REGION = 'us-west-2'.freeze
 # manually toggled to work with specific tests to debug EC2 interactions.
 # MOCK = ENV['AWS_MOCK'].nil? || ENV['AWS_MOCK'].to_s =~ /true/i ? true : false
 MOCK = true
+AWS_MOCKS = AwsMocks.new(region: REGION, service: SERVICE)
 
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
@@ -57,6 +58,17 @@ RSpec.configure do |config|
     # a real object. This is generally recommended, and will default to
     # `true` in RSpec 4.
     mocks.verify_partial_doubles = true
+  end
+
+  config.before :all do
+    if MOCK
+      stub_const('ENV',
+        'AWS_ACCESS_KEY_ID' => SecureRandom.hex(12),
+        'AWS_SECRET_ACCESS_KEY' => SecureRandom.hex(20),
+        'AWS_DEFAULT_REGION' => REGION)
+      AwsHelpers.config
+      allow(AwsHelpers).to receive(:ec2).and_return(AWS_MOCKS.resource)
+    end
   end
 
   # This option will default to `:apply_to_host_groups` in RSpec 4 (and will

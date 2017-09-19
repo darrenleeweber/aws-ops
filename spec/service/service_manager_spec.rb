@@ -5,12 +5,6 @@ require 'spec_helper'
 describe ServiceManager do
   let(:service_manager) { described_class.new(SERVICE) }
 
-  let(:aws_mocks) { AwsMocks.new(region: REGION, service: SERVICE) }
-
-  before do
-    allow(AwsHelpers).to receive(:ec2).and_return(aws_mocks.resource) if MOCK
-  end
-
   describe '#new' do
     it 'works' do
       service = double('service')
@@ -29,7 +23,7 @@ describe ServiceManager do
     end
     context 'nodes for a service are available' do
       before do
-        allow(service_manager).to receive(:nodes).and_return(aws_mocks.instances) if MOCK
+        allow(service_manager).to receive(:nodes).and_return(AWS_MOCKS.instances) if MOCK
       end
       it 'returns an Array<Aws::EC2::Instance>' do
         result = service_manager.nodes
