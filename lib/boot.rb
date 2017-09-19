@@ -12,6 +12,7 @@ else
   )
 end
 
+require_relative 'aws/aws_helper'
 require_relative 'aws/aws_helpers'
 require_relative 'aws/aws_security_groups_settings'
 require_relative 'aws/aws_security_groups'

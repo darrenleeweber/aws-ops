@@ -5,6 +5,10 @@ def client_port
   host_settings['client_port']
 end
 
+def aws_helper
+  @aws_helper ||= AwsHelper.new
+end
+
 def host_settings
   # the `host` object should be accessible to this method
   Settings.aws[host.hostname]
