@@ -20,6 +20,8 @@ group :test do
   gem 'rspec'
   gem 'simplecov', require: false
   gem 'single_cov'
+  gem 'vcr'
+  gem 'webmock'
 end
 
 # Do not place the capistrano-related gems in the default or Rails.env bundle group
