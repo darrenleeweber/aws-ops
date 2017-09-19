@@ -69,24 +69,68 @@ describe AwsMocks do
 
   describe '#instance_state' do
     let(:state) { aws_mocks.instance_state }
-
     it 'is an Aws::EC2::Types::InstanceState' do
       expect(state).not_to be_nil
       expect(state).to be_an Aws::EC2::Types::InstanceState
     end
-
     it 'is "running" by default' do
+      expect(state.code).to eq 16
       expect(state.name).to eq 'running'
     end
-
-    it 'can be set to "stopped"' do
-      state = aws_mocks.instance_state('stopped')
+    it 'can be "pending"' do
+      state = aws_mocks.instance_state(0, 'pending')
+      expect(state.code).to eq 0
+      expect(state.name).to eq 'pending'
+    end
+    it 'can be "shutting-down"' do
+      state = aws_mocks.instance_state(32, 'shutting-down')
+      expect(state.code).to eq 32
+      expect(state.name).to eq 'shutting-down'
+    end
+    it 'can be "stopped"' do
+      state = aws_mocks.instance_state(80, 'stopped')
+      expect(state.code).to eq 80
       expect(state.name).to eq 'stopped'
     end
-
-    it 'can be set to "terminated"' do
-      state = aws_mocks.instance_state('terminated')
+    it 'can be "stopping"' do
+      state = aws_mocks.instance_state(64, 'stopping')
+      expect(state.code).to eq 64
+      expect(state.name).to eq 'stopping'
+    end
+    it 'can be "terminated"' do
+      state = aws_mocks.instance_state(48, 'terminated')
+      expect(state.code).to eq 48
       expect(state.name).to eq 'terminated'
+    end
+  end
+
+  describe '#instance_tag_name' do
+    let(:nodeN) { 2 }
+    let(:tag_name) { aws_mocks.instance_tag_name(nodeN) }
+    it 'works' do
+      expect(tag_name).to be_an String
+    end
+    it 'contains "stage"' do
+      expect(tag_name).to include aws_mocks.stage
+    end
+    it 'contains "service"' do
+      expect(tag_name).to include aws_mocks.service
+    end
+    it 'contains "node" number' do
+      expect(tag_name).to end_with nodeN.to_s
+    end
+  end
+
+  describe '#instance_tag_group' do
+    let(:tag_group) { aws_mocks.instance_tag_group }
+    it 'works' do
+      expect(tag_group).to be_an String
+    end
+    it 'contains "stage"' do
+      expect(tag_group).to include aws_mocks.stage
+    end
+    it 'contains "service"' do
+      expect(tag_group).to include aws_mocks.service
     end
   end
 
@@ -139,7 +183,7 @@ describe AwsMocks do
       expect(stage).to be_an Aws::EC2::Types::Tag
       expect(stage.key).to eq 'Stage'
       expect(stage.value).to be_an String
-      expect(stage.value).to eq 'test'
+      expect(stage.value).to eq aws_mocks.stage
     end
   end
 
@@ -152,6 +196,16 @@ describe AwsMocks do
 
     it 'is an availability zone in the REGION' do
       expect(placement.availability_zone).to match(/#{REGION}[abc]/)
+    end
+  end
+
+  describe '#stage' do
+    let(:stage) { aws_mocks.stage }
+    it 'works' do
+      expect(stage).to be_an String
+    end
+    it 'is "test" by default' do
+      expect(stage).to eq 'test'
     end
   end
 
