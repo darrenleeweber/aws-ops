@@ -13,12 +13,14 @@ class AwsMocks
   attr_reader :region
   attr_reader :resource
   attr_reader :service
+  attr_reader :stage
 
   # the config/settings/test.yml settings contains 'zookeeper' services
 
-  def initialize(region: 'us-west-2', service: 'zookeeper')
+  def initialize(region: 'us-west-2', service: 'zookeeper', stage: 'test')
     @region = region
     @service = service
+    @stage = stage
     @resource = Aws::EC2::Resource.new(region: region, stub_responses: true)
   end
 
@@ -31,9 +33,13 @@ class AwsMocks
       id: instance_id,
       stub_responses: true
     )
+    RSpec::Mocks.allow_message(inst, :instance_type) { 't2.micro' }
+    RSpec::Mocks.allow_message(inst, :image_id) { 'ami-6e1a0117' }
+    RSpec::Mocks.allow_message(inst, :key_name) { 'key-pair' }
     RSpec::Mocks.allow_message(inst, :launch_time) { Time.now.utc }
     RSpec::Mocks.allow_message(inst, :tags) { instance_tags(n) }
     RSpec::Mocks.allow_message(inst, :placement) { placement }
+    RSpec::Mocks.allow_message(inst, :state) { instance_state }
     ip_public = random_ip
     ip_private = random_ip
     RSpec::Mocks.allow_message(inst, :private_ip_address) { ip_private }
@@ -47,18 +53,33 @@ class AwsMocks
     'i-0' + SecureRandom.hex(8)
   end
 
-  def instance_state(state = 'running')
-    Aws::EC2::Types::InstanceState.new(name: state)
+  # http://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/EC2/Types/InstanceState.html
+  #  0: pending
+  # 16: running
+  # 32: shutting-down
+  # 48: terminated
+  # 64: stopping
+  # 80: stopped
+  def instance_state(code = 16, name = 'running')
+    Aws::EC2::Types::InstanceState.new(code: code, name: name)
   end
 
   def instance_tags(node = 1)
     [
-      Aws::EC2::Types::Tag.new(key: 'Name', value: "test_#{service}#{node}"),
-      Aws::EC2::Types::Tag.new(key: 'Group', value: "test_#{service}"),
-      Aws::EC2::Types::Tag.new(key: 'Stage', value: 'test'),
+      Aws::EC2::Types::Tag.new(key: 'Name', value: instance_tag_name(node)),
+      Aws::EC2::Types::Tag.new(key: 'Group', value: instance_tag_group),
+      Aws::EC2::Types::Tag.new(key: 'Stage', value: stage),
       Aws::EC2::Types::Tag.new(key: 'Manager', value: 'AManager'),
       Aws::EC2::Types::Tag.new(key: 'Service', value: service)
     ]
+  end
+
+  def instance_tag_name(node = 1)
+    "#{stage}_#{service}#{node}"
+  end
+
+  def instance_tag_group
+    "#{stage}_#{service}"
   end
 
   def placement
