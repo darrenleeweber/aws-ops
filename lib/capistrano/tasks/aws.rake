@@ -3,7 +3,7 @@ namespace :ops do
   namespace :aws do
     desc 'Check credentials for AWS SDK'
     task :check_credentials do
-      puts AwsHelpers.aws_credentials? ? 'OK' : 'Failed to init credentials'
+      puts AwsHelpers.credentials? ? 'OK' : 'Failed to init credentials'
     end
 
     desc 'Check AWS settings'
@@ -36,32 +36,32 @@ namespace :ops do
       desc 'Find an EC2 instance by "Group" tag'
       task :find_instances_by_group, :group do |task, args|
         instances = AwsHelpers.ec2_find_group_instances(args.group)
-        AwsHelpers.ec2_instances_describe(instances)
+        puts AwsHelpers.ec2_instances_describe(instances).join("\n")
       end
 
       desc 'Find an EC2 instance by "Name" tag'
       task :find_instance_by_name, :name do |task, args|
         instances = AwsHelpers.ec2_find_name_instances(args.name)
-        AwsHelpers.ec2_instances_describe(instances)
+        puts AwsHelpers.ec2_instances_describe(instances).join("\n")
       end
 
       desc 'Find an EC2 instance by "Service" tag'
       task :find_instances_by_service, :service do |task, args|
         instances = AwsHelpers.ec2_find_service_instances(args.service)
-        AwsHelpers.ec2_instances_describe(instances)
+        puts AwsHelpers.ec2_instances_describe(instances).join("\n")
       end
 
       desc 'Find an EC2 instance by "Stage" tag'
       task :find_instances_by_stage, :stage do |task, args|
         stage = args.stage || fetch(:stage)
         instances = AwsHelpers.ec2_find_stage_instances(stage)
-        AwsHelpers.ec2_instances_describe(instances)
+        puts AwsHelpers.ec2_instances_describe(instances).join("\n")
       end
 
       desc 'Find an EC2 instance by ID'
       task :find_instance, :instance_id do |task, args|
         i = AwsHelpers.ec2_find_instance(args.instance_id)
-        AwsHelpers.ec2_instance_describe(i)
+        puts AwsHelpers.ec2_instance_describe(i)
       end
 
       desc 'Start an EC2 instance by ID'

@@ -9,6 +9,7 @@ class ServiceManager
   def initialize(service)
     @service = service
     @settings = ServiceSettings.new(service)
+    AwsHelpers.config
   end
 
   # All AWS::EC2::Instances for a service
@@ -28,7 +29,7 @@ class ServiceManager
   # All AWS::EC2::Instances for a service that are "running"
   # @return [Array<Aws::EC2::Instance>]
   def nodes_running
-    nodes.reject { |i| i.state.name.to_s == 'running' }
+    nodes.select { |i| i.state.name.to_s == 'running' }
   end
 
   # All AWS::EC2::Instances for a service that are "stopped"
@@ -47,7 +48,13 @@ class ServiceManager
   # The tag 'Name' of AWS::EC2::Instances in a service
   # @return [Array<String>]
   def node_names
-    nodes.map { |i| AwsHelpers.ec2_instance_tag_name(i) }
+    nodes.map { |i| node_name(i) }
+  end
+
+  # The tag 'Name' of AWS::EC2::Instances in a service
+  # @return [String]
+  def node_name(node)
+    AwsHelpers.ec2_instance_tag_name(node)
   end
 
   # Assumes the node name is unique for nodes that are not terminated

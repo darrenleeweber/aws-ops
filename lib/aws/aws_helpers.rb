@@ -9,18 +9,21 @@ module AwsHelpers
 
   module_function
 
-  def aws_credentials
+  def config
     # http://docs.aws.amazon.com/sdk-for-ruby/v2/developer-guide/setup-config.html
+    Aws.config.update(credentials: credentials)
+  end
+
+  def credentials
     @aws_credentials ||= begin
       access_key_id = Settings.aws.access_key_id || ENV['AWS_ACCESS_KEY_ID']
       secret_access_key = Settings.aws.secret_access_key || ENV['AWS_SECRET_ACCESS_KEY']
       Aws::Credentials.new(access_key_id, secret_access_key)
     end
-    Aws.config.update(credentials: @aws_credentials)
   end
 
-  def aws_credentials?
-    aws_credentials
+  def credentials?
+    credentials
     true
   rescue
     false
@@ -154,14 +157,17 @@ module AwsHelpers
 
   # Print instances information
   # @param instances [Array<Aws::EC2::Instance>]
+  # @return [Array<String>]
   def ec2_instances_describe(instances)
-    instances.each { |i| ec2_instance_describe(i) }
+    instances.collect { |i| ec2_instance_describe(i) }
   end
 
   # Print instance information
   # @param instance [Aws::EC2::Instance]
+  # @return String
   def ec2_instance_describe(inst)
-    pp_json ec2_instance_info(inst).to_json
+    json = ec2_instance_info(inst).to_json
+    JSON.pretty_generate(JSON.parse(json))
   end
 
   # Content for /etc/hosts
@@ -169,7 +175,9 @@ module AwsHelpers
   # @param public [Boolean] use public or private IP
   def ec2_instance_etc_hosts(i, public = true)
     ip = public ? i.public_ip_address : i.private_ip_address
-    "#{ip}\t{HOST}" # template for HOST in settings
+    public_dns = i.public_dns_name.to_s
+    private_dns = i.private_dns_name.to_s
+    "#{ip}\t\t#{public_dns}\t\t#{private_dns}\t\t{HOST}" # template for HOST in settings
   end
 
   # Content for ~/.ssh/config
@@ -177,12 +185,12 @@ module AwsHelpers
   # @param public [Boolean] use public or private DNS name
   def ec2_instance_ssh_config(i, public = true)
     hostname = public ? i.public_dns_name : i.private_dns_name
-    ssh_config =  "Host {HOST}\n" # template for HOST in settings
-    ssh_config += "    User {USER}\n" # template for USER in settings
-    ssh_config += "    Hostname #{hostname}\n"
-    ssh_config += "    IdentityFile ~/.ssh/#{i.key_name}.pem\n"
-    ssh_config += "    Port 22\n\n"
-    ssh_config
+    # Use templates for HOST and USER (values provided in settings)
+    "Host {HOST}\n" \
+      "\tUser {USER}\n" \
+      "\tHostname #{hostname}\n" \
+      "\tIdentityFile ~/.ssh/#{i.key_name}.pem\n" \
+      "\tPort 22\n"
   end
 
   # Start an instance
@@ -235,13 +243,6 @@ module AwsHelpers
     puts "instances #{instance_ids}: waiting to terminate"
     ec2.client.wait_until(:instance_terminated, instance_ids: instance_ids)
     puts "instances #{instance_ids}: terminated"
-  end
-
-  private
-
-  # @param json [String]
-  def pp_json(json)
-    puts JSON.pretty_generate(JSON.parse(json))
   end
 
 end

@@ -24,12 +24,10 @@ module ZookeeperHelpers
   # @param public [Boolean] true by default
   # @return connections [Array<String>]
   def connections(public = true)
-    alive = manager.nodes_alive
-    settings.nodes.map do |n|
-      inst = alive.find { |i| AwsHelpers.ec2_instance_tag_name?(i, n.tag_name) }
-      next if inst.nil?
+    manager.nodes_running.map do |inst|
+      node = settings.nodes.find { |n| n.tag_name == manager.node_name(inst) }
       dns = public ? inst.public_dns_name : inst.private_dns_name
-      "#{dns}:#{n.client_port}"
+      "#{dns}:#{node.client_port}"
     end
   end
 
@@ -44,12 +42,10 @@ module ZookeeperHelpers
   # @param public [Boolean] false by default
   # @return server_connections [Array<String>]
   def zoo_cfg(public = false)
-    alive = manager.nodes_alive
-    settings.nodes.map do |n|
-      inst = alive.find { |i| AwsHelpers.ec2_instance_tag_name?(i, n.tag_name) }
-      next if inst.nil?
+    manager.nodes_running.map do |inst|
+      node = settings.nodes.find { |n| n.tag_name == manager.node_name(inst) }
       dns = public ? inst.public_dns_name : inst.private_dns_name
-      "server.#{n.myid}=#{dns}:#{n.leader_port}:#{n.election_port}"
+      "server.#{node.myid}=#{dns}:#{node.leader_port}:#{node.election_port}"
     end
   end
 
