@@ -179,12 +179,12 @@ module AwsHelpers
   # @param public [Boolean] use public or private DNS name
   def ec2_instance_ssh_config(i, public = true)
     hostname = public ? i.public_dns_name : i.private_dns_name
-    ssh_config =  "Host {HOST}\n" # template for HOST in settings
-    ssh_config += "    User {USER}\n" # template for USER in settings
-    ssh_config += "    Hostname #{hostname}\n"
-    ssh_config += "    IdentityFile ~/.ssh/#{i.key_name}.pem\n"
-    ssh_config += "    Port 22\n\n"
-    ssh_config
+    # Use templates for HOST and USER (values provided in settings)
+    "Host {HOST}\n" \
+      "\tUser {USER}\n" \
+      "\tHostname #{hostname}\n" \
+      "\tIdentityFile ~/.ssh/#{i.key_name}.pem\n" \
+      "\tPort 22\n"
   end
 
   # Start an instance
