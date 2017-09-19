@@ -157,14 +157,17 @@ module AwsHelpers
 
   # Print instances information
   # @param instances [Array<Aws::EC2::Instance>]
+  # @return [Array<String>]
   def ec2_instances_describe(instances)
-    instances.each { |i| ec2_instance_describe(i) }
+    instances.collect { |i| ec2_instance_describe(i) }
   end
 
   # Print instance information
   # @param instance [Aws::EC2::Instance]
+  # @return String
   def ec2_instance_describe(inst)
-    pp_json ec2_instance_info(inst).to_json
+    json = ec2_instance_info(inst).to_json
+    JSON.pretty_generate(JSON.parse(json))
   end
 
   # Content for /etc/hosts
@@ -240,13 +243,6 @@ module AwsHelpers
     puts "instances #{instance_ids}: waiting to terminate"
     ec2.client.wait_until(:instance_terminated, instance_ids: instance_ids)
     puts "instances #{instance_ids}: terminated"
-  end
-
-  private
-
-  # @param json [String]
-  def pp_json(json)
-    puts JSON.pretty_generate(JSON.parse(json))
   end
 
 end
