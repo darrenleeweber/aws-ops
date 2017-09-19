@@ -25,7 +25,7 @@ module AwsHelpers
   def credentials?
     credentials
     true
-  rescue
+  rescue StandardError
     false
   end
 
