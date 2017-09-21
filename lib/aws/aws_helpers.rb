@@ -212,6 +212,10 @@ module AwsHelpers
     i = ec2_find_instance(instance_id)
     i.reboot
     ec2_wait_instance_startup([i.id])
+  rescue Aws::EC2::Errors::IncorrectState
+    # Cannot reboot instance that is currently in stopped state.
+    i.start
+    ec2_wait_instance_startup([i.id])
   end
 
   # Stop an instance
