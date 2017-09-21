@@ -66,9 +66,9 @@ RSpec.configure do |config|
         'AWS_ACCESS_KEY_ID' => SecureRandom.hex(12),
         'AWS_SECRET_ACCESS_KEY' => SecureRandom.hex(20),
         'AWS_DEFAULT_REGION' => REGION)
-      AwsHelpers.config
       allow(AwsHelpers).to receive(:ec2).and_return(AWS_MOCKS.resource)
     end
+    AwsHelpers.config
   end
 
   # This option will default to `:apply_to_host_groups` in RSpec 4 (and will
