@@ -141,7 +141,6 @@ paths for configs that will override these settings.
 Copy test settings into a few new `{stage}` files, i.e.:
 - `config/deploy/{stage}.rb`
 - `config/settings/{stage}.yml`
-- `lib/zookeeper/zoo.cfg.{stage}` (TODO: eliminate this)
 
 Review and modify all the values in those files.  Make sure you have the access
 token details and the PEM access file.  
