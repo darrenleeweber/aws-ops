@@ -1,5 +1,12 @@
 # These settings are merged into config/settings.yml
 
+# https://aws.amazon.com/sdk-for-ruby/
+#
+# Some image-ids as of 2017-08
+# Amazon Linux AMI 2017.03.1 (HVM), SSD Volume Type - ami-aa5ebdd2
+# Red Hat Enterprise Linux 7.4 (HVM), SSD Volume Type - ami-9fa343e7
+# Ubuntu Server 16.04 LTS (HVM), SSD Volume Type - ami-6e1a0117
+
 # - these test settings may use small instances that cannot support large
 #   application loads
 # - these test settings may not be fault tolerant
@@ -17,8 +24,15 @@
 # It might be possible to dynamically detect the OS, e.g.
 # https://unix.stackexchange.com/questions/6345/how-can-i-get-distribution-name-and-version-number-in-a-simple-shell-script
 
-
 aws:
+  # when access_key_id and secret_access_key are blank, Settings will try to use ENV values
+  access_key_id:
+  secret_access_key:
+  region: us-west-2
+  availability_zones:
+    - us-west-2a
+    - us-west-2b
+    - us-west-2c
 
   instance_default_test: &TestDefault
     resource: instance
