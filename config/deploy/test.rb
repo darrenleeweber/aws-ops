@@ -26,7 +26,7 @@
 # /etc/zookeeper/conf/myid on zookeeper servers.  Also, these hostnames
 # will be added to the /etc/hosts file on zookeeper servers and associated with
 # AWS IPs. See related zookeeper details in:
-# - lib/zookeeper/zoo.cfg.{stage}
+# - lib/zookeeper/zoo.cfg
 # - lib/zookeeper/zookeeper_configure.rake
 
 server 'test_zookeeper1', user: 'ubuntu', roles: %w[ubuntu zookeeper]

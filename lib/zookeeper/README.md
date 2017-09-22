@@ -7,7 +7,7 @@ See also:
 
 ## Configuration
 
-See `lib/zookeeper/zoo.cfg.{stage}`
+See `lib/zookeeper/zoo.cfg
 
 Look for "zookeeper" in:
  - `config/settings/{stage}.yml`

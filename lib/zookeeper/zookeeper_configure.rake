@@ -23,7 +23,7 @@ namespace :zookeeper do
     # Apply the template zoo.cfg file for the capistrano stage; note
     # that this template file is assumed to be deployed on the server already.
     def zoo_cfg_template
-      sudo("cp #{current_path}/lib/zookeeper/zoo.cfg.#{fetch(:stage)} /etc/zookeeper/conf/zoo.cfg")
+      sudo("cp #{current_path}/lib/zookeeper/zoo.cfg /etc/zookeeper/conf/zoo.cfg")
     end
 
     # Update the server details in zoo.cfg, using /etc/hosts data, to manage the
