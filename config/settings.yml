@@ -1,16 +1,6 @@
-# http://docs.aws.amazon.com/sdk-for-ruby/v2/developer-guide/setup-config.html
-
-# Some image-ids as of 2017-08
-# Amazon Linux AMI 2017.03.1 (HVM), SSD Volume Type - ami-aa5ebdd2
-# Red Hat Enterprise Linux 7.4 (HVM), SSD Volume Type - ami-9fa343e7
-# Ubuntu Server 16.04 LTS (HVM), SSD Volume Type - ami-6e1a0117
-
-aws:
-  # when access_key_id and secret_access_key are blank, Settings will try to use ENV values
-  access_key_id:
-  secret_access_key:
-  region: us-west-2
-  availability_zones:
-    - us-west-2a
-    - us-west-2b
-    - us-west-2c
+# THIS FILE LEFT BLANK
+# - consolidate all settings into config/settings/{stage}.yml
+# - the  config/settings/test.yml can serve as a useful template
+# - arbitrary settings file can be assigned to CLUSTER_SETTINGS, e.g.
+# export CLUSTER_SETTINGS=~/my_cluster/settings.yml
+#
