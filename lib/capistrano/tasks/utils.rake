@@ -27,11 +27,17 @@ end
 
 def ubuntu_helper
   # the `current_path` should be accessible to this method
+  # the `current_path` should exist only after a `cap {stage} deploy`
   @ubuntu_helper ||= begin
     helper = UbuntuHelper.new(current_path)
-    execute("mkdir -p #{helper.log_path}")
+    # validate that paths exist on the deployment systems
+    execute("[ -d #{helper.current_path} ] || exit 1")
+    execute("[ -d #{helper.log_path} ]     || exit 1")
+    execute("[ -d #{helper.script_path} ]  || exit 1")
     helper
   end
+rescue StandardError
+  puts "Run 'cap {stage} deploy' to ensure scripts and paths are available on remote hosts"
 end
 
 # @param json [String]
