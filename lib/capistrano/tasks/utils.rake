@@ -25,13 +25,31 @@ def install_java8
   sudo(ubuntu_helper.java_8_oracle)
 end
 
+def redhat_helper
+  # the `current_path` should be accessible to this method
+  # the `current_path` should exist only after a `cap {stage} deploy`
+  @redhat_helper ||= begin
+    validate_script_paths RedhatHelper.new(current_path)
+  end
+end
+
 def ubuntu_helper
   # the `current_path` should be accessible to this method
+  # the `current_path` should exist only after a `cap {stage} deploy`
   @ubuntu_helper ||= begin
-    helper = UbuntuHelper.new(current_path)
-    execute("mkdir -p #{helper.log_path}")
-    helper
+    validate_script_paths UbuntuHelper.new(current_path)
   end
+end
+
+def validate_script_paths(helper)
+  # validate that paths exist on the deployment systems
+  execute("[ -d #{helper.current_path} ] || exit 1")
+  execute("[ -d #{helper.log_path} ]     || exit 1")
+  execute("[ -d #{helper.script_path} ]  || exit 1")
+  helper
+rescue StandardError
+  puts "Run 'cap {stage} deploy' to ensure scripts and paths are available on remote hosts"
+  raise 'Failure to deploy'
 end
 
 # @param json [String]
