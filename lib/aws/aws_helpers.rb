@@ -175,9 +175,7 @@ module AwsHelpers
   # @param public [Boolean] use public or private IP
   def ec2_instance_etc_hosts(i, public = true)
     ip = public ? i.public_ip_address : i.private_ip_address
-    public_dns = i.public_dns_name.to_s
-    private_dns = i.private_dns_name.to_s
-    "#{ip}\t\t#{public_dns}\t\t#{private_dns}\t\t{HOST}" # template for HOST in settings
+    "#{ip}\t#{i.public_dns_name}\t#{i.private_dns_name}\t{HOST}" # template for HOST in settings
   end
 
   # Content for ~/.ssh/config
