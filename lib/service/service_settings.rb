@@ -20,6 +20,10 @@ class ServiceSettings
     @configuration ||= service_values.select { |v| v.resource == 'configuration' }.first
   end
 
+  def find_by_name(name)
+    nodes.find { |n| n.tag_name == name }
+  end
+
   def nodes
     @nodes ||= begin
       nodes = service_values.select { |v| v.resource == 'instance' }
