@@ -80,7 +80,7 @@ class UbuntuHelper
   end
 
   def kafka_manager
-    "#{script_path}/kafka_manager.sh #{kafka_ver} > #{log_path}/kafka_manager.log"
+    "#{script_path}/kafka_manager.sh > #{log_path}/kafka_manager.log"
   end
 
   def log_path_files
