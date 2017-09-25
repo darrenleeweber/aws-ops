@@ -14,6 +14,7 @@ namespace :kafka_manager do
         if kafka_manager_running?
           puts "#{host.hostname} is already running Kafka Manager"
         else
+          # TODO: does it need to be run by sudo?
           sudo('kafka-manager')
         end
       end
@@ -34,7 +35,8 @@ namespace :kafka_manager do
     task :stop do
       on roles(:kafka_manager) do
         # Ignore the exit(1) status when it's not running already
-        sudo('${KAFKA_BIN}/kafka-server-stop.sh || true')
+        # sudo('${KAFKA_BIN}/kafka-server-stop.sh || true')
+        puts 'TODO'
       end
     end
   end
