@@ -5,6 +5,14 @@ if [ -d /usr/share/kafka-manager ]; then
     exit
 fi
 
+
+curl -s https://packagecloud.io/install/repositories/spuder/kafka-manager/script.deb.sh | sudo bash
+
+sudo apt install kafka-manager
+
+exit
+
+
 # ---
 # Download
 cd /tmp
@@ -23,3 +31,8 @@ sbt debian:packageBin
 sudo dpkg -i -R target/
 
 # dpkg -L kafka-manager
+
+# ---
+# Cleanup
+
+sbt clean clean-files

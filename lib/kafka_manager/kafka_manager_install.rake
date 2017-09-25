@@ -7,7 +7,7 @@ namespace :kafka_manager do
   namespace :service do
     def install_kafka_manager
       install_java8
-      sudo(ubuntu_helper.sbt)
+      # sudo(ubuntu_helper.sbt)
       sudo(ubuntu_helper.kafka_manager)
     end
 
