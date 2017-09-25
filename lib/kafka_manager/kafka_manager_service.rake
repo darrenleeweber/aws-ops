@@ -14,7 +14,7 @@ namespace :kafka_manager do
         if kafka_manager_running?
           puts "#{host.hostname} is already running Kafka Manager"
         else
-          # TODO: does it need to be run by sudo?
+          # It requires sudo to create PID and log files
           sudo('kafka-manager')
         end
       end
@@ -23,7 +23,7 @@ namespace :kafka_manager do
     desc 'Status of Kafka Manager'
     task :status do
       on roles(:kafka_manager) do |host|
-        if kafka_running?
+        if kafka_manager_running?
           puts "#{host.hostname} is running Kafka Manager"
         else
           puts "#{host.hostname} is not running Kafka Manager"

@@ -5,7 +5,6 @@ if [ -d /usr/share/kafka-manager ]; then
     exit
 fi
 
-
 curl -s https://packagecloud.io/install/repositories/spuder/kafka-manager/script.deb.sh | sudo bash
 
 sudo apt install kafka-manager

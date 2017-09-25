@@ -99,6 +99,10 @@ class UbuntuHelper
     "#{script_path}/sbt.sh > #{log_path}/sbt.log"
   end
 
+  def upstart
+    "apt-get install upstart > #{log_path}/upstart.log"
+  end
+
   def zookeeper
     "#{script_path}/zookeeper.sh > #{log_path}/zookeeper.log"
   end
