@@ -206,14 +206,21 @@ describe AwsHelpers do
     it 'works' do
       expect(etc_hosts).to be_an String
     end
-    it 'starts with Public IP' do
+    it 'starts with Public IP (by default)' do
       expect(etc_hosts).to start_with inst.public_ip_address
     end
+    it 'starts with Private IP (when requested)' do
+      etc_hosts = aws_helpers.ec2_instance_etc_hosts(inst, false)
+      expect(etc_hosts).to start_with inst.private_ip_address
+    end
     it 'includes Public DNS' do
-      expect(etc_hosts).to include inst.public_dns_name
+      expect(etc_hosts).to include "\t#{inst.public_dns_name}"
     end
     it 'includes Private DNS' do
-      expect(etc_hosts).to include inst.private_dns_name
+      expect(etc_hosts).to include "\t#{inst.private_dns_name}"
+    end
+    it 'includes {HOST} template' do
+      expect(etc_hosts).to include "\t{HOST}"
     end
   end
 
