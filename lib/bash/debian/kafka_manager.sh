@@ -7,7 +7,7 @@ fi
 
 curl -s https://packagecloud.io/install/repositories/spuder/kafka-manager/script.deb.sh | sudo bash
 
-sudo apt-get install kafka-manager
+sudo apt-get install -y -q kafka-manager
 
 
 #---
