@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ -d /usr/share/kafka-manager ]; then
+if which kafka-manager; then
     echo "Kafka manager is installed"
     exit
 fi
@@ -30,6 +30,8 @@ EOF
 
 sudo mv /tmp/kafka-manager.service /lib/systemd/system/
 sudo systemctl enable kafka-manager.service
+
+# TODO: Create 'kafka' user/group to run the service
 
 exit
 
