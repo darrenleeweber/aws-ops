@@ -21,7 +21,7 @@ namespace :zookeeper do
 
     desc 'Find and describe all nodes'
     task :find do
-      ZookeeperHelpers.manager.describe_nodes
+      puts ZookeeperHelpers.manager.describe_nodes.join("\n")
     end
 
     desc 'Compose public entries for ~/.ssh/config for nodes'

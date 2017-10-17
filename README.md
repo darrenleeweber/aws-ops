@@ -6,6 +6,8 @@ Utils to provision services on AWS
 
 Incomplete - work in progress.
 
+See also `lib/{service}/README.md` documentation.
+
 # Goals
  - use ruby AWS API client to provision AWS resources
  - use capistrano for service installation/configuration
