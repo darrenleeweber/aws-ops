@@ -1,5 +1,5 @@
 
-[![Build Status](https://travis-ci.org/darrenleeweber/aws-ops.svg?branch=master)](https://travis-ci.org/darrenleeweber/aws-ops) [![Coverage Status](https://coveralls.io/repos/github/darrenleeweber/aws-ops/badge.svg?branch=master)](https://coveralls.io/github/darrenleeweber/aws-ops?branch=master)
+[![Build Status](https://travis-ci.org/darrenleeweber/aws-ops.svg?branch=master)](https://travis-ci.org/darrenleeweber/aws-ops)  [![Maintainability](https://api.codeclimate.com/v1/badges/3cf2ea6b174c68dce41f/maintainability)](https://codeclimate.com/github/darrenleeweber/aws-ops/maintainability)  [![Test Coverage](https://api.codeclimate.com/v1/badges/3cf2ea6b174c68dce41f/test_coverage)](https://codeclimate.com/github/darrenleeweber/aws-ops/test_coverage)  [![Coverage Status](https://coveralls.io/repos/github/darrenleeweber/aws-ops/badge.svg?branch=master)](https://coveralls.io/github/darrenleeweber/aws-ops?branch=master)
 
 # aws-ops
 Utils to provision services on AWS
