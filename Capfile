@@ -8,15 +8,11 @@ require_relative 'lib/boot'
 
 # default deploy_config_path is 'config/deploy.rb'
 cluster_deploy_path = ENV['CLUSTER_DEPLOY_PATH']
-if cluster_deploy_path
-  set :deploy_config_path, File.expand_path(cluster_deploy_path)
-end
+set :deploy_config_path, File.expand_path(cluster_deploy_path) if cluster_deploy_path
 
 # default stage_config_path is 'config/deploy'
 cluster_stage_path = ENV['CLUSTER_STAGE_PATH']
-if cluster_stage_path
-  set :stage_config_path, File.expand_path(cluster_stage_path)
-end
+set :stage_config_path, File.expand_path(cluster_stage_path) if cluster_stage_path
 
 # ---
 # Standard Capfile content below here.

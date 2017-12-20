@@ -11,9 +11,7 @@ namespace :ops do
         # with cd(".dotfiles"):
         #     run('git pull') # Keep dotfiles synchronized.
 
-        unless test('[ -f ~/.ssh/config ]')
-          execute 'touch ~/.ssh/config; chmod 600 ~/.ssh/config'
-        end
+        execute 'touch ~/.ssh/config; chmod 600 ~/.ssh/config' unless test('[ -f ~/.ssh/config ]')
 
         #
         # TODO: check whether to use host.hostname or something here.
