@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 gem 'aws-sdk-ec2', '~> 1'
 gem 'config'
-gem 'highline', '~> 1.7', '>= 1.7.8'
+gem 'highline', '~> 1.7'
 
 # lib/capistrano/tasks/console.rake uses pry
 gem 'pry'
