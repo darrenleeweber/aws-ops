@@ -111,8 +111,7 @@ aws:
     kafka_home: "/opt/kafka" # symlinks to /opt/kafka_{SCALA_VERSION}-{KAFKA_VERSION}
     kafka_version: "1.0.0"
     scala_version: "2.12"
-    # Note on a t1.micro we need KAFKA_HEAP_OPTS="-Xmx512M -Xms512M"
-    kafka_heap_opts: "-Xmx512M -Xms512M"  # defaults to "-Xmx1G -Xms1G"
+    #kafka_heap_opts: "-Xmx512M -Xms512M"  # defaults to "-Xmx1G -Xms1G"
     delete.topic.enable: true # use 'false' in production
     auto.create.topics.enable: true # use 'false' in production
     log.dirs: /data/kafka  # CSV, best to match N log.dirs to partitions
