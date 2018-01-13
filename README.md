@@ -291,6 +291,13 @@ depends on it).
 
 ## ZooKeeper
 
+- double check the latest releases available, see
+  - https://zookeeper.apache.org/releases.html
+  - don't just get the latest release, get the release that your cluster services recommend
+  - TODO: allow a custom version of zookeeper
+    - currently uses the default package for Ubuntu
+    - the settings file has no version options for zookeeper
+
 ```bash
 export STAGE={stage}
 bundle exec cap -T | grep zookeeper
@@ -300,9 +307,13 @@ bundle exec cap ${STAGE} zookeeper:service:configure
 bundle exec cap ${STAGE} zookeeper:service:start
 bundle exec cap ${STAGE} zookeeper:service:status
 # if all goes well, the status should report 'imok'
-# Also check the 'srvr' details and look for leader/follower 'Mode';
-# if the 'Mode: standalone', stop and restart the service until the
+# Also check the 'srvr' details and look for leader/follower 'Mode'.
+bundle exec cap ${STAGE} zookeeper:service:command['srvr']
+# If it's 'Mode: standalone', stop and restart the service until the
 # 'Mode' shows the servers have formed a quorum and elected a leader.
+# It usually resolves after one, maybe two, restarts
+bundle exec cap ${STAGE} zookeeper:service:stop # wait 10-30 sec
+bundle exec cap ${STAGE} zookeeper:service:start # wait 10-30 sec
 bundle exec cap ${STAGE} zookeeper:service:command['srvr']
 ```
 
