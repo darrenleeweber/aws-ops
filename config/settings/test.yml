@@ -109,8 +109,8 @@ aws:
   test_kafka_configuration:
     resource: configuration
     kafka_home: "/opt/kafka" # symlinks to /opt/kafka_{SCALA_VERSION}-{KAFKA_VERSION}
-    kafka_version: "0.11.0.0"
-    scala_version: "2.11"
+    kafka_version: "1.0.0"
+    scala_version: "2.12"
     # Note on a t1.micro we need KAFKA_HEAP_OPTS="-Xmx512M -Xms512M"
     kafka_heap_opts: "-Xmx512M -Xms512M"  # defaults to "-Xmx1G -Xms1G"
     delete.topic.enable: true # use 'false' in production
