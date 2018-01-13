@@ -353,9 +353,16 @@ export STAGE={stage}
 bundle exec cap ${STAGE} kafka:service:tail_server_log["${STAGE}_kafka1"]
 ```
 
+When Kafka is running, confirm that it has registered brokers with ZooKeeper.  Use the
+ZooNavigator UI to refresh the zoo-nodes and check that the Kafka node tree contains
+some brokers.  The `/kafka/brokers/ids` should list all the brokers configured in
+`config/settings/{STAGE}.yml`
+
+- See [Kafka](lib/kafka/README.md) docs for more about testing Kafka
+
 ## Kafka Manager
 
-TODO
+TODO - run it on any system (e.g. a laptop) and connect to the cluster on AWS
 
 
 # Explanation of enabling AWS hosts for Capistrano
