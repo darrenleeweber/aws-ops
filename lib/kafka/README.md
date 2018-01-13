@@ -6,6 +6,13 @@ See also:
 - https://www.digitalocean.com/community/tutorials/how-to-install-apache-kafka-on-ubuntu-14-04
 - https://github.com/voxpupuli/puppet-kafka
 
+Kafka on AWS
+- https://docs.confluent.io/current/kafka/deployment.html#hardware
+- https://www.confluent.io/blog/design-and-deployment-considerations-for-deploying-apache-kafka-on-aws/
+
+"We recommend using d2.xlarge if you're using instance storage, or r3.xlarge or m4.2xlarge if you’re using EBS"
+
+
 ## Configuration
 
 See `lib/kafka/kafka.rake :service:configure`
