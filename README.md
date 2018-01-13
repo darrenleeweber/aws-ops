@@ -6,6 +6,7 @@ Utils to provision services on AWS
 
 Incomplete - work in progress.
 
+
 # Goals
  - use ruby AWS API client to provision AWS resources
  - use capistrano for service installation/configuration
@@ -15,9 +16,11 @@ Incomplete - work in progress.
     - default settings are in config/settings/test.yml
  - use AWS discovery services to find everything dynamically
 
+
 # Background information and resources
  - https://aws.amazon.com/blogs/devops/tag/capistrano/
  - http://fuzzyblog.io/blog/aws/2016/09/23/aws-tutorial-09-deploying-rails-apps-to-aws-with-capistrano-take-1.html
+
 
 # Install
 ```bash
@@ -26,6 +29,56 @@ cd aws-ops
 bundle install
 bundle exec cap -T
 ```
+
+
+# Additional Documentation
+
+- [Zookeeper](lib/zookeeper/README.md)
+  - [ZooNavigator](lib/zoonavigator/README.md)
+- [Kafka](lib/kafka/README.md)
+
+
+# Getting Started
+
+AWS resources and services are defined by YAML settings and managed by capistrano tasks.  This is not exactly a
+quick-start, turn-key solution; there are settings to change and things to think about; read all the details below
+and use the online resources to provision systems.
+
+- review `config/settings` and `config/deploy` content
+- create a new {STAGE}, let's call it 'dev'
+```
+cp config/settings/test.yml config/settings/dev.yml
+sed -i s/test/dev/ config/settings/dev.yml
+sed -i s/TEST/DEV/ config/settings/dev.yml
+
+cp config/deploy/dev.rb config/deploy/dev.rb
+sed -i s/test/dev/ config/deploy/dev.rb
+```
+
+- make some decisions about the settings in those files
+- establish AWS-API credentials and get a PEM file
+  - use the PEM file in `config/settings/dev.yml`
+
+```bash
+export AWS_PROFILE=profileX
+export AWS_SECRET_ACCESS_KEY=secret_key
+export AWS_ACCESS_KEY_ID=secret_key
+export AWS_DEFAULT_REGION="regionX"
+```
+
+- check settings
+
+```bash
+export CLUSTER_ENV='dev' # or whatever {env} in config/settings/{env}.yml
+export STAGE='dev' # or whatever {stage} in config/deploy/{stage}.rb
+bundle exec cap ${STAGE} ops:aws:check_settings
+```
+
+- run capistrano tasks to manage AWS nodes
+- run capistrano tasks to provision services on AWS nodes
+- `bundle exec cap -T` to list node and service tasks
+- read all the details below
+
 
 # Configure
 
@@ -238,6 +291,13 @@ depends on it).
 
 ## ZooKeeper
 
+- double check the latest releases available, see
+  - https://zookeeper.apache.org/releases.html
+  - don't just get the latest release, get the release that your cluster services recommend
+  - TODO: allow a custom version of zookeeper
+    - currently uses the default package for Ubuntu
+    - the settings file has no version options for zookeeper
+
 ```bash
 export STAGE={stage}
 bundle exec cap -T | grep zookeeper
@@ -247,9 +307,13 @@ bundle exec cap ${STAGE} zookeeper:service:configure
 bundle exec cap ${STAGE} zookeeper:service:start
 bundle exec cap ${STAGE} zookeeper:service:status
 # if all goes well, the status should report 'imok'
-# Also check the 'srvr' details and look for leader/follower 'Mode';
-# if the 'Mode: standalone', stop and restart the service until the
+# Also check the 'srvr' details and look for leader/follower 'Mode'.
+bundle exec cap ${STAGE} zookeeper:service:command['srvr']
+# If it's 'Mode: standalone', stop and restart the service until the
 # 'Mode' shows the servers have formed a quorum and elected a leader.
+# It usually resolves after one, maybe two, restarts
+bundle exec cap ${STAGE} zookeeper:service:stop # wait 10-30 sec
+bundle exec cap ${STAGE} zookeeper:service:start # wait 10-30 sec
 bundle exec cap ${STAGE} zookeeper:service:command['srvr']
 ```
 
@@ -289,9 +353,16 @@ export STAGE={stage}
 bundle exec cap ${STAGE} kafka:service:tail_server_log["${STAGE}_kafka1"]
 ```
 
+When Kafka is running, confirm that it has registered brokers with ZooKeeper.  Use the
+ZooNavigator UI to refresh the zoo-nodes and check that the Kafka node tree contains
+some brokers.  The `/kafka/brokers/ids` should list all the brokers configured in
+`config/settings/{STAGE}.yml`
+
+- See [Kafka](lib/kafka/README.md) docs for more about testing Kafka
+
 ## Kafka Manager
 
-TODO
+TODO - run it on any system (e.g. a laptop) and connect to the cluster on AWS
 
 
 # Explanation of enabling AWS hosts for Capistrano

@@ -32,8 +32,8 @@ module KafkaHelpers
 
   def kafka_ver
     @kafka_ver ||= [
-      configuration['scala_version'] || '2.11',
-      configuration['kafka_version'] || '0.11.0.0'
+      configuration['scala_version'] || '2.12',
+      configuration['kafka_version'] || '1.0.0'
     ].join(' ')
   end
 

@@ -6,6 +6,13 @@ See also:
 - https://www.digitalocean.com/community/tutorials/how-to-install-apache-kafka-on-ubuntu-14-04
 - https://github.com/voxpupuli/puppet-kafka
 
+Kafka on AWS
+- https://docs.confluent.io/current/kafka/deployment.html#hardware
+- https://www.confluent.io/blog/design-and-deployment-considerations-for-deploying-apache-kafka-on-aws/
+
+"We recommend using d2.xlarge if you're using instance storage, or r3.xlarge or m4.2xlarge if you’re using EBS"
+
+
 ## Configuration
 
 See `lib/kafka/kafka.rake :service:configure`
@@ -41,11 +48,16 @@ cap kafka:service:tail_server_log[server]             # tail -n250 ${KAFKA_HOME}
 
 ### Using Kafka
 
+For this quick test, it's assumed there is a local installation of Kafka available in `/opt/kafka`.  This
+test will use some Kafka utilities to work with the AWS cluster.  It's a good idea to match the
+local version with the AWS cluster version.
+
 ```bash
 export KAFKA_HOME=/opt/kafka
+export STAGE={stage}
 
 # get the zookeeper connection details (replace 'test' with your capistrano {stage})
-ZK=$(AWS_ENV=test bundle exec cap test zookeeper:service:connections)
+ZK=$(bundle exec cap ${STAGE} zookeeper:service:connections)
 KAFKA_ZK="${ZK}/kafka"
 echo $KAFKA_ZK
 
@@ -58,20 +70,23 @@ ${KAFKA_HOME}/bin/kafka-topics.sh --zookeeper ${KAFKA_ZK} --create   --topic tes
 ${KAFKA_HOME}/bin/kafka-topics.sh --zookeeper ${KAFKA_ZK} --describe --topic test
 
 # use console utils to observe pub/sub activity
+# - create a new screen session
+#   - it should inherit the ENV values for $STAGE and $KAFKA_HOME set above
 # - use screen to create a vertical split window for the producer and consumer:
-#   - `^A |` to split vertically and `^A tab` to jump between them
-#   - `^A c` to create a new session in the right side window
+#   - `^a |` to split vertically and `^A tab` to jump between them
+#   - `^a c` to create a new session in the right side window
+#   - `^a ?` for screen help
 
 # - in the left window:
 # get the kafka broker list (replace 'test' with your capistrano {stage})
-KAFKA_BROKERS=$(AWS_ENV=test bundle exec cap test kafka:service:brokers)
+KAFKA_BROKERS=$(bundle exec cap ${STAGE} kafka:service:brokers)
 echo $KAFKA_BROKERS
 # create the producer using:
 ${KAFKA_HOME}/bin/kafka-console-producer.sh --broker-list ${KAFKA_BROKERS} --topic test
 
 # - in the right window:
 # get the kafka broker list (replace 'test' with your capistrano {stage})
-KAFKA_BROKERS=$(AWS_ENV=test bundle exec cap test kafka:service:brokers)
+KAFKA_BROKERS=$(bundle exec cap ${STAGE} kafka:service:brokers)
 echo $KAFKA_BROKERS
 # create the consumer using:
 ${KAFKA_HOME}/bin/kafka-console-consumer.sh --bootstrap-server ${KAFKA_BROKERS} --topic test

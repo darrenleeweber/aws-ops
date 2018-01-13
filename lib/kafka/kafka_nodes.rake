@@ -16,7 +16,7 @@ namespace :kafka do
 
     desc 'Find and describe all nodes'
     task :find do
-      KafkaHelpers.manager.describe_nodes
+      puts KafkaHelpers.manager.describe_nodes
     end
 
     desc 'Reboot Kafka systems - WARNING, can reset IPs'

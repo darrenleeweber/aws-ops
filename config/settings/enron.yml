@@ -34,7 +34,7 @@ aws:
     - us-west-2b
     - us-west-2c
 
-  instance_default_test: &TestDefault
+  instance_default_enron: &EnronDefault
     resource: instance
     region: us-west-2
     image_id: ami-6e1a0117  # Ubuntu
@@ -45,13 +45,13 @@ aws:
     instance_type: t2.micro
     availability_zone: us-west-2a
     security_groups:
-      - test_ssh_security_group
-    key_name: dweber-consulting-test
-    tag_name: test_default
-    tag_group: test_nodes
-    tag_manager: dlweber
+      - enron_ssh_security_group
+    key_name: dweber-consulting-dev
+    tag_name: enron_default
+    tag_group: enron_nodes
+    tag_manager: dweber-consulting
     tag_service:
-    tag_stage: test
+    tag_stage: enron
 
   # ---
   # Zookeeper Nodes
@@ -60,7 +60,7 @@ aws:
   # - it's important that each instance has a 'myid' with a unique integer between 1-255 (inclusive)
   # - the `leader_port` and the `election_port` must match up with security_group settings
 
-  test_zookeeper_configuration:
+  enron_zookeeper_configuration:
     resource: configuration
     maxClientCnxns: 0
     client_port: 2181
@@ -69,30 +69,30 @@ aws:
     dataLogDir: "/var/log/zookeeper"
     dataDir: "/var/lib/zookeeper"
 
-  test_zookeeper1: &ZookeeperDefaults
-    <<: *TestDefault
+  enron_zookeeper1: &ZookeeperDefaults
+    <<: *EnronDefault
     myid: 1
     client_port: 2181
     leader_port: 2888
     election_port: 3888
     security_groups:
-      - test_ssh_security_group
-      - test_zookeeper_security_group
+      - enron_ssh_security_group
+      - enron_zookeeper_security_group
     tag_service: zookeeper
-    tag_group: test_zookeeper
-    tag_name: test_zookeeper1
+    tag_group: enron_zookeeper
+    tag_name: enron_zookeeper1
     availability_zone: us-west-2a  # need one node in each zone
 
-  test_zookeeper2:
+  enron_zookeeper2:
     <<: *ZookeeperDefaults
     myid: 2
-    tag_name: test_zookeeper2
+    tag_name: enron_zookeeper2
     availability_zone: us-west-2b  # need one node in each zone
 
-  test_zookeeper3:
+  enron_zookeeper3:
     <<: *ZookeeperDefaults
     myid: 3
-    tag_name: test_zookeeper3
+    tag_name: enron_zookeeper3
     availability_zone: us-west-2c  # need one node in each zone
 
   # ---
@@ -106,13 +106,12 @@ aws:
   #   - broker.id
   #   - zookeeper.connect
   #   - advertised.listeners
-  test_kafka_configuration:
+  enron_kafka_configuration:
     resource: configuration
     kafka_home: "/opt/kafka" # symlinks to /opt/kafka_{SCALA_VERSION}-{KAFKA_VERSION}
     kafka_version: "1.0.0"
     scala_version: "2.12"
-    # Note on a t1.micro we need KAFKA_HEAP_OPTS="-Xmx512M -Xms512M"
-    kafka_heap_opts: "-Xmx512M -Xms512M"  # defaults to "-Xmx1G -Xms1G"
+    #kafka_heap_opts: "-Xmx512M -Xms512M"  # defaults to "-Xmx1G -Xms1G"
     delete.topic.enable: true # use 'false' in production
     auto.create.topics.enable: true # use 'false' in production
     log.dirs: /data/kafka  # CSV, best to match N log.dirs to partitions
@@ -124,67 +123,29 @@ aws:
     log.retention.check.interval.ms: 300000
     zookeeper.connection.timeout.ms: 6000
 
-  test_kafka1: &KafkaDefaults
-    <<: *TestDefault
+  enron_kafka1: &KafkaDefaults
+    <<: *EnronDefault
+    instance_type: t2.large
     broker_id: 1
     client_port: 9092 # AFAIK, it's always 9092
     tag_service: kafka
-    tag_group: test_kafka
-    tag_name: test_kafka1
+    tag_group: enron_kafka
+    tag_name: enron_kafka1
     availability_zone: us-west-2a  # need one node in each zone
     security_groups:
-      - test_ssh_security_group
-      - test_kafka_security_group
+      - enron_ssh_security_group
+      - enron_kafka_security_group
 
-  test_kafka2:
+  enron_kafka2:
     <<: *KafkaDefaults
     broker_id: 2
-    tag_name: test_kafka2
+    tag_name: enron_kafka2
     availability_zone: us-west-2b  # need one node in each zone
 
-  test_kafka3:
+  enron_kafka3:
     <<: *KafkaDefaults
     broker_id: 3
-    tag_name: test_kafka3
-    availability_zone: us-west-2c  # need one node in each zone
-
-  # ---
-  # Mesos Nodes
-  # - note definition and use of defaults: MesosMasterDefaults, MesosAgentDefaults
-  # - it's important that each instance has 'mesos' in the key and tag_name (case sensitive)
-
-  test_mesos_master1: &MesosMasterDefaults
-    <<: *TestDefault
-    tag_service: mesos
-    tag_group: test_mesos_master
-    tag_name: test_mesos_master1
-    availability_zone: us-west-2a  # need one node in each zone
-
-  test_mesos_master2:
-    <<: *MesosMasterDefaults
-    tag_name: test_mesos_master2
-    availability_zone: us-west-2b  # need one node in each zone
-
-  test_mesos_master3:
-    <<: *MesosMasterDefaults
-    tag_name: test_mesos_master3
-    availability_zone: us-west-2c  # need one node in each zone
-
-  test_mesos_agent1: &MesosAgentDefaults
-    <<: *TestDefault
-    tag_service: mesos
-    tag_group: test_mesos_agent
-    tag_name: test_mesos_agent1
-    availability_zone: us-west-2a  # need one node in each zone
-
-  test_mesos_agent2:
-    <<: *MesosAgentDefaults
-    tag_name: test_mesos_agent2
-    availability_zone: us-west-2b  # need one node in each zone
-
-  test_mesos_agent3:
-    <<: *MesosMasterDefaults
-    tag_name: test_mesos_agent3
+    tag_name: enron_kafka3
     availability_zone: us-west-2c  # need one node in each zone
 
   # ---
@@ -194,17 +155,17 @@ aws:
   # - creation of security groups is idempotent (AWS doesn't allow duplicates)
   # - instance creation can validate or create a new security group, as necessary
 
-  test_security_group_defaults: &TestSecurityGroupDefault
+  enron_security_group_defaults: &EnronSecurityGroupDefault
     resource: security_group
     vpc_id: vpc-14d0be7c
-    tag_group: test_security_groups
+    tag_group: enron_security_groups
     tag_manager: dlweber
-    tag_stage: test
+    tag_stage: enron
 
-  test_ssh_security_group:
-    <<: *TestSecurityGroupDefault
-    tag_name: test_ssh_security_group
-    group_name: test_ssh_security_group
+  enron_ssh_security_group:
+    <<: *EnronSecurityGroupDefault
+    tag_name: enron_ssh_security_group
+    group_name: enron_ssh_security_group
     description: 'SSH access'
     authorize_ingress:
       group_id:
@@ -215,13 +176,13 @@ aws:
           ip_ranges:
             - cidr_ip: '0.0.0.0/0'
 
-  # - these ip_permissions for the test stage are wide open, for ease of use
+  # - these ip_permissions for the enron stage are wide open, for ease of use
   # - for production, the IP CIDR needs to be specific to subnets
   # - the public subnets should have an IPV4 CIDR for each availability_zone
-  test_zookeeper_security_group:
-    <<: *TestSecurityGroupDefault
-    tag_name: test_zookeeper_security_group
-    group_name: test_zookeeper_security_group
+  enron_zookeeper_security_group:
+    <<: *EnronSecurityGroupDefault
+    tag_name: enron_zookeeper_security_group
+    group_name: enron_zookeeper_security_group
     description: 'Zookeeper port access'
     authorize_ingress:
       group_id:
@@ -255,13 +216,13 @@ aws:
           ipv_6_ranges:
             - cidr_ipv_6: '::/0'
 
-  # - these ip_permissions for the test stage are wide open, for ease of use
+  # - these ip_permissions for the enron stage are wide open, for ease of use
   # - for production, the IP CIDR needs to be specific to subnets
   # - the public subnets should have an IPV4 CIDR for each availability_zone
-  test_kafka_security_group:
-    <<: *TestSecurityGroupDefault
-    tag_name: test_kafka_security_group
-    group_name: test_kafka_security_group
+  enron_kafka_security_group:
+    <<: *EnronSecurityGroupDefault
+    tag_name: enron_kafka_security_group
+    group_name: enron_kafka_security_group
     description: 'Kafka port access'
     authorize_ingress:
       group_id:

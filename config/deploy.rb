@@ -1,6 +1,6 @@
 
 set :application, 'aws-ops'
-set :repo_url, 'git@github.com:darrenleeweber/aws-ops.git'
+set :repo_url, 'https://github.com/darrenleeweber/aws-ops.git'
 
 #####
 # AWS SSH Connection Notes:
