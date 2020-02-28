@@ -105,7 +105,7 @@ GEM
       yard (~> 0.9)
     rainbow (2.2.2)
       rake
-    rake (12.3.0)
+    rake (13.0.1)
     reek (4.7.3)
       codeclimate-engine-rb (~> 0.4.0)
       parser (>= 2.4.0.0, < 2.5)
